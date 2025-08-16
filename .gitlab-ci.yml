@@ -1,5 +1,3 @@
-default:
-  GIT_STRATEGY: fetch
 
 stages:
   - sbom
@@ -11,6 +9,7 @@ include:
   - template: Security/SAST.gitlab-ci.yml
 
 sbom:
+  GIT_STRATEGY: fetch
   image: python:3.11
   script:
     - echo "[sbom] PWD: $PWD"
@@ -27,6 +26,7 @@ sbom:
       - frontend/sbom.xml
 
 lint_backend:
+  GIT_STRATEGY: fetch
   image: python:3.11
   script:
     - echo "[lint_backend] PWD: $PWD"
@@ -36,6 +36,7 @@ lint_backend:
     - poetry run flake8 .
 
 lint_frontend:
+  GIT_STRATEGY: fetch
   image: node:20-alpine
   script:
     - echo "[lint_frontend] PWD: $PWD"
@@ -44,6 +45,7 @@ lint_frontend:
     - npm run lint
 
 dependency_scan:
+  GIT_STRATEGY: fetch
   image: registry.gitlab.com/gitlab-org/security-products/dependency-scanning:latest
   script:
     - echo "[dependency_scan] PWD: $PWD"
