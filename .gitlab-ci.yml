@@ -5,10 +5,11 @@ stages:
   - scan
 
 sbom:
-  image: cyclonedx/cyclonedx-cli:latest
+  image: python:3.11
   script:
-    - cyclonedx-py -o backend/sbom.xml
-    - cyclonedx-npm -o frontend/sbom.xml
+    - pip install cyclonedx-bom cyclonedx-bom-npm
+    - cd backend && cyclonedx-py -o sbom.xml && cd ..
+    - cd frontend && cyclonedx-npm -o sbom.xml && cd ..
   artifacts:
     paths:
       - backend/sbom.xml
@@ -30,7 +31,7 @@ lint_frontend:
 dependency_scan:
   image: registry.gitlab.com/gitlab-org/security-products/dependency-scanning:latest
   script:
-    - /analyzer run
+    - dependency-scanning scan
 
 sast:
   image: registry.gitlab.com/gitlab-org/security-products/sast:latest
