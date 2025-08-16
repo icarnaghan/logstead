@@ -184,12 +184,18 @@ generate-child-pipeline:
         dir="${d%/}"
         added=0
 
+
         if [ -f "$dir/pyproject.toml" ]; then
           cat >> child-pipeline.yml <<'EOF'
 
       ${dir}_sbom_py:
         extends: .py_sbom
         variables: { DIR: "__DIR__" }
+
+      ${dir}_trivy_py:
+        extends: .py_trivy
+        variables: { DIR: "__DIR__" }
+        needs: [${dir}_sbom_py]
 
       ${dir}_lint_py:
         extends: .py_lint
@@ -210,6 +216,11 @@ generate-child-pipeline:
       ${dir}_sbom_node:
         extends: .node_sbom
         variables: { DIR: "$dir" }
+
+      ${dir}_trivy_node:
+        extends: .node_trivy
+        variables: { DIR: "$dir" }
+        needs: [${dir}_sbom_node]
 
       ${dir}_lint_node:
         extends: .node_lint
