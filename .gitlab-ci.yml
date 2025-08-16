@@ -1,14 +1,20 @@
+
 stages:
   - sbom
   - lint
   - test
   - scan
 
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 sbom:
   image: python:3.11
   script:
-    - pip install cyclonedx-bom cyclonedx-bom-npm
+    - pip install cyclonedx-bom
     - cd backend && cyclonedx-py -o sbom.xml && cd ..
+    - apt-get update && apt-get install -y npm
+    - npm install -g @cyclonedx/cyclonedx-npm
     - cd frontend && cyclonedx-npm -o sbom.xml && cd ..
   artifacts:
     paths:
@@ -31,9 +37,5 @@ lint_frontend:
 dependency_scan:
   image: registry.gitlab.com/gitlab-org/security-products/dependency-scanning:latest
   script:
-    - dependency-scanning scan
+    - dependency-scanning $CI_PROJECT_DIR
 
-sast:
-  image: registry.gitlab.com/gitlab-org/security-products/sast:latest
-  script:
-    - /analyzer run
