@@ -212,7 +212,8 @@ dependency_scan:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
   script:
-    - echo "[dependency_scan] PWD: $PWD"
-    - echo "[dependency_scan] Root contents:"
-    - ls -al
-    - dependency-scanning scan .
+    - |
+      echo "[dependency_scan] PWD: $PWD"
+      echo "[dependency_scan] Root contents:"
+      ls -al
+      dependency-scanning scan .
