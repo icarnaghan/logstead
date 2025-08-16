@@ -102,7 +102,11 @@ generate-child-pipeline:
             artifacts: true
         script:
           - docker build -t logstead_backend:latest ./backend
-          - trivy image --exit-code 1 --no-progress --severity CRITICAL,HIGH logstead_backend:latest
+          - trivy image --exit-code 1 --no-progress --severity CRITICAL,HIGH -f json -o trivy-report-backend.json logstead_backend:latest
+        artifacts:
+          when: always
+          paths:
+            - trivy-report-backend.json
 
       .py_lint:
         extends: .py_base
@@ -150,7 +154,11 @@ generate-child-pipeline:
             artifacts: true
         script:
           - docker build -t logstead_frontend:latest ./frontend
-          - trivy image --exit-code 1 --no-progress --severity CRITICAL,HIGH logstead_frontend:latest
+          - trivy image --exit-code 1 --no-progress --severity CRITICAL,HIGH -f json -o trivy-report-frontend.json logstead_frontend:latest
+        artifacts:
+          when: always
+          paths:
+            - trivy-report-frontend.json
 
       .node_lint:
         extends: .node_base
