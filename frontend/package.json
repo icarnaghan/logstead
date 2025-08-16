@@ -15,6 +15,6 @@
     "lint": "echo 'No linter configured yet'"
   },
   "devDependencies": {
-    "@testing-library/react": "^14.0.0"
+    "@testing-library/react": "^14.3.1"
   }
 }
