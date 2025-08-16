@@ -14,8 +14,10 @@ include:
 default:
   interruptible: true
   before_script:
-    - echo "[ci] PWD: $PWD"
-    - echo "[ci] Root contents:" && ls -al
+    - |
+      echo "[ci] PWD: $PWD"
+      echo "[ci] Root contents:"
+      ls -al
   cache:
     key:
       files:
