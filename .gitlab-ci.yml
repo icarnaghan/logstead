@@ -1,3 +1,25 @@
+# -------------------
+# Trivy image scan jobs
+# -------------------
+trivy_scan_frontend:
+  stage: scan
+  image: aquasec/trivy:latest
+  needs: []
+  script:
+    - trivy image --exit-code 1 --no-progress --severity CRITICAL,HIGH logstead_frontend:latest || exit 1
+  rules:
+    - if: $CI_COMMIT_BRANCH
+  allow_failure: false
+
+trivy_scan_backend:
+  stage: scan
+  image: aquasec/trivy:latest
+  needs: []
+  script:
+    - trivy image --exit-code 1 --no-progress --severity CRITICAL,HIGH logstead_backend:latest || exit 1
+  rules:
+    - if: $CI_COMMIT_BRANCH
+  allow_failure: false
 # Monorepo-friendly CI with dynamic child pipeline generation.
 # Stages: prepare -> sbom -> lint -> test -> scan
 
