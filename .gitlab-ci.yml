@@ -1,6 +1,5 @@
 default:
-  variables:
-    GIT_STRATEGY: fetch
+  GIT_STRATEGY: fetch
 
 stages:
   - sbom
