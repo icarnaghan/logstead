@@ -1,0 +1,11 @@
+[flake8]
+exclude =
+    __pycache__,
+    .venv,
+    .git,
+    ai,
+    queueing,
+    dist,
+    *.egg-info,
+    .vscode,
+    .idea
