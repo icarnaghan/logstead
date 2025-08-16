@@ -1,3 +1,6 @@
+default:
+  variables:
+    GIT_STRATEGY: fetch
 
 stages:
   - sbom
@@ -11,12 +14,13 @@ include:
 sbom:
   image: python:3.11
   script:
+    - echo "[sbom] PWD: $PWD"
+    - echo "[sbom] Root directory contents:" && ls -al
     - pip install cyclonedx-bom
     - cd backend && cyclonedx-py -o sbom.xml && cd ..
     - apt-get update && apt-get install -y npm
     - npm install -g @cyclonedx/cyclonedx-npm
-    - echo "Listing root directory contents for debug:" && ls -al
-    - echo "Listing frontend directory contents for debug:" && ls -al frontend || echo "frontend directory missing"
+    - echo "[sbom] Frontend directory contents:" && ls -al frontend || echo "frontend directory missing"
     - cd frontend && cyclonedx-npm -o sbom.xml && cd ..
   artifacts:
     paths:
@@ -26,6 +30,8 @@ sbom:
 lint_backend:
   image: python:3.11
   script:
+    - echo "[lint_backend] PWD: $PWD"
+    - echo "[lint_backend] Root directory contents:" && ls -al
     - pip install poetry
     - cd backend && poetry install
     - poetry run flake8 .
@@ -33,11 +39,15 @@ lint_backend:
 lint_frontend:
   image: node:20-alpine
   script:
+    - echo "[lint_frontend] PWD: $PWD"
+    - echo "[lint_frontend] Root directory contents:" && ls -al
     - cd frontend && npm ci
     - npm run lint
 
 dependency_scan:
   image: registry.gitlab.com/gitlab-org/security-products/dependency-scanning:latest
   script:
+    - echo "[dependency_scan] PWD: $PWD"
+    - echo "[dependency_scan] Root directory contents:" && ls -al
     - dependency-scanning scan $CI_PROJECT_DIR
 
