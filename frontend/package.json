@@ -13,5 +13,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "echo 'No linter configured yet'"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0"
   }
 }
