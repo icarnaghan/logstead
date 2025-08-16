@@ -19,13 +19,12 @@ default:
     - echo "[ci] PWD: $PWD"
     - echo "[ci] Root contents:" && ls -al
   cache:
-    # Cache per-branch; bust when lockfiles change
     key:
       files:
-        - **/poetry.lock
-        - **/package-lock.json
-        - **/pnpm-lock.yaml
-        - **/yarn.lock
+        - "**/poetry.lock"
+        - "**/package-lock.json"
+        - "**/pnpm-lock.yaml"
+        - "**/yarn.lock"
     paths:
       - .cache/pip
       - .cache/pypoetry
