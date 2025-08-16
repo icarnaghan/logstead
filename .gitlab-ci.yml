@@ -15,6 +15,8 @@ sbom:
     - cd backend && cyclonedx-py -o sbom.xml && cd ..
     - apt-get update && apt-get install -y npm
     - npm install -g @cyclonedx/cyclonedx-npm
+    - echo "Listing root directory contents for debug:" && ls -al
+    - echo "Listing frontend directory contents for debug:" && ls -al frontend || echo "frontend directory missing"
     - cd frontend && cyclonedx-npm -o sbom.xml && cd ..
   artifacts:
     paths:
@@ -37,5 +39,5 @@ lint_frontend:
 dependency_scan:
   image: registry.gitlab.com/gitlab-org/security-products/dependency-scanning:latest
   script:
-    - dependency-scanning $CI_PROJECT_DIR
+    - dependency-scanning scan $CI_PROJECT_DIR
 
