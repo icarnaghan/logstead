@@ -78,8 +78,9 @@ generate-child-pipeline:
         stage: sbom
         script:
           - cd "$DIR"
-          - pip install cyclonedx-bom
-          - cyclonedx-py -o sbom.xml
+          - pip install --upgrade pip cyclonedx-bom
+          - poetry install --no-root
+          - cyclonedx-py poetry --format xml -o sbom.xml
         artifacts:
           when: always
           paths:
