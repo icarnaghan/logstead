@@ -1,0 +1,25 @@
+
+# Root .gitignore
+.env
+.DS_Store
+*.log
+sbom.xml
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+node_modules/
+build/
+*.env.*
+*.local
+*.swp
+*.swo
+*.bak
+*.tmp
+/.vscode/
+/.idea/
+*.iml
+coverage/
+dist/
+*.egg-info/
+poetry.lock

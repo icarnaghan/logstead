@@ -1,0 +1,38 @@
+stages:
+  - sbom
+  - lint
+  - test
+  - scan
+
+sbom:
+  image: cyclonedx/cyclonedx-cli:latest
+  script:
+    - cyclonedx-py -o backend/sbom.xml
+    - cyclonedx-npm -o frontend/sbom.xml
+  artifacts:
+    paths:
+      - backend/sbom.xml
+      - frontend/sbom.xml
+
+lint_backend:
+  image: python:3.11
+  script:
+    - pip install poetry
+    - cd backend && poetry install
+    - poetry run flake8 .
+
+lint_frontend:
+  image: node:20-alpine
+  script:
+    - cd frontend && npm ci
+    - npm run lint
+
+dependency_scan:
+  image: registry.gitlab.com/gitlab-org/security-products/dependency-scanning:latest
+  script:
+    - /analyzer run
+
+sast:
+  image: registry.gitlab.com/gitlab-org/security-products/sast:latest
+  script:
+    - /analyzer run
