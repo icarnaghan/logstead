@@ -80,7 +80,7 @@ generate-child-pipeline:
           - cd "$DIR"
           - pip install --upgrade pip cyclonedx-bom
           - poetry install --no-root
-          - cyclonedx-py poetry --format xml -o sbom.xml
+          - cyclonedx-py poetry -o sbom.xml
         artifacts:
           when: always
           paths:
