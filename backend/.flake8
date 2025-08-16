@@ -3,6 +3,7 @@ exclude =
     __pycache__,
     .venv,
     .git,
+    .cache,
     ai,
     queueing,
     dist,
