@@ -13,14 +13,22 @@ sbom:
     GIT_STRATEGY: fetch
   image: python:3.11
   script:
-    - echo "[sbom] PWD: $PWD"
-    - echo "[sbom] Root directory contents:" && ls -al
-    - pip install cyclonedx-bom
-    - cd backend && cyclonedx-py -o sbom.xml && cd ..
-    - apt-get update && apt-get install -y npm
-    - npm install -g @cyclonedx/cyclonedx-npm
-    - echo "[sbom] Frontend directory contents:" && ls -al frontend || echo "frontend directory missing"
-    - cd frontend && cyclonedx-npm -o sbom.xml && cd ..
+    - |
+      echo "[sbom] PWD: $PWD"
+    - |
+      echo "[sbom] Root directory contents:" && ls -al
+    - |
+      pip install cyclonedx-bom
+    - |
+      cd backend && cyclonedx-py -o sbom.xml && cd ..
+    - |
+      apt-get update && apt-get install -y npm
+    - |
+      npm install -g @cyclonedx/cyclonedx-npm
+    - |
+      echo "[sbom] Frontend directory contents:" && ls -al frontend || echo "frontend directory missing"
+    - |
+      cd frontend && cyclonedx-npm -o sbom.xml && cd ..
   artifacts:
     paths:
       - backend/sbom.xml
@@ -31,28 +39,40 @@ lint_backend:
     GIT_STRATEGY: fetch
   image: python:3.11
   script:
-    - echo "[lint_backend] PWD: $PWD"
-    - echo "[lint_backend] Root directory contents:" && ls -al
-    - pip install poetry
-    - cd backend && poetry install
-    - poetry run flake8 .
+    - |
+      echo "[lint_backend] PWD: $PWD"
+    - |
+      echo "[lint_backend] Root directory contents:" && ls -al
+    - |
+      pip install poetry
+    - |
+      cd backend && poetry install
+    - |
+      poetry run flake8 .
 
 lint_frontend:
   variables:
     GIT_STRATEGY: fetch
   image: node:20-alpine
   script:
-    - echo "[lint_frontend] PWD: $PWD"
-    - echo "[lint_frontend] Root directory contents:" && ls -al
-    - cd frontend && npm ci
-    - npm run lint
+    - |
+      echo "[lint_frontend] PWD: $PWD"
+    - |
+      echo "[lint_frontend] Root directory contents:" && ls -al
+    - |
+      cd frontend && npm ci
+    - |
+      npm run lint
 
 dependency_scan:
   variables:
     GIT_STRATEGY: fetch
   image: registry.gitlab.com/gitlab-org/security-products/dependency-scanning:latest
   script:
-    - echo "[dependency_scan] PWD: $PWD"
-    - echo "[dependency_scan] Root directory contents:" && ls -al
-    - dependency-scanning scan $CI_PROJECT_DIR
+    - |
+      echo "[dependency_scan] PWD: $PWD"
+    - |
+      echo "[dependency_scan] Root directory contents:" && ls -al
+    - |
+      dependency-scanning scan $CI_PROJECT_DIR
 
