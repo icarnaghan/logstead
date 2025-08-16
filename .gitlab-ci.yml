@@ -202,19 +202,3 @@ run-child-pipeline:
       - artifact: child-pipeline.yml
         job: generate-child-pipeline
     strategy: depend
-
-# ---------------------------------------------------------------
-# 2) Repo-wide dependency scan (optional, runs once at repo root)
-# ---------------------------------------------------------------
-dependency_scan:
-  stage: scan
-  image: registry.gitlab.com/gitlab-org/security-products/dependency-scanning:latest
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
-  script:
-    - |
-      echo "[dependency_scan] PWD: $PWD"
-      echo "[dependency_scan] Root contents:"
-      ls -al
-      dependency-scanning scan .
