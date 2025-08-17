@@ -1,7 +1,11 @@
+
 from fastapi import FastAPI
+from backend.services.property.routes import router as property_router
+
 
 
 app = FastAPI()
+app.include_router(property_router, prefix="/api")
 
 
 @app.get("/")
