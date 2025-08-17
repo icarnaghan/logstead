@@ -1,14 +1,11 @@
+[[tool.poetry.packages]]
+include = "app"
 [tool.poetry]
 name = "logstead-backend"
 version = "0.1.0"
 description = "Logstead FastAPI backend"
 authors = ["Your Name <you@example.com>"]
 
-# Add packages section for Poetry
-packages = [
-	{ include = "services" },
-	{ include = "main.py" }
-]
 
 [tool.poetry.dependencies]
 python = ">=3.13"

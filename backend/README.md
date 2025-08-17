@@ -1,24 +1,31 @@
 # Logstead Backend
 
 This is the FastAPI backend for Logstead.
-
 ## Structure
 - All backend code is now in the `app/` subfolder (i.e., `backend/app/`).
 - The outer `backend/` contains Poetry files, Dockerfile, and test config.
 
 ## Getting Started
 
-1. Install Poetry:
+1. Install Poetry (if not already):
    ```bash
    pip install poetry
    ```
-2. Install dependencies:
+2. Ensure Poetry uses in-project virtualenvs (recommended):
+   ```bash
+   poetry config virtualenvs.in-project true
+   ```
+3. Install dependencies (from the outer backend directory):
    ```bash
    poetry install
    ```
-3. Run the server (from the outer backend directory):
+4. Activate the virtual environment:
    ```bash
-   poetry run uvicorn backend.main:app --reload
+   source .venv/bin/activate
+   ```
+5. Run the server:
+   ```bash
+   poetry run uvicorn app.main:app --reload
    ```
 
 The API will be available at http://localhost:8000
