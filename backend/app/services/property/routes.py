@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List
 
-from backend.db import SessionLocal
-from backend.models import Property, PropertySchema
+from app.db import SessionLocal
+from app.models import Property, PropertySchema
 
 router = APIRouter(prefix="/properties", tags=["properties"])
 

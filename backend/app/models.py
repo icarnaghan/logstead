@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
-from backend.db import Base
+from app.db import Base
 from pydantic import BaseModel
 from typing import Optional
 
