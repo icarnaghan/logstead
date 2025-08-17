@@ -195,7 +195,8 @@ generate-child-pipeline:
       ${dir}_trivy_py:
         extends: .py_trivy
         variables: { DIR: "__DIR__" }
-        needs: [${dir}_sbom_py]
+        needs:
+          - ${dir}_sbom_py
 
       ${dir}_lint_py:
         extends: .py_lint
@@ -220,7 +221,8 @@ generate-child-pipeline:
       ${dir}_trivy_node:
         extends: .node_trivy
         variables: { DIR: "$dir" }
-        needs: [${dir}_sbom_node]
+        needs:
+          - ${dir}_sbom_node
 
       ${dir}_lint_node:
         extends: .node_lint
