@@ -59,7 +59,7 @@ generate-child-pipeline:
           policy: pull-push
 
       .node_base:
-        image: node:20-alpine
+        image: node:24-alpine
         before_script:
           - node --version
           - npm --version
