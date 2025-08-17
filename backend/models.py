@@ -1,8 +1,10 @@
-# SQLAlchemy ORM model
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from backend.db import Base
+from pydantic import BaseModel
+from typing import Optional
 
 
+# SQLAlchemy ORM model
 class Property(Base):
     __tablename__ = "properties"
     id = Column(Integer, primary_key=True, index=True)
@@ -17,10 +19,6 @@ class Property(Base):
 
 
 # Pydantic schema
-from pydantic import BaseModel, Field
-from typing import Optional
-
-
 class PropertySchema(BaseModel):
     id: Optional[int]
     name: str
