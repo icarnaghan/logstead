@@ -9,14 +9,16 @@ services:
     depends_on:
       - backend
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
       - ENV=development
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/logstead
-    volumes:
-      - ./backend:/app
+      - PYTHONPATH=/app
+  # volumes removed for production image build
     depends_on:
       - keycloak
       - db

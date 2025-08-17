@@ -36,28 +36,3 @@ async def create_property(property: PropertySchema, db: AsyncSession = Depends(g
     await db.commit()
     await db.refresh(db_property)
     return db_property
-
-
-@router.put("/{property_id}", response_model=PropertySchema)
-async def update_property(
-    property_id: int, property: PropertySchema, db: AsyncSession = Depends(get_db)
-):
-    result = await db.execute(select(Property).where(Property.id == property_id))
-    db_property = result.scalar_one_or_none()
-    if not db_property:
-        raise HTTPException(status_code=404, detail="Property not found")
-    for key, value in property.dict(exclude_unset=True).items():
-        setattr(db_property, key, value)
-    await db.commit()
-    await db.refresh(db_property)
-    return db_property
-
-
-@router.delete("/{property_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_property(property_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Property).where(Property.id == property_id))
-    db_property = result.scalar_one_or_none()
-    if not db_property:
-        raise HTTPException(status_code=404, detail="Property not found")
-    await db.delete(db_property)
-    await db.commit()
