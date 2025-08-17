@@ -8,7 +8,3 @@ repos:
     rev: 7.0.0  # Use the latest stable version
     hooks:
       - id: flake8
-        args: [
-          --max-line-length=88,
-          "--exclude=__pycache__,.venv,.git,.cache,ai,queueing,dist,*.egg-info,.vscode,.idea"
-        ]
