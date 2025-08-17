@@ -8,14 +8,17 @@ from backend.models import Property, PropertySchema
 
 router = APIRouter(prefix="/properties", tags=["properties"])
 
+
 async def get_db():
     async with SessionLocal() as session:
         yield session
+
 
 @router.get("/", response_model=List[PropertySchema])
 async def list_properties(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Property))
     return result.scalars().all()
+
 
 @router.get("/{property_id}", response_model=PropertySchema)
 async def get_property(property_id: int, db: AsyncSession = Depends(get_db)):
@@ -25,6 +28,7 @@ async def get_property(property_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Property not found")
     return property
 
+
 @router.post("/", response_model=PropertySchema, status_code=status.HTTP_201_CREATED)
 async def create_property(property: PropertySchema, db: AsyncSession = Depends(get_db)):
     db_property = Property(**property.dict(exclude_unset=True))
@@ -33,8 +37,11 @@ async def create_property(property: PropertySchema, db: AsyncSession = Depends(g
     await db.refresh(db_property)
     return db_property
 
+
 @router.put("/{property_id}", response_model=PropertySchema)
-async def update_property(property_id: int, property: PropertySchema, db: AsyncSession = Depends(get_db)):
+async def update_property(
+    property_id: int, property: PropertySchema, db: AsyncSession = Depends(get_db)
+):
     result = await db.execute(select(Property).where(Property.id == property_id))
     db_property = result.scalar_one_or_none()
     if not db_property:
@@ -44,6 +51,7 @@ async def update_property(property_id: int, property: PropertySchema, db: AsyncS
     await db.commit()
     await db.refresh(db_property)
     return db_property
+
 
 @router.delete("/{property_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_property(property_id: int, db: AsyncSession = Depends(get_db)):

@@ -1,7 +1,7 @@
-
 # SQLAlchemy ORM model
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from backend.db import Base
+
 
 class Property(Base):
     __tablename__ = "properties"
@@ -15,9 +15,11 @@ class Property(Base):
     description = Column(Text, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
+
 # Pydantic schema
 from pydantic import BaseModel, Field
 from typing import Optional
+
 
 class PropertySchema(BaseModel):
     id: Optional[int]
