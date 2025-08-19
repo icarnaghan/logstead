@@ -4,7 +4,7 @@ Logstead is a property and equipment tracking application for homeowners and pro
 
 ## Monorepo Structure
 - `frontend/` — React 19 + Vite app
-- `backend/` — FastAPI backend (all code in `backend/backend/`)
+- `backend/` — FastAPI backend (all code in `backend/app/`, Poetry-managed venv in `backend/.venv`)
 - `docker-compose.yml` — Orchestrates all services from the project root
 
 ## Features
@@ -46,8 +46,10 @@ App will be available at http://localhost:5173 (default Vite port).
 #### Run locally (development, hot reload):
 ```bash
 cd backend
+poetry config virtualenvs.in-project true  # recommended, one-time
 poetry install
-poetry run uvicorn backend.main:app --reload
+source .venv/bin/activate
+poetry run uvicorn app.main:app --reload
 ```
 App will be available at http://localhost:8000
 

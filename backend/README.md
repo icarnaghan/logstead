@@ -2,7 +2,7 @@
 
 This is the FastAPI backend for Logstead.
 ## Structure
-- All backend code is now in the `app/` subfolder (i.e., `backend/app/`).
+- All backend code is in the `app/` subfolder (i.e., `backend/app/`).
 - The outer `backend/` contains Poetry files, Dockerfile, and test config.
 
 ## Getting Started
@@ -11,7 +11,7 @@ This is the FastAPI backend for Logstead.
    ```bash
    pip install poetry
    ```
-2. Ensure Poetry uses in-project virtualenvs (recommended):
+2. Ensure Poetry uses in-project virtualenvs (recommended, one-time):
    ```bash
    poetry config virtualenvs.in-project true
    ```
