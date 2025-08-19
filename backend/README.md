@@ -1,3 +1,21 @@
+## Code Quality & pre-commit
+
+This project uses [pre-commit](https://pre-commit.com/) for automated code quality checks.
+
+To use pre-commit, you must either:
+
+1. Activate the Poetry virtual environment:
+   ```bash
+   source .venv/bin/activate
+   pre-commit run --all-files
+   ```
+
+2. Or run pre-commit directly with Poetry (no need to activate venv):
+   ```bash
+   poetry run pre-commit run --all-files
+   ```
+
+pre-commit is automatically run on every git commit if installed and set up.
 # Logstead Backend
 
 This is the FastAPI backend for Logstead.
