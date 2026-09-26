@@ -4,6 +4,8 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import AssetsPage, { type AssetsApi } from "./AssetsPage";
 import { ApiError } from "../lib/apiClient";
+import { ToastProvider } from "../components/ui";
+import { ThemeProvider } from "../theme/ThemeProvider";
 import type { DepreciableAsset, ScheduleRow } from "../api/assets";
 
 /**
@@ -40,14 +42,18 @@ function makeApi(overrides: Partial<AssetsApi> = {}): AssetsApi {
 
 function renderPage(api: AssetsApi) {
   return render(
-    <MemoryRouter initialEntries={["/properties/prop-1/assets"]}>
-      <Routes>
-        <Route
-          path="/properties/:propertyId/assets"
-          element={<AssetsPage api={api} />}
-        />
-      </Routes>
-    </MemoryRouter>,
+    <ThemeProvider>
+      <ToastProvider>
+        <MemoryRouter initialEntries={["/properties/prop-1/assets"]}>
+          <Routes>
+            <Route
+              path="/properties/:propertyId/assets"
+              element={<AssetsPage api={api} />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </ToastProvider>
+    </ThemeProvider>,
   );
 }
 
@@ -64,8 +70,13 @@ describe("AssetsPage — listing (Req 8.7)", () => {
 
     renderPage(api);
 
-    expect(await screen.findByText("Roof replacement")).toBeInTheDocument();
-    expect(screen.getByText("HVAC unit")).toBeInTheDocument();
+    // ResponsiveTable renders both a <table> and a card fallback, so asset
+    // descriptions appear twice; wait for the list to load, then scope to the
+    // table representation.
+    await screen.findAllByText("Roof replacement");
+    const table = screen.getByRole("table");
+    expect(within(table).getByText("Roof replacement")).toBeInTheDocument();
+    expect(within(table).getByText("HVAC unit")).toBeInTheDocument();
     expect(api.listAssets).toHaveBeenCalledWith("prop-1");
   });
 
@@ -73,8 +84,28 @@ describe("AssetsPage — listing (Req 8.7)", () => {
     const api = makeApi();
     renderPage(api);
     expect(
-      await screen.findByText(/no depreciable assets yet/i),
+      await screen.findByRole("heading", { name: /no depreciable assets yet/i }),
     ).toBeInTheDocument();
+  });
+
+  it("shows a role=status loading state while assets are fetching", async () => {
+    let resolve: (rows: DepreciableAsset[]) => void = () => {};
+    const api = makeApi({
+      listAssets: vi.fn().mockImplementation(
+        () =>
+          new Promise<DepreciableAsset[]>((r) => {
+            resolve = r;
+          }),
+      ),
+    });
+    renderPage(api);
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      /loading assets/i,
+    );
+
+    resolve([]);
+    await screen.findByRole("heading", { name: /no depreciable assets yet/i });
   });
 });
 
@@ -156,6 +187,64 @@ describe("AssetsPage — cost_basis validation (Req 8.2)", () => {
   });
 });
 
+describe("AssetsPage — guarded delete + feedback (Req 4, 5.2)", () => {
+  it("confirms before deleting, calls the API, refreshes, and toasts success", async () => {
+    const user = userEvent.setup();
+    const listAssets = vi
+      .fn()
+      .mockResolvedValueOnce([asset({ id: "a1", description: "Old roof" })])
+      .mockResolvedValue([]);
+    const api = makeApi({ listAssets });
+
+    renderPage(api);
+    await screen.findAllByText("Old roof");
+
+    await user.click(
+      within(screen.getByRole("table")).getByRole("button", {
+        name: /delete/i,
+      }),
+    );
+
+    // The confirm dialog names the asset; the API is not called yet.
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText(/delete "old roof"/i)).toBeInTheDocument();
+    expect(api.deleteAsset).not.toHaveBeenCalled();
+
+    await user.click(within(dialog).getByRole("button", { name: /^delete/i }));
+
+    expect(api.deleteAsset).toHaveBeenCalledWith("prop-1", "a1");
+    // The list re-fetches after the delete.
+    await screen.findByText(/no depreciable assets yet/i);
+    // Success toast is announced.
+    expect(await screen.findByText("Asset deleted")).toBeInTheDocument();
+  });
+
+  it("does not delete when the confirmation is cancelled", async () => {
+    const user = userEvent.setup();
+    const api = makeApi({
+      listAssets: vi
+        .fn()
+        .mockResolvedValue([asset({ id: "a1", description: "Old roof" })]),
+    });
+
+    renderPage(api);
+    await screen.findAllByText("Old roof");
+
+    await user.click(
+      within(screen.getByRole("table")).getByRole("button", {
+        name: /delete/i,
+      }),
+    );
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: /cancel/i }));
+
+    expect(api.deleteAsset).not.toHaveBeenCalled();
+    expect(
+      within(screen.getByRole("table")).getByText("Old roof"),
+    ).toBeInTheDocument();
+  });
+});
+
 describe("AssetsPage — schedule display (Req 9.4)", () => {
   it("renders the schedule rows in a table when an asset is expanded", async () => {
     const user = userEvent.setup();
@@ -181,17 +270,23 @@ describe("AssetsPage — schedule display (Req 9.4)", () => {
     });
 
     renderPage(api);
-    await screen.findByText("Rental building");
+    await screen.findAllByText("Rental building");
 
-    await user.click(screen.getByRole("button", { name: /view schedule/i }));
+    // The view-schedule toggle appears in both the table and card layouts;
+    // click the one in the table representation.
+    await user.click(
+      within(screen.getByRole("table")).getByRole("button", {
+        name: /view schedule/i,
+      }),
+    );
 
     // The schedule table appears with year / amount / remaining-basis rows.
     const tables = await screen.findAllByRole("table");
     // The last table is the schedule (the first is the asset list).
     const scheduleTable = tables[tables.length - 1];
     expect(within(scheduleTable).getByText("2023")).toBeInTheDocument();
-    expect(within(scheduleTable).getByText("5833.33")).toBeInTheDocument();
-    expect(within(scheduleTable).getByText("269166.67")).toBeInTheDocument();
+    expect(within(scheduleTable).getByText("$5,833.33")).toBeInTheDocument();
+    expect(within(scheduleTable).getByText("$269,166.67")).toBeInTheDocument();
     expect(within(scheduleTable).getByText("2024")).toBeInTheDocument();
 
     expect(api.getSchedule).toHaveBeenCalledWith("prop-1", "a1");

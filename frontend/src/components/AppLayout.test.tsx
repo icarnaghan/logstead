@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { axe } from "vitest-axe";
 import { describe, expect, it } from "vitest";
 import App from "../App";
+import { ToastProvider } from "./ui";
 
 /**
  * Component / accessibility tests for the navigation shell (task 19.3).
@@ -21,9 +22,11 @@ import App from "../App";
  */
 function renderAt(path: string) {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <App />
-    </MemoryRouter>,
+    <ToastProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <App />
+      </MemoryRouter>
+    </ToastProvider>,
   );
 }
 
@@ -180,6 +183,23 @@ describe("AppLayout — numbers-first layout has no charts/visualizations", () =
         '[class*="recharts"], [class*="chartjs"], [class*="chart-container"], [class*="victory"], [class*="nivo"]',
       ),
     ).toBeNull();
+  });
+});
+
+describe("AppLayout — print styling hides app chrome (Req 10.3)", () => {
+  it("marks the header and sidebar nav as print:hidden", () => {
+    renderAt("/");
+
+    // The banner/header is excluded from print output.
+    const header = screen.getByRole("banner");
+    expect(header.className).toContain("print:hidden");
+
+    // The desktop sidebar (the aside wrapping the Primary nav) is too.
+    const aside = screen
+      .getByRole("navigation", { name: /primary/i })
+      .closest("aside") as HTMLElement;
+    expect(aside).not.toBeNull();
+    expect(aside.className).toContain("print:hidden");
   });
 });
 

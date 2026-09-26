@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import type { ReactElement } from "react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -8,6 +9,7 @@ import type {
   TransactionsApi,
 } from "../../api/transactions";
 import { ReceiptList } from "./ReceiptList";
+import { ToastProvider } from "../ui";
 
 /**
  * Component tests for the per-transaction receipts UI in isolation (task 22.3).
@@ -59,9 +61,14 @@ function pdf(name = "new.pdf"): File {
   return new File(["%PDF-1.4"], name, { type: "application/pdf" });
 }
 
+/** Renders the component inside a ToastProvider (required by useToast). */
+function renderList(ui: ReactElement) {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+}
+
 describe("ReceiptList", () => {
   it("renders existing receipts with download links", () => {
-    render(
+    renderList(
       <ReceiptList
         api={makeApi()}
         propertyId={PROPERTY_ID}
@@ -81,7 +88,7 @@ describe("ReceiptList", () => {
   });
 
   it("shows an empty-state message when there are no receipts", () => {
-    render(
+    renderList(
       <ReceiptList
         api={makeApi()}
         propertyId={PROPERTY_ID}
@@ -97,7 +104,7 @@ describe("ReceiptList", () => {
     const api = makeApi();
     const onChanged = vi.fn();
     const user = userEvent.setup();
-    render(
+    renderList(
       <ReceiptList
         api={api}
         propertyId={PROPERTY_ID}
@@ -130,11 +137,11 @@ describe("ReceiptList", () => {
     expect(attachOrder).toBeLessThan(putOrder);
   });
 
-  it("deletes a receipt and refreshes the list", async () => {
+  it("confirms before deleting a receipt, then refreshes the list", async () => {
     const api = makeApi();
     const onChanged = vi.fn();
     const user = userEvent.setup();
-    render(
+    renderList(
       <ReceiptList
         api={api}
         propertyId={PROPERTY_ID}
@@ -147,12 +154,45 @@ describe("ReceiptList", () => {
     const [firstDelete] = screen.getAllByRole("button", { name: /delete/i });
     await user.click(firstDelete);
 
+    // A confirmation dialog naming the document appears; nothing deleted yet.
+    const dialog = await screen.findByRole("dialog");
+    expect(
+      within(dialog).getByText(/delete "invoice\.pdf"/i),
+    ).toBeInTheDocument();
+    expect(api.deleteReceipt).not.toHaveBeenCalled();
+
+    await user.click(within(dialog).getByRole("button", { name: /^delete/i }));
+
     await waitFor(() => expect(onChanged).toHaveBeenCalledTimes(1));
     expect(api.deleteReceipt).toHaveBeenCalledWith(
       PROPERTY_ID,
       TRANSACTION_ID,
       "doc-1",
     );
+  });
+
+  it("does not delete a receipt when the confirmation is cancelled", async () => {
+    const api = makeApi();
+    const onChanged = vi.fn();
+    const user = userEvent.setup();
+    renderList(
+      <ReceiptList
+        api={api}
+        propertyId={PROPERTY_ID}
+        transactionId={TRANSACTION_ID}
+        receipts={RECEIPTS}
+        onChanged={onChanged}
+      />,
+    );
+
+    const [firstDelete] = screen.getAllByRole("button", { name: /delete/i });
+    await user.click(firstDelete);
+
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: /cancel/i }));
+
+    expect(api.deleteReceipt).not.toHaveBeenCalled();
+    expect(onChanged).not.toHaveBeenCalled();
   });
 
   it("shows an error when the attach flow fails and does not call onChanged", async () => {
@@ -163,7 +203,7 @@ describe("ReceiptList", () => {
     });
     const onChanged = vi.fn();
     const user = userEvent.setup();
-    render(
+    renderList(
       <ReceiptList
         api={api}
         propertyId={PROPERTY_ID}
@@ -175,14 +215,14 @@ describe("ReceiptList", () => {
 
     await user.upload(screen.getByLabelText(/attach a document/i), pdf());
 
-    expect(
-      await screen.findByText(/could not attach the document/i),
-    ).toBeInTheDocument();
+    // The inline alert surfaces the failure (an error toast is also shown).
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent(/could not attach the document/i);
     expect(onChanged).not.toHaveBeenCalled();
   });
 
   it("has no automated accessibility violations with receipts listed", async () => {
-    const { container } = render(
+    const { container } = renderList(
       <ReceiptList
         api={makeApi()}
         propertyId={PROPERTY_ID}

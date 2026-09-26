@@ -1,5 +1,5 @@
 import type { ReportLine } from "../../api/reports";
-import { formatMoney } from "../transactions/money";
+import { formatMoney } from "../../lib/money";
 
 interface ScheduleELineTableProps {
   /** Accessible caption describing the table. */

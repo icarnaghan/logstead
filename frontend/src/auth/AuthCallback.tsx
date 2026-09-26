@@ -14,6 +14,7 @@ import {
   parseCallbackParams,
   type AuthDeps,
 } from "../lib/auth";
+import { Button } from "../components/ui";
 
 export interface AuthCallbackProps {
   /** Overridable for tests. */
@@ -56,15 +57,15 @@ export default function AuthCallback({
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 text-fg-muted">
         <p role="alert">Sign-in failed: {error}</p>
-        <button
+        <Button
           type="button"
-          className="rounded-md bg-accent px-4 py-2 text-accent-fg hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          variant="primary"
           onClick={() => {
             void login();
           }}
         >
           Try signing in again
-        </button>
+        </Button>
       </div>
     );
   }

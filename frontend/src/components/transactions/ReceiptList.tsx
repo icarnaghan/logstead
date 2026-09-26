@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { ReceiptDocument, TransactionsApi } from "../../api/transactions";
+import { ConfirmDialog, useToast } from "../ui";
 
 interface ReceiptListProps {
   api: TransactionsApi;
@@ -25,6 +26,13 @@ export function ReceiptList({
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { notify } = useToast();
+
+  // Receipt pending deletion (drives the ConfirmDialog); null when closed.
+  const [pendingDelete, setPendingDelete] = useState<ReceiptDocument | null>(
+    null,
+  );
+  const [deleting, setDeleting] = useState(false);
 
   async function handleFile(file: File) {
     setBusy(true);
@@ -38,24 +46,31 @@ export function ReceiptList({
       );
       await api.uploadToPresignedUrl(upload_url, file, file.type || undefined);
       onChanged();
+      notify({ variant: "success", title: "Document attached" });
     } catch {
       setError("Could not attach the document. Please try again.");
+      notify({ variant: "error", title: "Could not attach the document" });
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
     }
   }
 
-  async function handleDelete(documentId: string) {
-    setBusy(true);
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    const document = pendingDelete;
+    setDeleting(true);
     setError(null);
     try {
-      await api.deleteReceipt(propertyId, transactionId, documentId);
+      await api.deleteReceipt(propertyId, transactionId, document.id);
       onChanged();
+      setPendingDelete(null);
+      notify({ variant: "success", title: "Document deleted" });
     } catch {
       setError("Could not delete the document. Please try again.");
+      notify({ variant: "error", title: "Could not delete the document" });
     } finally {
-      setBusy(false);
+      setDeleting(false);
     }
   }
 
@@ -84,7 +99,7 @@ export function ReceiptList({
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => void handleDelete(receipt.id)}
+                onClick={() => setPendingDelete(receipt)}
                 className="rounded px-2 py-1 text-danger hover:bg-danger-subtle disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 Delete
@@ -117,6 +132,22 @@ export function ReceiptList({
           {error}
         </p>
       ) : null}
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        title="Delete document"
+        description={
+          pendingDelete ? (
+            <>Delete &quot;{pendingDelete.filename}&quot;?</>
+          ) : null
+        }
+        confirmLabel="Delete"
+        onConfirm={() => void confirmDelete()}
+        pending={deleting}
+      />
     </div>
   );
 }

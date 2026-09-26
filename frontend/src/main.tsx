@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import AuthCallback from "./auth/AuthCallback.tsx";
 import RequireAuth from "./auth/RequireAuth.tsx";
 import { ThemeProvider } from "./theme/ThemeProvider.tsx";
+import { ToastProvider } from "./components/ui/toast/ToastProvider.tsx";
 import "./index.css";
 
 const rootElement = document.getElementById("root");
@@ -15,6 +16,7 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <ThemeProvider>
+      <ToastProvider>
       <BrowserRouter>
       <Routes>
         {/* Hosted UI redirect target: exchanges the code, then lands on "/". */}
@@ -30,6 +32,7 @@ createRoot(rootElement).render(
         />
       </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </ThemeProvider>
   </StrictMode>,
 );

@@ -24,17 +24,11 @@ export default function ProfilePage() {
         <h2 id="account-heading" className="text-lg font-medium text-fg">
           Account
         </h2>
-        <dl className="mt-3 divide-y divide-slate-200 rounded-md border border-border">
+        <dl className="mt-3 divide-y divide-border rounded-md border border-border">
           <div className="flex justify-between gap-4 px-4 py-3">
             <dt className="text-sm text-fg-subtle">Email</dt>
             <dd className="text-sm font-medium text-fg">
               {profile?.email ?? "Not available"}
-            </dd>
-          </div>
-          <div className="flex justify-between gap-4 px-4 py-3">
-            <dt className="text-sm text-fg-subtle">User ID</dt>
-            <dd className="truncate text-sm font-medium text-fg">
-              {profile?.sub ?? "Not available"}
             </dd>
           </div>
         </dl>

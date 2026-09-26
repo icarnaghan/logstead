@@ -1,10 +1,11 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { PropertyList } from "./PropertyList";
 import { ApiError, type Property } from "../../api/properties";
 import type { PhotoWithUrl } from "../../api/photos";
+import { ToastProvider } from "../ui";
 
 /**
  * Component tests for the properties photo-tile grid (Requirements 2.3, 2.6, 2.7).
@@ -32,14 +33,16 @@ function renderList(
 ) {
   const onDeleted = vi.fn();
   render(
-    <MemoryRouter>
-      <PropertyList
-        properties={properties}
-        onDeleted={onDeleted}
-        loadPhotos={async () => []}
-        {...overrides}
-      />
-    </MemoryRouter>,
+    <ToastProvider>
+      <MemoryRouter>
+        <PropertyList
+          properties={properties}
+          onDeleted={onDeleted}
+          loadPhotos={async () => []}
+          {...overrides}
+        />
+      </MemoryRouter>
+    </ToastProvider>,
   );
   return { onDeleted };
 }
@@ -89,7 +92,7 @@ describe("PropertyList", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("deletes a property from the More menu and notifies the parent on success", async () => {
+  it("deletes a property after confirming, notifies the parent, and toasts success", async () => {
     const user = userEvent.setup();
     const remove = vi.fn().mockResolvedValue(undefined);
     const { onDeleted } = renderList({ remove });
@@ -101,8 +104,35 @@ describe("PropertyList", () => {
       await screen.findByRole("menuitem", { name: /delete maple duplex/i }),
     );
 
+    // A confirmation dialog naming the property must appear first.
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText(/delete "maple duplex"/i)).toBeInTheDocument();
+    expect(remove).not.toHaveBeenCalled();
+
+    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+
     await waitFor(() => expect(onDeleted).toHaveBeenCalledWith("p1"));
     expect(remove).toHaveBeenCalledWith("p1");
+    expect(await screen.findByText(/property deleted/i)).toBeInTheDocument();
+  });
+
+  it("does not delete when the confirmation is cancelled", async () => {
+    const user = userEvent.setup();
+    const remove = vi.fn().mockResolvedValue(undefined);
+    const { onDeleted } = renderList({ remove });
+
+    await user.click(
+      screen.getByRole("button", { name: /more actions for maple duplex/i }),
+    );
+    await user.click(
+      await screen.findByRole("menuitem", { name: /delete maple duplex/i }),
+    );
+
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: /cancel/i }));
+
+    expect(remove).not.toHaveBeenCalled();
+    expect(onDeleted).not.toHaveBeenCalled();
   });
 
   it("surfaces a 409 conflict message inline and does not remove the card", async () => {
@@ -123,9 +153,15 @@ describe("PropertyList", () => {
       await screen.findByRole("menuitem", { name: /delete oak house/i }),
     );
 
-    expect(
-      await screen.findByText(/remove associated transactions and assets first/i),
-    ).toBeInTheDocument();
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+
+    // The conflict message is surfaced both inline on the card and in an
+    // error toast, so more than one match is expected.
+    const conflictMessages = await screen.findAllByText(
+      /remove associated transactions and assets first/i,
+    );
+    expect(conflictMessages.length).toBeGreaterThanOrEqual(1);
     expect(onDeleted).not.toHaveBeenCalled();
   });
 });

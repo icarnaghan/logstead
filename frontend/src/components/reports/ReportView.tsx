@@ -1,15 +1,47 @@
+import { lazy } from "react";
 import {
   DEPRECIATION_LINE,
   OTHER_LINE,
   type ScheduleEReport,
 } from "../../api/reports";
-import { formatMoney } from "../transactions/money";
+import { formatMoney } from "../../lib/money";
+import { Card } from "../ui";
 import { ScheduleELineTable } from "./ScheduleELineTable";
 import { OtherItemsList } from "./OtherItemsList";
+import { ChartCard } from "../charts/ChartCard";
+import { LazyChart } from "../charts/LazyChart";
+import { expenseByCategory } from "../charts/prepare";
+import { ExpenseByCategoryTable } from "../charts/ExpenseByCategoryTable";
+
+/**
+ * The expense-by-category chart is the lazy boundary: Recharts is reached only
+ * through this `React.lazy` import, so it code-splits into its own async chunk
+ * absent from the initial paint (Requirement 14). The always-present data table
+ * lives in a Recharts-free module and is imported eagerly above.
+ */
+const ExpenseByCategoryChart = lazy(
+  () => import("../charts/ExpenseByCategoryChart"),
+);
 
 interface ReportViewProps {
   /** The fetched Schedule E report to render. */
   report: ScheduleEReport;
+  /**
+   * Prefix for the generated section-heading element ids. Defaults to a stable
+   * value for the standalone per-property page; the combined report passes a
+   * per-property prefix so multiple `ReportView`s can be composed on one page
+   * without duplicate ids (which would break the `aria-labelledby` wiring and
+   * fail accessibility checks).
+   */
+  idPrefix?: string;
+  /**
+   * Whether each report grouping is exposed as a named landmark `region`.
+   * Defaults to `true` for the standalone per-property page. The combined
+   * report composes many `ReportView`s, so it passes `false` to render the
+   * groupings as `role="group"` (still labelled, but not landmarks) — this
+   * keeps the page's landmark set uncluttered and uniquely distinguishable.
+   */
+  region?: boolean;
 }
 
 /** True when a two-decimal money string represents a negative amount (a loss). */
@@ -27,11 +59,28 @@ function isLoss(amount: string): boolean {
  * Line 19 "Other" expenses, and the income / expense / net totals. A negative
  * net is presented as a loss.
  */
-export function ReportView({ report }: ReportViewProps) {
+export function ReportView({
+  report,
+  idPrefix = "report",
+  region = true,
+}: ReportViewProps) {
   const { header, lines, other_items, totals } = report;
+
+  // When not a landmark region, expose each grouping as a labelled group so the
+  // heading association is preserved without adding a landmark.
+  const sectionRole = region ? undefined : "group";
+
+  const headerHeadingId = `${idPrefix}-header-heading`;
+  const incomeHeadingId = `${idPrefix}-income-heading`;
+  const expensesHeadingId = `${idPrefix}-expenses-heading`;
+  const depreciationHeadingId = `${idPrefix}-depreciation-heading`;
+  const otherHeadingId = `${idPrefix}-other-heading`;
+  const totalsHeadingId = `${idPrefix}-totals-heading`;
 
   const incomeLines = lines.filter((line) => line.kind === "income");
   const expenseLines = lines.filter((line) => line.kind === "expense");
+  // Ranked (desc) expense-by-category data for the chart (Req 16.1, 16.3).
+  const expenseData = expenseByCategory(report);
   const depreciationLine = lines.find((line) => line.line === DEPRECIATION_LINE);
   const otherLine = lines.find((line) => line.line === OTHER_LINE);
 
@@ -39,12 +88,14 @@ export function ReportView({ report }: ReportViewProps) {
 
   return (
     <div className="space-y-8">
-      <section
-        aria-labelledby="report-header-heading"
-        className="rounded-lg border border-border bg-surface p-4 shadow-card"
+      <Card
+        as="section"
+        role={sectionRole}
+        aria-labelledby={headerHeadingId}
+        className="break-inside-avoid p-4"
       >
         <h2
-          id="report-header-heading"
+          id={headerHeadingId}
           className="text-lg font-semibold text-fg"
         >
           {header.property_name}
@@ -75,11 +126,16 @@ export function ReportView({ report }: ReportViewProps) {
             </dd>
           </div>
         </dl>
-      </section>
+      </Card>
 
-      <section aria-labelledby="report-income-heading">
+      <Card
+        as="section"
+        role={sectionRole}
+        aria-labelledby={incomeHeadingId}
+        className="break-inside-avoid p-4"
+      >
         <h2
-          id="report-income-heading"
+          id={incomeHeadingId}
           className="text-base font-semibold text-fg"
         >
           Income
@@ -90,11 +146,16 @@ export function ReportView({ report }: ReportViewProps) {
             lines={incomeLines}
           />
         </div>
-      </section>
+      </Card>
 
-      <section aria-labelledby="report-expenses-heading">
+      <Card
+        as="section"
+        role={sectionRole}
+        aria-labelledby={expensesHeadingId}
+        className="break-inside-avoid p-4"
+      >
         <h2
-          id="report-expenses-heading"
+          id={expensesHeadingId}
           className="text-base font-semibold text-fg"
         >
           Expenses
@@ -105,14 +166,37 @@ export function ReportView({ report }: ReportViewProps) {
             lines={expenseLines}
           />
         </div>
-      </section>
+      </Card>
 
-      <section
-        aria-labelledby="report-depreciation-heading"
-        className="rounded-lg border border-border bg-surface p-4 shadow-card"
+      {/*
+        Ranked expense-by-category chart (Req 16.1), placed directly below the
+        expense section. Only rendered when there are expense rows so an empty
+        report never shows an empty chart frame. The chart is lazy-loaded; the
+        always-present data table is the mobile / error fallback (Req 12.1, 14).
+      */}
+      {expenseData.length > 0 && (
+        <ChartCard
+          title={`Expenses by category — ${header.property_name}`}
+          ariaLabel={`Expenses by Schedule E category for ${header.property_name}, ranked highest to lowest`}
+          chart={
+            <LazyChart
+              fallbackTable={<ExpenseByCategoryTable data={expenseData} />}
+            >
+              <ExpenseByCategoryChart data={expenseData} />
+            </LazyChart>
+          }
+          dataTable={<ExpenseByCategoryTable data={expenseData} />}
+        />
+      )}
+
+      <Card
+        as="section"
+        role={sectionRole}
+        aria-labelledby={depreciationHeadingId}
+        className="break-inside-avoid p-4"
       >
         <h2
-          id="report-depreciation-heading"
+          id={depreciationHeadingId}
           className="text-base font-semibold text-fg"
         >
           Depreciation (Line 18)
@@ -129,11 +213,16 @@ export function ReportView({ report }: ReportViewProps) {
             {formatMoney(depreciationLine?.total ?? "0.00")}
           </span>
         </p>
-      </section>
+      </Card>
 
-      <section aria-labelledby="report-other-heading">
+      <Card
+        as="section"
+        role={sectionRole}
+        aria-labelledby={otherHeadingId}
+        className="break-inside-avoid p-4"
+      >
         <h2
-          id="report-other-heading"
+          id={otherHeadingId}
           className="text-base font-semibold text-fg"
         >
           Other expenses (Line 19)
@@ -154,14 +243,16 @@ export function ReportView({ report }: ReportViewProps) {
             items={other_items}
           />
         </div>
-      </section>
+      </Card>
 
-      <section
-        aria-labelledby="report-totals-heading"
-        className="rounded-lg border border-border bg-surface p-4 shadow-card"
+      <Card
+        as="section"
+        role={sectionRole}
+        aria-labelledby={totalsHeadingId}
+        className="break-inside-avoid p-4"
       >
         <h2
-          id="report-totals-heading"
+          id={totalsHeadingId}
           className="text-base font-semibold text-fg"
         >
           Totals
@@ -169,23 +260,23 @@ export function ReportView({ report }: ReportViewProps) {
         <dl className="mt-3 space-y-2 text-sm">
           <div className="flex items-center justify-between">
             <dt className="font-medium text-fg-muted">Total income</dt>
-            <dd className="tabular-nums text-fg">
+            <dd className="font-medium tabular-nums text-fg">
               {formatMoney(totals.total_income)}
             </dd>
           </div>
           <div className="flex items-center justify-between">
             <dt className="font-medium text-fg-muted">Total expenses</dt>
-            <dd className="tabular-nums text-fg">
+            <dd className="font-medium tabular-nums text-fg">
               {formatMoney(totals.total_expenses)}
             </dd>
           </div>
-          <div className="flex items-center justify-between border-t border-border pt-2">
-            <dt className="font-semibold text-fg">
+          <div className="flex items-baseline justify-between border-t-2 border-border pt-3">
+            <dt className="text-lg font-bold text-fg">
               {netLoss ? "Net loss" : "Net income"}
             </dt>
             <dd
               className={[
-                "font-semibold tabular-nums",
+                "text-xl font-bold tabular-nums",
                 netLoss ? "text-danger" : "text-fg",
               ].join(" ")}
             >
@@ -193,7 +284,7 @@ export function ReportView({ report }: ReportViewProps) {
             </dd>
           </div>
         </dl>
-      </section>
+      </Card>
     </div>
   );
 }

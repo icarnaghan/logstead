@@ -1,5 +1,6 @@
 import type { DashboardSummary } from "../../api/dashboard";
-import { formatMoney, isLoss } from "./money";
+import { formatMoney, isLoss } from "../../lib/money";
+import { Card } from "../ui";
 
 interface PortfolioSummaryProps {
   /** The dashboard summary whose portfolio totals are displayed. */
@@ -26,23 +27,23 @@ export function PortfolioSummary({ summary }: PortfolioSummaryProps) {
       aria-label={`Portfolio totals for ${summary.tax_year}`}
       className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3"
     >
-      <div className="rounded-lg border border-border bg-surface p-4">
+      <Card className="p-4">
         <p className="text-sm font-medium text-fg-subtle">Total income</p>
         <p className="mt-1 text-2xl font-semibold tabular-nums text-fg">
           {formatMoney(summary.total_income)}
         </p>
-      </div>
+      </Card>
 
-      <div className="rounded-lg border border-border bg-surface p-4">
+      <Card className="p-4">
         <p className="text-sm font-medium text-fg-subtle">Total expenses</p>
         <p className="mt-1 text-2xl font-semibold tabular-nums text-fg">
           {formatMoney(summary.total_expenses)}
         </p>
-      </div>
+      </Card>
 
       <div
         className={[
-          "rounded-lg border p-4",
+          "rounded-lg border p-4 shadow-card",
           loss
             ? "border-danger bg-danger-subtle"
             : "border-success bg-success-subtle",

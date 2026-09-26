@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { PropertySection } from "../components/PropertySection";
 import { ReportView } from "../components/reports/ReportView";
+import { Button, Select, StateBlock } from "../components/ui";
 import * as reportsApiDefault from "../api/reports";
 import {
   reportToCsv,
@@ -121,7 +122,10 @@ export default function ReportsPage({ api, years }: ReportsPageProps = {}) {
       />
 
       <div className="mt-8 space-y-6">
-        <section aria-labelledby="report-controls-heading">
+        <section
+          aria-labelledby="report-controls-heading"
+          className="print:hidden"
+        >
           <h2 id="report-controls-heading" className="sr-only">
             Report controls
           </h2>
@@ -133,11 +137,10 @@ export default function ReportsPage({ api, years }: ReportsPageProps = {}) {
               >
                 Tax year
               </label>
-              <select
+              <Select
                 id="report-tax-year"
                 value={taxYear === null ? "" : String(taxYear)}
                 onChange={(event) => void handleYearChange(event.target.value)}
-                className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 <option value="">Select a year…</option>
                 {yearOptions.map((year) => (
@@ -145,32 +148,34 @@ export default function ReportsPage({ api, years }: ReportsPageProps = {}) {
                     {year}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             {report && (
-              <div className="flex items-center gap-2">
-                <button
+              <div className="flex items-center gap-2 print:hidden">
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={handleDownloadCsv}
-                  className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   Download CSV
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={handleDownloadJson}
-                  className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   Download JSON
-                </button>
+                </Button>
               </div>
             )}
           </div>
         </section>
 
         {loading ? (
-          <p className="text-fg-muted">Loading report…</p>
+          <StateBlock kind="loading" title="Loading report…" />
         ) : error ? (
           <p role="alert" className="text-sm text-danger">
             {error}
@@ -178,10 +183,11 @@ export default function ReportsPage({ api, years }: ReportsPageProps = {}) {
         ) : report ? (
           <ReportView report={report} />
         ) : (
-          <p className="text-fg-muted">
-            Choose a tax year above to generate this property's Schedule E
-            report.
-          </p>
+          <StateBlock
+            kind="empty"
+            title="No report yet"
+            description="Choose a tax year above to generate this property's Schedule E report."
+          />
         )}
       </div>
     </>

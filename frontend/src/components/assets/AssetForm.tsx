@@ -4,6 +4,7 @@ import {
   type CreateAssetInput,
   type DepreciableAsset,
 } from "../../api/assets";
+import { Button } from "../ui";
 
 /** The shape submitted upward; recovery period is already resolved to a number. */
 export interface AssetFormValues {
@@ -208,22 +209,19 @@ export function AssetForm({
       </div>
 
       <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-fg hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-        >
+        <Button type="submit" variant="primary" size="sm" disabled={submitting}>
           {asset ? "Save changes" : "Add asset"}
-        </button>
+        </Button>
         {onCancel && (
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="sm"
             onClick={onCancel}
             disabled={submitting}
-            className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>

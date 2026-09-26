@@ -34,7 +34,7 @@ export default function AppLayout() {
         Skip to main content
       </a>
 
-      <header className="border-b border-border bg-surface">
+      <header className="border-b border-border bg-surface print:hidden">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
           <Dialog.Root open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
             <Dialog.Trigger asChild>
@@ -54,11 +54,11 @@ export default function AppLayout() {
             </Dialog.Trigger>
 
             <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 z-40 bg-slate-900/40 md:hidden" />
+              <Dialog.Overlay className="fixed inset-0 z-40 bg-fg/40 md:hidden print:hidden" />
               <Dialog.Content
                 id="mobile-nav"
                 aria-label="Main navigation"
-                className="fixed inset-y-0 left-0 z-50 w-72 max-w-[80%] bg-surface p-4 shadow-card focus:outline-none md:hidden"
+                className="fixed inset-y-0 left-0 z-50 w-72 max-w-[80%] bg-surface p-4 shadow-card focus:outline-none md:hidden print:hidden"
               >
                 <div className="mb-4 flex items-center justify-between">
                   <Dialog.Title className="text-lg font-semibold">
@@ -93,7 +93,7 @@ export default function AppLayout() {
       </header>
 
       <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6">
-        <aside className="hidden w-56 shrink-0 md:block">
+        <aside className="hidden w-56 shrink-0 md:block print:hidden">
           <nav aria-label="Primary">
             <MainNav />
           </nav>

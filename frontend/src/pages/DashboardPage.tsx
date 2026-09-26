@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   dashboardApi as sharedApi,
@@ -14,7 +14,27 @@ import {
 import { listAssets, type DepreciableAsset } from "../api/assets";
 import { TaxYearSelector } from "../components/dashboard/TaxYearSelector";
 import { DashboardEmptyState } from "../components/dashboard/DashboardEmptyState";
-import { formatMoney, isLoss, sumMoney } from "../components/dashboard/money";
+import { Button, Card, Tile } from "../components/ui";
+import { formatMoney, isLoss, sumMoney } from "../lib/money";
+import { ChartCard } from "../components/charts/ChartCard";
+import { LazyChart } from "../components/charts/LazyChart";
+import { incomeExpenseNet, netByProperty } from "../components/charts/prepare";
+import { IncomeExpenseNetTable } from "../components/charts/IncomeExpenseNetTable";
+import { NetByPropertyTable } from "../components/charts/NetByPropertyTable";
+
+/**
+ * The income/expenses/net and net-by-property charts are the lazy boundary:
+ * Recharts is reached only through these `React.lazy` imports, so it code-splits
+ * into its own async chunk absent from the initial paint (Requirement 14). The
+ * always-present data tables live in Recharts-free modules imported eagerly
+ * above.
+ */
+const IncomeExpenseNetChart = lazy(
+  () => import("../components/charts/IncomeExpenseNetChart"),
+);
+const NetByPropertyChart = lazy(
+  () => import("../components/charts/NetByPropertyChart"),
+);
 
 interface DashboardPageProps {
   /** Injectable dashboard API for tests; defaults to the shared singleton. */
@@ -60,34 +80,6 @@ function depreciationOf(
   );
 }
 
-/** Shared tile shell — a rounded surface card with a labelled heading. */
-function Tile({
-  title,
-  headingId,
-  children,
-  className,
-}: {
-  title: string;
-  headingId: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <section
-      aria-labelledby={headingId}
-      className={[
-        "rounded-lg border border-border bg-surface shadow-card p-4",
-        className ?? "",
-      ].join(" ")}
-    >
-      <h2 id={headingId} className="text-sm font-medium text-fg-subtle">
-        {title}
-      </h2>
-      <div className="mt-2">{children}</div>
-    </section>
-  );
-}
-
 /**
  * Headline portfolio snapshot: total income, expenses, and net across all
  * properties for the selected year. Net loss is styled with the danger token
@@ -96,10 +88,16 @@ function Tile({
 function PortfolioSnapshotTile({ summary }: { summary: DashboardSummary }) {
   const loss = isLoss(summary.net);
   const netLabel = loss ? "Net loss" : "Net income";
+  const chartData = incomeExpenseNet({
+    total_income: summary.total_income,
+    total_expenses: summary.total_expenses,
+    net: summary.net,
+  });
   return (
-    <section
+    <Card
+      as="section"
       aria-label={`Portfolio totals for ${summary.tax_year}`}
-      className="rounded-lg border border-border bg-surface shadow-card p-4 sm:col-span-2"
+      className="p-4 sm:col-span-2"
     >
       <h2 className="text-sm font-medium text-fg-subtle">
         Portfolio snapshot ({summary.tax_year})
@@ -134,7 +132,59 @@ function PortfolioSnapshotTile({ summary }: { summary: DashboardSummary }) {
           </dd>
         </div>
       </dl>
-    </section>
+
+      {/*
+        Compact income / expenses / net chart (Req 17.1), below the headline
+        numbers. Lazy-loaded; the always-present data table is the mobile /
+        error fallback (Req 12.1, 14). This tile intentionally pairs its numbers
+        with a single primary chart (Req 11.6 guideline).
+      */}
+      <div className="mt-4">
+        <ChartCard
+          title={`Income, expenses & net (${summary.tax_year})`}
+          ariaLabel={`Portfolio income, expenses, and net for ${summary.tax_year}`}
+          height={220}
+          chart={
+            <LazyChart
+              height={220}
+              fallbackTable={<IncomeExpenseNetTable data={chartData} />}
+            >
+              <IncomeExpenseNetChart data={chartData} />
+            </LazyChart>
+          }
+          dataTable={<IncomeExpenseNetTable data={chartData} />}
+        />
+      </div>
+    </Card>
+  );
+}
+
+/**
+ * Ranked net-contribution-by-property chart in its own dashboard tile
+ * (Requirements 18.1, 18.2). Rendered only when there is at least one property.
+ * Lazy-loaded; the always-present data table is the mobile / error fallback.
+ */
+function NetByPropertyTile({
+  properties,
+}: {
+  properties: readonly PropertySummary[];
+}) {
+  const chartData = netByProperty(properties);
+  return (
+    <div className="sm:col-span-2">
+      <ChartCard
+        title="Net contribution by property"
+        ariaLabel="Net contribution by property, ranked from highest to lowest"
+        chart={
+          <LazyChart
+            fallbackTable={<NetByPropertyTable data={chartData} />}
+          >
+            <NetByPropertyChart data={chartData} />
+          </LazyChart>
+        }
+        dataTable={<NetByPropertyTable data={chartData} />}
+      />
+    </div>
   );
 }
 
@@ -206,6 +256,14 @@ function CombinedScheduleETile({ combined }: { combined: CombinedState }) {
               </dd>
             </div>
           </dl>
+          <p className="mt-3">
+            <Link
+              to="/reports"
+              className="text-sm font-medium text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              View combined report
+            </Link>
+          </p>
         </>
       )}
     </Tile>
@@ -352,12 +410,9 @@ function PropertiesLaunchpadTile({
 /** A single quicklink styled like a bordered nav pill. */
 function QuickLink({ to, label }: { to: string; label: string }) {
   return (
-    <Link
-      to={to}
-      className="inline-flex rounded-md border border-border px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-    >
-      {label}
-    </Link>
+    <Button asChild variant="secondary" size="sm">
+      <Link to={to}>{label}</Link>
+    </Button>
   );
 }
 
@@ -382,9 +437,12 @@ function QuickActionsTile() {
  * no recorded income, a per-property launchpad, and quick actions. A small
  * tax-year selector at the top drives every tile.
  *
- * Numbers, text, and links only — no charts, canvases, or visualizations. The
- * add-first-property empty state is shown when the user owns no properties
- * (Requirement 11.4).
+ * Being the data-dense portfolio home, the dashboard intentionally shows two
+ * charts (Req 11.6 is a guideline): the compact income/expenses/net bars inside
+ * the portfolio snapshot tile (Req 17.1) and the ranked net-by-property chart
+ * in its own tile (Req 18.1). Each is a single primary chart within its tile and
+ * keeps its always-present data table (Req 12.1). The add-first-property empty
+ * state is shown when the user owns no properties (Requirement 11.4).
  */
 export default function DashboardPage({
   api = sharedApi,
@@ -508,6 +566,9 @@ export default function DashboardPage({
           <PortfolioSnapshotTile summary={summary} />
           <CombinedScheduleETile combined={combined} />
           <DepreciationTile combined={combined} />
+          {summary.properties.length > 0 ? (
+            <NetByPropertyTile properties={summary.properties} />
+          ) : null}
           <NeedsAttentionTile properties={summary.properties} />
           <PropertiesLaunchpadTile properties={summary.properties} />
           <QuickActionsTile />

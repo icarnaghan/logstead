@@ -2,6 +2,7 @@ import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AddressAutocomplete } from "./AddressAutocomplete";
 import { PropertyDetailsView } from "./PropertyDetailsView";
+import { Button } from "../ui";
 import {
   createProperty,
   enrichAddress,
@@ -225,16 +226,13 @@ export function AddPropertyDialog({
       }}
     >
       <Dialog.Trigger asChild>
-        <button
-          type="button"
-          className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-fg hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
+        <Button type="button" variant="primary">
           Add property
-        </button>
+        </Button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-slate-900/40" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 max-h-[90vh] w-[92vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg bg-surface p-6 shadow-xl focus:outline-none">
+        <Dialog.Overlay className="fixed inset-0 bg-fg/40" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 max-h-[90vh] w-[92vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-surface p-6 shadow-card focus:outline-none">
           <Dialog.Title className="text-lg font-semibold text-fg">
             Add a property
           </Dialog.Title>
@@ -390,20 +388,13 @@ export function AddPropertyDialog({
 
             <div className="flex justify-end gap-2 pt-2">
               <Dialog.Close asChild>
-                <button
-                  type="button"
-                  className="rounded-md border border-border px-4 py-2 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                >
+                <Button type="button" variant="secondary">
                   Cancel
-                </button>
+                </Button>
               </Dialog.Close>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
+              <Button type="submit" variant="primary" disabled={submitting}>
                 {submitting ? "Saving…" : "Save property"}
-              </button>
+              </Button>
             </div>
           </form>
         </Dialog.Content>

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { Category, TransactionType } from "../../api/transactions";
+import { Select } from "../ui";
 
 interface CategorySelectProps {
   id: string;
@@ -37,13 +38,13 @@ export function CategorySelect({
   );
 
   return (
-    <select
+    <Select
       id={id}
       value={value}
-      aria-invalid={invalid || undefined}
+      invalid={invalid}
       aria-describedby={describedBy}
       onChange={(event) => onChange(event.target.value)}
-      className="mt-1 block w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      className="mt-1 block w-full"
     >
       <option value="">Select a category…</option>
       {options.map((category) => (
@@ -51,6 +52,6 @@ export function CategorySelect({
           {category.label} (Line {category.schedule_e_line})
         </option>
       ))}
-    </select>
+    </Select>
   );
 }

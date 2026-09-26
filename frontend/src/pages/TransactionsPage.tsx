@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import * as Dialog from "@radix-ui/react-dialog";
-import { PROPERTY_NAV, propertyPath } from "../components/navConfig";
+import { PropertySection } from "../components/PropertySection";
 import {
   transactionsApi as sharedApi,
   fieldErrorFrom,
@@ -17,6 +17,8 @@ import { TransactionForm } from "../components/transactions/TransactionForm";
 import { TransactionList } from "../components/transactions/TransactionList";
 import { TaxYearFilter } from "../components/transactions/TaxYearFilter";
 import { ReceiptList } from "../components/transactions/ReceiptList";
+import { Button, ConfirmDialog, StateBlock, useToast } from "../components/ui";
+import { formatMoney } from "../lib/money";
 
 interface TransactionsPageProps {
   /** Injectable API for tests; defaults to the shared singleton. */
@@ -31,8 +33,9 @@ function recentYears(count = 6): number[] {
 /**
  * Per-property transactions page (Requirements 5.1–5.8, 7.3, 7.4).
  *
- * Renders the per-property sub-navigation and heading (mirroring
- * `PropertySection`), then a tax-year filter, a date-descending transaction
+ * Renders the shared `PropertySection` (breadcrumb, property-name heading, and
+ * per-property sub-navigation), then a tax-year filter, a date-descending
+ * transaction
  * table, an add/edit dialog form with Schedule E category selection and
  * Other-requires-description enforcement, delete, and per-transaction receipt
  * attach/list/delete via pre-signed URL.
@@ -41,6 +44,7 @@ export default function TransactionsPage({
   api = sharedApi,
 }: TransactionsPageProps) {
   const { propertyId = "" } = useParams();
+  const { notify } = useToast();
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -57,6 +61,12 @@ export default function TransactionsPage({
   // Receipts state, keyed by the currently expanded transaction.
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [receipts, setReceipts] = useState<ReceiptDocument[]>([]);
+
+  // The transaction awaiting delete confirmation, if any (ConfirmDialog is
+  // controlled). Clicking Delete on a row opens the dialog; only confirming
+  // performs the deletion (Requirements 4.1–4.3).
+  const [pendingDelete, setPendingDelete] = useState<Transaction | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const years = useMemo(() => recentYears(), []);
 
@@ -129,6 +139,7 @@ export default function TransactionsPage({
     setSubmitting(true);
     setFormError(null);
     try {
+      const isEdit = editing !== null;
       if (editing) {
         await api.updateTransaction(propertyId, editing.id, input);
       } else {
@@ -137,29 +148,56 @@ export default function TransactionsPage({
       setDialogOpen(false);
       setEditing(null);
       await loadTransactions();
+      notify({
+        variant: "success",
+        title: isEdit ? "Transaction updated" : "Transaction added",
+      });
     } catch (error) {
       if (error instanceof ApiError && error.status === 400) {
+        // Validation errors stay in the form next to the field.
         setFormError(
           fieldErrorFrom(error.body) ?? { message: error.message },
         );
       } else {
+        // Non-field failures also surface as an error toast (Requirement 5.4).
         setFormError({ message: "Could not save the transaction." });
+        notify({
+          variant: "error",
+          title: "Could not save transaction",
+        });
       }
     } finally {
       setSubmitting(false);
     }
   }
 
-  async function handleDelete(transaction: Transaction) {
+  function requestDelete(transaction: Transaction) {
+    setPendingDelete(transaction);
+  }
+
+  async function confirmDelete() {
+    const transaction = pendingDelete;
+    if (!transaction) return;
+    setDeleting(true);
+    setListError(null);
     try {
       await api.deleteTransaction(propertyId, transaction.id);
       if (expandedId === transaction.id) {
         setExpandedId(null);
         setReceipts([]);
       }
+      setPendingDelete(null);
       await loadTransactions();
+      notify({ variant: "success", title: "Transaction deleted" });
     } catch {
       setListError("Could not delete the transaction.");
+      notify({
+        variant: "error",
+        title: "Could not delete transaction",
+      });
+      setPendingDelete(null);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -177,51 +215,25 @@ export default function TransactionsPage({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <section aria-labelledby="page-heading">
-      <h1 id="page-heading" className="text-2xl font-semibold text-fg">
-        Transactions
-      </h1>
-      <p className="mt-1 text-sm text-fg-subtle">Property: {propertyId}</p>
-
-      <nav aria-label="Property sections" className="mt-4">
-        <ul className="flex flex-wrap gap-2">
-          {PROPERTY_NAV.map((item) => (
-            <li key={item.segment}>
-              <NavLink
-                to={propertyPath(propertyId, item.segment)}
-                className={({ isActive }) =>
-                  [
-                    "inline-block rounded-md px-3 py-1.5 text-sm font-medium",
-                    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-                    isActive
-                      ? "bg-accent text-accent-fg"
-                      : "text-fg-muted hover:bg-surface-muted",
-                  ].join(" ")
-                }
-              >
-                {item.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+    <>
+      <PropertySection
+        propertyId={propertyId}
+        title="Transactions"
+        description="Record income and expenses for this property, categorize each to a Schedule E line, and attach supporting documents."
+      />
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <TaxYearFilter value={taxYear} years={years} onChange={setTaxYear} />
 
         <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
           <Dialog.Trigger asChild>
-            <button
-              type="button"
-              onClick={openCreate}
-              className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-accent-fg hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
+            <Button type="button" variant="primary" onClick={openCreate}>
               Add transaction
-            </button>
+            </Button>
           </Dialog.Trigger>
           <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 bg-slate-900/40" />
-            <Dialog.Content className="fixed left-1/2 top-1/2 w-[min(32rem,90vw)] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-surface p-6 shadow-xl focus:outline-none">
+            <Dialog.Overlay className="fixed inset-0 bg-fg/40" />
+            <Dialog.Content className="fixed left-1/2 top-1/2 w-[min(32rem,90vw)] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-surface p-6 shadow-card focus:outline-none">
               <Dialog.Title className="text-lg font-semibold text-fg">
                 {editing ? "Edit transaction" : "Add transaction"}
               </Dialog.Title>
@@ -262,14 +274,21 @@ export default function TransactionsPage({
       ) : null}
 
       {loading ? (
-        <p className="mt-4 text-fg-muted">Loading transactions…</p>
+        <StateBlock kind="loading" title="Loading transactions…" />
+      ) : transactions.length === 0 ? (
+        <StateBlock
+          kind="empty"
+          title="No transactions yet"
+          description="Add your first transaction to record income and expenses."
+          action={{ label: "Add transaction", onClick: openCreate }}
+        />
       ) : (
         <TransactionList
           transactions={transactions}
           categories={categories}
           expandedId={expandedId}
           onEdit={openEdit}
-          onDelete={handleDelete}
+          onDelete={requestDelete}
           onToggleReceipts={handleToggleReceipts}
           renderReceipts={(transaction) => (
             <ReceiptList
@@ -282,6 +301,22 @@ export default function TransactionsPage({
           )}
         />
       )}
-    </section>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        title="Delete transaction"
+        description={
+          pendingDelete
+            ? `Delete the ${formatMoney(pendingDelete.amount)} transaction from ${pendingDelete.date}? This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        onConfirm={confirmDelete}
+        pending={deleting}
+      />
+    </>
   );
 }

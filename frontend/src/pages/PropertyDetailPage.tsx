@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   getProperty,
@@ -17,8 +17,23 @@ import {
 import { PropertyDetailsView } from "../components/properties/PropertyDetailsView";
 import { PropertyPhotos } from "../components/photos";
 import { TaxYearSelector } from "../components/dashboard/TaxYearSelector";
-import { formatMoney, isLoss } from "../components/dashboard/money";
+import { Button, Card, Tile } from "../components/ui";
+import { formatMoney, isLoss } from "../lib/money";
 import { propertyPath } from "../components/navConfig";
+import { ChartCard } from "../components/charts/ChartCard";
+import { LazyChart } from "../components/charts/LazyChart";
+import { incomeExpenseNet } from "../components/charts/prepare";
+import { IncomeExpenseNetTable } from "../components/charts/IncomeExpenseNetTable";
+
+/**
+ * The per-property income/expenses/net chart is the lazy boundary: Recharts is
+ * reached only through this `React.lazy` import, so it code-splits into its own
+ * async chunk absent from the initial paint (Requirement 14). The always-present
+ * data table lives in a Recharts-free module imported eagerly above.
+ */
+const IncomeExpenseNetChart = lazy(
+  () => import("../components/charts/IncomeExpenseNetChart"),
+);
 
 type LoadState =
   | { status: "loading" }
@@ -69,34 +84,6 @@ function taxYearRange(
   return Array.from({ length: span }, (_, index) => current - index);
 }
 
-/** Shared tile shell — a rounded surface card with a labelled heading. */
-function Tile({
-  title,
-  headingId,
-  children,
-  className,
-}: {
-  title: string;
-  headingId: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <section
-      aria-labelledby={headingId}
-      className={[
-        "rounded-lg border border-border bg-surface shadow-card p-4",
-        className ?? "",
-      ].join(" ")}
-    >
-      <h2 id={headingId} className="text-sm font-medium text-fg-subtle">
-        {title}
-      </h2>
-      <div className="mt-2">{children}</div>
-    </section>
-  );
-}
-
 /** Income / expenses / net tile driven by the selected year's report. */
 function IncomeExpenseTile({ report }: { report: ReportState }) {
   return (
@@ -110,40 +97,69 @@ function IncomeExpenseTile({ report }: { report: ReportState }) {
           {report.message}
         </p>
       ) : report.status === "loaded" ? (
-        <dl className="space-y-2">
-          <div className="flex items-baseline justify-between gap-4">
-            <dt className="text-sm text-fg-muted">Total income</dt>
-            <dd className="tabular-nums font-semibold text-fg">
-              {formatMoney(report.report.totals.total_income)}
-            </dd>
+        <>
+          <dl className="space-y-2">
+            <div className="flex items-baseline justify-between gap-4">
+              <dt className="text-sm text-fg-muted">Total income</dt>
+              <dd className="tabular-nums font-semibold text-fg">
+                {formatMoney(report.report.totals.total_income)}
+              </dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-4">
+              <dt className="text-sm text-fg-muted">Total expenses</dt>
+              <dd className="tabular-nums font-semibold text-fg">
+                {formatMoney(report.report.totals.total_expenses)}
+              </dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-4 border-t border-border pt-2">
+              <dt className="text-sm font-medium text-fg-muted">
+                {isLoss(report.report.totals.net) ? "Net loss" : "Net income"}
+              </dt>
+              <dd
+                className={[
+                  "tabular-nums text-lg font-semibold",
+                  isLoss(report.report.totals.net)
+                    ? "text-danger"
+                    : "text-success",
+                ].join(" ")}
+              >
+                {formatMoney(report.report.totals.net)}
+                {isLoss(report.report.totals.net) ? (
+                  <span className="ml-2 align-middle text-xs font-medium uppercase tracking-wide text-danger">
+                    Loss
+                  </span>
+                ) : null}
+              </dd>
+            </div>
+          </dl>
+
+          {/*
+            Compact income / expenses / net chart for this property (Req 17.2),
+            below the numbers. Lazy-loaded; the always-present data table is the
+            mobile / error fallback (Req 12.1, 14).
+          */}
+          <div className="mt-4">
+            {(() => {
+              const chartData = incomeExpenseNet(report.report.totals);
+              return (
+                <ChartCard
+                  title="Income, expenses & net"
+                  ariaLabel="Income, expenses, and net for the selected year"
+                  height={220}
+                  chart={
+                    <LazyChart
+                      height={220}
+                      fallbackTable={<IncomeExpenseNetTable data={chartData} />}
+                    >
+                      <IncomeExpenseNetChart data={chartData} />
+                    </LazyChart>
+                  }
+                  dataTable={<IncomeExpenseNetTable data={chartData} />}
+                />
+              );
+            })()}
           </div>
-          <div className="flex items-baseline justify-between gap-4">
-            <dt className="text-sm text-fg-muted">Total expenses</dt>
-            <dd className="tabular-nums font-semibold text-fg">
-              {formatMoney(report.report.totals.total_expenses)}
-            </dd>
-          </div>
-          <div className="flex items-baseline justify-between gap-4 border-t border-border pt-2">
-            <dt className="text-sm font-medium text-fg-muted">
-              {isLoss(report.report.totals.net) ? "Net loss" : "Net income"}
-            </dt>
-            <dd
-              className={[
-                "tabular-nums text-lg font-semibold",
-                isLoss(report.report.totals.net)
-                  ? "text-danger"
-                  : "text-success",
-              ].join(" ")}
-            >
-              {formatMoney(report.report.totals.net)}
-              {isLoss(report.report.totals.net) ? (
-                <span className="ml-2 align-middle text-xs font-medium uppercase tracking-wide text-danger">
-                  Loss
-                </span>
-              ) : null}
-            </dd>
-          </div>
-        </dl>
+        </>
       ) : null}
     </Tile>
   );
@@ -254,14 +270,15 @@ function NotesTile({
             className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           />
           <div className="flex items-center gap-3">
-            <button
+            <Button
               type="button"
+              variant="primary"
+              size="sm"
               onClick={() => void handleSave()}
               disabled={saving}
-              className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {saving ? "Saving…" : "Save"}
-            </button>
+            </Button>
             {savedMessage ? (
               <span role="status" className="text-sm text-success">
                 {savedMessage}
@@ -282,12 +299,9 @@ function NotesTile({
 /** A single quicklink button styled like a bordered nav pill. */
 function QuickLink({ to, label }: { to: string; label: string }) {
   return (
-    <Link
-      to={to}
-      className="inline-flex rounded-md border border-border px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-    >
-      {label}
-    </Link>
+    <Button asChild variant="secondary" size="sm">
+      <Link to={to}>{label}</Link>
+    </Button>
   );
 }
 
@@ -438,7 +452,7 @@ export default function PropertyDetailPage({
       {state.status === "loaded" ? (
         <>
           {/* Header tile: photo + identity + tax-year selector. */}
-          <div className="mt-3 flex flex-col gap-4 rounded-lg border border-border bg-surface shadow-card p-4 sm:flex-row sm:items-center sm:justify-between">
+          <Card className="mt-3 flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <div className="h-20 w-28 shrink-0 overflow-hidden rounded-md bg-surface-muted">
                 {headerPhoto ? (
@@ -486,7 +500,7 @@ export default function PropertyDetailPage({
               </div>
             </div>
             <TaxYearSelector value={taxYear} years={years} onChange={setTaxYear} />
-          </div>
+          </Card>
 
           {/* Tile grid. */}
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -561,9 +575,9 @@ export default function PropertyDetailPage({
               )}
             </Tile>
 
-            <div className="rounded-lg border border-border bg-surface shadow-card p-4 sm:col-span-2 lg:col-span-3">
+            <Card className="p-4 sm:col-span-2 lg:col-span-3">
               <PropertyPhotos propertyId={state.property.id} />
-            </div>
+            </Card>
           </div>
         </>
       ) : null}

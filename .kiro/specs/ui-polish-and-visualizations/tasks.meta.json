@@ -1,0 +1,834 @@
+{
+  "pbtResults": {
+    "1.5 Write property test: money formatting preserves exact value": {
+      "status": "passed",
+      "lastRunTimestamp": 1790433881992
+    },
+    "1.6 Write property test: money ↔ integer-cents round-trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1790433882904
+    },
+    "3.12 Write property test: primitives are focus-ringed and token-colored": {
+      "status": "passed",
+      "lastRunTimestamp": 1790434758295
+    },
+    "15.2 Write property test: chart colors are token references": {
+      "status": "passed",
+      "lastRunTimestamp": 1790438390717
+    },
+    "15.4 Write property tests for `prepare.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1790438391599
+    },
+    "15.7 Write property + axe/contract tests for `ChartCard`": {
+      "status": "passed",
+      "lastRunTimestamp": 1790438571926
+    }
+  },
+  "executionHistory": {
+    "1.1 Add `clsx` dependency and create `lib/cn.ts`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697401
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432707305
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790433721557
+      }
+    ],
+    "1.3 Create canonical `lib/money.ts`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697522
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790433736807
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790433914450
+      }
+    ],
+    "1.7 Re-point money imports and delete old modules": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697583
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790433921062
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434031266
+      }
+    ],
+    "2. Checkpoint — foundation helpers green": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697641
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434035093
+      }
+    ],
+    "3.1 Add focus-ring constant, `Button`, and `Input` primitives": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697737
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434044650
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434181487
+      }
+    ],
+    "3.3 Add `Card` + `Tile` and `Select` primitives": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697800
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434045341
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434350002
+      }
+    ],
+    "3.5 Add `ConfirmDialog` primitive": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697871
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434352361
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434629052
+      }
+    ],
+    "3.7 Add `ResponsiveTable` and `StateBlock` primitives": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697933
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434046684
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434351360
+      }
+    ],
+    "3.9 Add `toast/ToastProvider` + `useToast` and mount in `main.tsx`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432697985
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434353412
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434630440
+      }
+    ],
+    "3.11 Create `components/ui/index.ts` barrel export": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698051
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434631390
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434775963
+      }
+    ],
+    "4. Checkpoint — primitives green": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698102
+      },
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434780671
+      }
+    ],
+    "5.1 Replace copy-pasted button/focus-ring strings with `Button`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698166
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434826909
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435265711
+      }
+    ],
+    "5.2 Unify tax-year selectors and Cancel/Delete styles": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698220
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435266610
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435421450
+      }
+    ],
+    "5.3 Apply `Card`/`Tile` and dedupe local Tile definitions": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698284
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435422389
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435671477
+      }
+    ],
+    "5.4 Fix token/style drift": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698385
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435671550
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435868919
+      }
+    ],
+    "5.5 Route `AssetList` cost basis and `ScheduleTable` amounts through `formatMoney`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698449
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435671639
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435870319
+      }
+    ],
+    "6. Checkpoint — Part A style migration green": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698499
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435871135
+      }
+    ],
+    "7.1 Add `PropertyLayout` layout route + property context": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698550
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435876031
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436036531
+      }
+    ],
+    "7.3 Add `Breadcrumb` primitive": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698604
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436033198
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436188368
+      }
+    ],
+    "7.5 Update `PropertySection` to show name + breadcrumb; remove `TransactionsPage` inline nav": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698652
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436189626
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436334128
+      }
+    ],
+    "7.6 Remove Cognito `sub` from `ProfilePage`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698703
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436034183
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436187375
+      }
+    ],
+    "7.7 Replace raw `category_id` fallback in `TransactionList`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698752
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436035551
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436186027
+      }
+    ],
+    "8. Checkpoint — wayfinding green": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698802
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436334957
+      }
+    ],
+    "9.1 Wire property and transaction deletes through `ConfirmDialog` + toasts": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698851
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436341541
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436701907
+      }
+    ],
+    "9.2 Wire asset and receipt deletes through `ConfirmDialog` + toasts": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432698900
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436342726
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436703288
+      }
+    ],
+    "9.3 Emit success/error toasts on create/update": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699006
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436704105
+      }
+    ],
+    "10.1 Apply `ResponsiveTable` to `TransactionList`, `AssetList`, `PropertyBreakdownTable`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699053
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436710520
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437384025
+      }
+    ],
+    "11.1 Apply `StateBlock` on transactions, assets, and reports sub-pages": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699103
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437384978
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437545289
+      }
+    ],
+    "12. Checkpoint — Part A complete": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699152
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437546279
+      }
+    ],
+    "13.1 Polish per-property `ReportView` document treatment": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699201
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437557320
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437803472
+      }
+    ],
+    "13.2 Add print styling for reports": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699249
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437558135
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437804440
+      }
+    ],
+    "13.3 Add routed combined report page + nav entry": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699300
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437805419
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438187646
+      }
+    ],
+    "13.4 Add `CombinedReportView` over existing `/reports/combined` data": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699351
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438186759
+      }
+    ],
+    "14. Checkpoint — reports green": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699400
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438188610
+      }
+    ],
+    "15.1 Add `recharts` dependency and `components/charts/chartColors.ts`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699452
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438195125
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438411166
+      }
+    ],
+    "15.3 Create `components/charts/prepare.ts`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699515
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438196063
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438412495
+      }
+    ],
+    "15.5 Add `ResizeObserver` stub to `src/test/setup.ts`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699571
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438197304
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438413461
+      }
+    ],
+    "15.6 Create `ChartCard` wrapper and `ChartPlaceholder`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699622
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438414697
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438634097
+      }
+    ],
+    "15.8 Wire `React.lazy` + `Suspense` chart-loading with error boundary": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699683
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438635097
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438810936
+      }
+    ],
+    "16. Checkpoint — chart foundation green + lazy chunk verified": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699733
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438812022
+      }
+    ],
+    "17.1 Implement `ExpenseByCategoryChart` (ranked desc, horizontal bars)": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699782
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438819765
+      },
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790439639444
+      }
+    ],
+    "17.3 Implement `IncomeExpenseNetChart` (compact bars)": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699834
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438820707
+      },
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790440120658
+      }
+    ],
+    "17.4 Implement `NetByPropertyChart` (ranked horizontal bars)": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699882
+      },
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438823527
+      },
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790440123188
+      }
+    ],
+    "18. Checkpoint — Phase 1 charts green + bundle unchanged": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699934
+      },
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790440123427
+      }
+    ],
+    "19.1 Implement `DepreciationChart` (line/area)": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432699983
+      },
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790440127709
+      },
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790440333662
+      }
+    ],
+    "20. Final checkpoint — full suite green + lazy splitting confirmed": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790432700031
+      },
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790440368791
+      }
+    ],
+    "1. Foundation: class-composition and money helpers": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434031391
+      }
+    ],
+    "3. Shared UI primitives in `components/ui/`": [
+      {
+        "executionId": "2d4dfe4c-853f-4cc7-853e-66160342d7d9",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790434776027
+      }
+    ],
+    "5. Migrate call sites to primitives (Part A polish)": [
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790435870383
+      }
+    ],
+    "7. Wayfinding (Req 2, 3)": [
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436334228
+      }
+    ],
+    "9. Destructive-delete confirmations + feedback (Req 4, 5)": [
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790436704204
+      }
+    ],
+    "10. Responsive tables (Req 6)": [
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437384129
+      }
+    ],
+    "11. Richer empty/loading states (Req 9)": [
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790437545407
+      }
+    ],
+    "13. Reports as a hand-off document (Req 10, 16.2 surface)": [
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438187708
+      }
+    ],
+    "15. Chart foundation (Req 11–15)": [
+      {
+        "executionId": "16f88382-d174-4983-b462-56303848c762",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790438811003
+      }
+    ],
+    "17. Phase 1 charts (Req 16, 17, 18)": [
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790440123241
+      }
+    ],
+    "19. Phase 2 chart — asset depreciation schedule (Req 19)": [
+      {
+        "executionId": "27aa8b48-a9cc-430a-80b7-c0770ebd9e19",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790440333764
+      }
+    ]
+  }
+}

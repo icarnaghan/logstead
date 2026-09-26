@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { Select } from "../ui";
 
 interface TaxYearSelectorProps {
   /** The currently selected tax year. */
@@ -23,18 +24,17 @@ export function TaxYearSelector({ value, years, onChange }: TaxYearSelectorProps
       <label htmlFor={id} className="text-sm font-medium text-fg-muted">
         Tax year
       </label>
-      <select
+      <Select
         id={id}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="rounded-md border border-border px-2 py-1.5 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         {years.map((year) => (
           <option key={year} value={year}>
             {year}
           </option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 }

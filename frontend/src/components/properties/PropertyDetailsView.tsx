@@ -1,20 +1,10 @@
 import type { PropertyDetails } from "../../api/properties";
+import { formatMoney } from "../../lib/money";
 
 interface PropertyDetailsViewProps {
   details: PropertyDetails;
   /** Optional heading id so callers can label a surrounding region. */
   headingId?: string;
-}
-
-/** Format a money string (two-decimal) as USD; passes through when unparseable. */
-function formatMoney(value?: string | null): string | null {
-  if (value === null || value === undefined || value === "") return null;
-  const num = Number(value);
-  if (Number.isNaN(num)) return value;
-  return num.toLocaleString(undefined, {
-    style: "currency",
-    currency: "USD",
-  });
 }
 
 /** Render a boolean presence flag as an accessible Yes/No, or null when unset. */

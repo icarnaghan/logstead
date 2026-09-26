@@ -59,3 +59,25 @@
     color: rgb(var(--color-fg));
   }
 }
+
+/*
+ * Print styling (Requirement 10.3). When the reports page is printed, the app
+ * chrome (header, sidebar/nav, download buttons, charts) is hidden via
+ * `print:hidden` utilities on those elements. Here we force a clean paper
+ * treatment: white background + black text, and strip card shadows/borders
+ * that only waste ink. `break-inside-avoid` on report sections keeps each
+ * section from splitting awkwardly across pages.
+ */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Flatten the elevation surfaces so cards read as plain sections on paper. */
+  .shadow-card {
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+}

@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import PropertyDetailPage from "./PropertyDetailPage";
+import { ThemeProvider } from "../theme/ThemeProvider";
 import { ApiError, type Property } from "../api/properties";
 import type { ScheduleEReport } from "../api/reports";
 import type { DepreciableAsset } from "../api/assets";
@@ -62,23 +63,27 @@ function renderAt(id: string, options: RenderOptions = {}) {
       ? propertyOption
       : async () => propertyOption ?? baseProperty;
   render(
-    <MemoryRouter initialEntries={[`/properties/${id}`]}>
-      <Routes>
-        <Route
-          path="/properties/:propertyId"
-          element={
-            <PropertyDetailPage
-              load={load}
-              loadReport={options.loadReport ?? (async () => makeReport())}
-              loadPhotos={async () => []}
-              loadAssets={options.loadAssets ?? (async () => [])}
-              loadNote={options.loadNote ?? (async () => "")}
-              saveNote={options.saveNote ?? (async (_id, text) => text)}
-            />
-          }
-        />
-      </Routes>
-    </MemoryRouter>,
+    // The income/expenses tile now renders a chart, which reads
+    // `useChartColors → useTheme`; without a ThemeProvider that hook throws.
+    <ThemeProvider>
+      <MemoryRouter initialEntries={[`/properties/${id}`]}>
+        <Routes>
+          <Route
+            path="/properties/:propertyId"
+            element={
+              <PropertyDetailPage
+                load={load}
+                loadReport={options.loadReport ?? (async () => makeReport())}
+                loadPhotos={async () => []}
+                loadAssets={options.loadAssets ?? (async () => [])}
+                loadNote={options.loadNote ?? (async () => "")}
+                saveNote={options.saveNote ?? (async (_id, text) => text)}
+              />
+            }
+          />
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>,
   );
 }
 
@@ -108,10 +113,26 @@ describe("PropertyDetailPage dashboard", () => {
     const tile = await screen.findByRole("region", {
       name: /income & expenses/i,
     });
-    expect(within(tile).getByText("$24,000.00")).toBeInTheDocument();
-    expect(within(tile).getByText("$7,175.33")).toBeInTheDocument();
-    expect(within(tile).getByText("$16,824.67")).toBeInTheDocument();
+    // Amounts now appear in both the numeric headline and the tile's chart data
+    // table, so query for at least one occurrence within the tile.
+    expect(within(tile).getAllByText("$24,000.00").length).toBeGreaterThan(0);
+    expect(within(tile).getAllByText("$7,175.33").length).toBeGreaterThan(0);
+    expect(within(tile).getAllByText("$16,824.67").length).toBeGreaterThan(0);
     expect(within(tile).getByText(/net income/i)).toBeInTheDocument();
+  });
+
+  it("shows the income/expenses/net chart once the report loads (Req 17.2)", async () => {
+    renderAt("p1", { loadReport: async () => makeReport() });
+
+    const tile = await screen.findByRole("region", {
+      name: /income & expenses/i,
+    });
+    // The compact income/expenses/net chart region (role=img) lives inside the
+    // tile, with its always-present data table alongside.
+    expect(
+      within(tile).getByRole("img", { name: /income, expenses, and net/i }),
+    ).toBeInTheDocument();
+    expect(within(tile).getByRole("table")).toBeInTheDocument();
   });
 
   it("labels a negative net as a loss", async () => {
@@ -130,7 +151,8 @@ describe("PropertyDetailPage dashboard", () => {
       name: /income & expenses/i,
     });
     expect(within(tile).getByText(/net loss/i)).toBeInTheDocument();
-    expect(within(tile).getByText("-$500.00")).toBeInTheDocument();
+    // Appears in both the headline and the tile's chart data table.
+    expect(within(tile).getAllByText("-$500.00").length).toBeGreaterThan(0);
   });
 
   it("shows the Line 18 depreciation total", async () => {

@@ -1,4 +1,5 @@
 import type { ScheduleRow } from "../../api/assets";
+import { formatMoney } from "../../lib/money";
 
 interface ScheduleTableProps {
   /** Accessible caption / heading describing which asset this schedule is for. */
@@ -12,8 +13,9 @@ interface ScheduleTableProps {
  *
  * This is deliberately a data table (year, depreciation amount, remaining
  * basis) and never a chart: the initial release is numbers-and-forms only.
- * Money values arrive as strings and are rendered verbatim to avoid any
- * floating-point drift.
+ * Money values arrive as exact-decimal strings and are rendered through the
+ * canonical {@link formatMoney} (Requirement 7.3) with `tabular-nums`
+ * alignment (Requirement 7.5); no floating-point arithmetic is introduced.
  */
 export function ScheduleTable({ caption, rows }: ScheduleTableProps) {
   if (rows.length === 0) {
@@ -47,10 +49,10 @@ export function ScheduleTable({ caption, rows }: ScheduleTableProps) {
               {row.tax_year}
             </th>
             <td className="py-1.5 pr-4 text-right tabular-nums text-fg">
-              {row.amount}
+              {formatMoney(row.amount)}
             </td>
             <td className="py-1.5 text-right tabular-nums text-fg">
-              {row.remaining_basis}
+              {formatMoney(row.remaining_basis)}
             </td>
           </tr>
         ))}

@@ -8,6 +8,24 @@ import "vitest-axe/extend-expect";
 // component tests can run automated accessibility checks (Requirement 14.4).
 expect.extend(axeMatchers);
 
+// Recharts' <ResponsiveContainer> observes its element with ResizeObserver,
+// which jsdom does not implement. Register a no-op stub so charts can mount in
+// tests without throwing (Requirement 15.1). Only installed when absent so a
+// richer polyfill in another environment is left intact.
+if (typeof globalThis.ResizeObserver === "undefined") {
+  class ResizeObserverStub {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+  globalThis.ResizeObserver =
+    ResizeObserverStub as unknown as typeof ResizeObserver;
+  if (typeof window !== "undefined") {
+    window.ResizeObserver =
+      ResizeObserverStub as unknown as typeof ResizeObserver;
+  }
+}
+
 // Unmount React trees after each test to avoid cross-test leakage.
 afterEach(() => {
   cleanup();

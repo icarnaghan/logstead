@@ -7,7 +7,8 @@ import type {
   TransactionType,
 } from "../../api/transactions";
 import { CategorySelect } from "./CategorySelect";
-import { isPositiveAmount, toMoneyString } from "./money";
+import { Button } from "../ui";
+import { isPositiveAmount, toMoneyString } from "../../lib/money";
 
 interface TransactionFormProps {
   categories: readonly Category[];
@@ -254,20 +255,12 @@ export function TransactionForm({
       </div>
 
       <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-md px-3 py-2 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
+        <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
+        </Button>
+        <Button type="submit" variant="primary" disabled={submitting}>
           {initial ? "Save changes" : "Add transaction"}
-        </button>
+        </Button>
       </div>
     </form>
   );

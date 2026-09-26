@@ -56,7 +56,7 @@ describe("ReportView — header (Req 10.2)", () => {
   it("renders the property name, address, type and usage days", () => {
     render(<ReportView report={makeReport()} />);
 
-    const header = sectionByHeading(/maple duplex/i);
+    const header = sectionByHeading(/^maple duplex$/i);
     expect(
       within(header).getByRole("heading", { name: "Maple Duplex" }),
     ).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe("ReportView — header (Req 10.2)", () => {
       />,
     );
 
-    const header = sectionByHeading(/maple duplex/i);
+    const header = sectionByHeading(/^maple duplex$/i);
     const addressDt = within(header).getByText("Address");
     expect(addressDt.nextElementSibling).toHaveTextContent("—");
     const typeDt = within(header).getByText("Property type");
@@ -195,12 +195,44 @@ describe("ReportView — totals and net label (Req 10.4)", () => {
   });
 });
 
-describe("ReportView — numbers-first presentation (Req 11.4/11.5)", () => {
-  it("renders no chart, canvas, or svg element", () => {
-    const { container } = render(<ReportView report={makeReport()} />);
+describe("ReportView — expense-by-category chart (Req 16.1, 16.3)", () => {
+  it("renders the ranked expense-by-category chart card with its always-present data table", () => {
+    render(<ReportView report={makeReport()} />);
 
-    expect(container.querySelector("canvas")).toBeNull();
-    expect(container.querySelector("svg")).toBeNull();
+    // The chart carries the accessibility contract: a role="img" region with a
+    // summarizing, non-empty aria-label (Req 12.2).
+    const chartRegion = screen.getByRole("img");
+    expect(chartRegion.getAttribute("aria-label")).toMatch(
+      /expenses by schedule e category/i,
+    );
+
+    // The always-present data table (Req 12.1) lists each expense category with
+    // its formatted amount, ranked descending (Req 16.3): Depreciation 5833.33,
+    // Repairs 1200.00, Other 142.00.
+    const chartCard = screen
+      .getByRole("heading", { name: /expenses by category/i })
+      .closest("section") as HTMLElement;
+    const rowHeaders = within(chartCard)
+      .getAllByRole("rowheader")
+      .map((cell) => cell.textContent);
+    expect(rowHeaders).toEqual(["Depreciation", "Repairs", "Other"]);
+    expect(within(chartCard).getByText("$5,833.33")).toBeInTheDocument();
+  });
+
+  it("omits the expense chart when the report has no expense lines", () => {
+    render(
+      <ReportView
+        report={makeReport({
+          lines: [
+            { line: 3, label: "Rents received", kind: "income", total: "1000.00" },
+          ],
+        })}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("heading", { name: /expenses by category/i }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 });

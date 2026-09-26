@@ -1,3 +1,5 @@
+import { Select } from "../ui";
+
 interface TaxYearFilterProps {
   /** Selected tax year, or null for "All years". */
   value: number | null;
@@ -20,14 +22,13 @@ export function TaxYearFilter({ value, years, onChange }: TaxYearFilterProps) {
       >
         Tax year
       </label>
-      <select
+      <Select
         id="tax-year-filter"
         value={value === null ? "all" : String(value)}
         onChange={(event) => {
           const raw = event.target.value;
           onChange(raw === "all" ? null : Number(raw));
         }}
-        className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         <option value="all">All years</option>
         {years.map((year) => (
@@ -35,7 +36,7 @@ export function TaxYearFilter({ value, years, onChange }: TaxYearFilterProps) {
             {year}
           </option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import ReportsPage, { type ReportsApi } from "./ReportsPage";
+import { ThemeProvider } from "../theme/ThemeProvider";
 import type { ScheduleEReport } from "../api/reports";
 
 /**
@@ -54,14 +55,16 @@ const YEARS = [2024, 2023, 2022] as const;
 
 function renderPage(api: ReportsApi) {
   return render(
-    <MemoryRouter initialEntries={["/properties/prop-1/reports"]}>
-      <Routes>
-        <Route
-          path="/properties/:propertyId/reports"
-          element={<ReportsPage api={api} years={YEARS} />}
-        />
-      </Routes>
-    </MemoryRouter>,
+    <ThemeProvider>
+      <MemoryRouter initialEntries={["/properties/prop-1/reports"]}>
+        <Routes>
+          <Route
+            path="/properties/:propertyId/reports"
+            element={<ReportsPage api={api} years={YEARS} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>,
   );
 }
 
@@ -99,7 +102,12 @@ describe("ReportsPage — year selection fetches and renders (Req 10.1-10.5)", (
       .closest("section") as HTMLElement;
     expect(within(incomeSection).getByText("Rents received")).toBeInTheDocument();
     expect(within(incomeSection).getByText("$24,000.00")).toBeInTheDocument();
-    expect(screen.getByText("Repairs")).toBeInTheDocument();
+    // "Repairs" now appears both in the expense line table and the chart's
+    // always-present data table, so scope the assertion to the expense section.
+    const expenseSection = screen
+      .getByRole("heading", { name: /^expenses$/i })
+      .closest("section") as HTMLElement;
+    expect(within(expenseSection).getByText("Repairs")).toBeInTheDocument();
 
     // Line 18 depreciation total is shown.
     const depSection = screen
@@ -169,6 +177,43 @@ describe("ReportsPage — year selection fetches and renders (Req 10.1-10.5)", (
     expect(await screen.findByRole("alert")).toHaveTextContent(
       /unable to load the schedule e report/i,
     );
+  });
+});
+
+describe("ReportsPage — empty/loading states (Req 9.1, 9.2, 9.3)", () => {
+  it("shows an idle empty state before a year is chosen", () => {
+    const api = makeApi();
+    renderPage(api);
+
+    expect(
+      screen.getByRole("heading", { name: /no report yet/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/choose a tax year above/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a role=status loading state while the report is fetching", async () => {
+    const user = userEvent.setup();
+    let resolve: (report: ScheduleEReport) => void = () => {};
+    const api = makeApi({
+      getReport: vi.fn().mockImplementation(
+        () =>
+          new Promise<ScheduleEReport>((r) => {
+            resolve = r;
+          }),
+      ),
+    });
+    renderPage(api);
+
+    await user.selectOptions(screen.getByLabelText(/tax year/i), "2024");
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      /loading report/i,
+    );
+
+    resolve(makeReport());
+    await screen.findByText("Maple Duplex");
   });
 });
 
@@ -251,6 +296,97 @@ describe("ReportsPage — client-side export (Req 10.7)", () => {
     const [entry] = captured;
     expect(entry.type).toBe("application/json");
     expect(JSON.parse(entry.content)).toEqual(makeReport());
+  });
+});
+
+describe("ReportsPage — hand-off document + print styling (Req 10.1-10.3)", () => {
+  it("groups income, expenses, depreciation, other, and totals into sections", async () => {
+    const user = userEvent.setup();
+    const api = makeApi();
+    renderPage(api);
+
+    await user.selectOptions(screen.getByLabelText(/tax year/i), "2024");
+    await screen.findByText("Maple Duplex");
+
+    // Each report grouping is a delineated section with its own heading.
+    for (const name of [
+      /^income$/i,
+      /^expenses$/i,
+      /depreciation \(line 18\)/i,
+      /other expenses \(line 19\)/i,
+      /^totals$/i,
+    ]) {
+      const heading = screen.getByRole("heading", { name });
+      expect(heading.closest("section")).not.toBeNull();
+    }
+  });
+
+  it("emphasizes the net and labels it as income (not color alone)", async () => {
+    const user = userEvent.setup();
+    const api = makeApi();
+    renderPage(api);
+
+    await user.selectOptions(screen.getByLabelText(/tax year/i), "2024");
+    await screen.findByText("Maple Duplex");
+
+    const totalsSection = screen
+      .getByRole("heading", { name: /^totals$/i })
+      .closest("section") as HTMLElement;
+
+    // Textual cue distinguishes income vs loss without relying on color.
+    const netLabel = within(totalsSection).getByText(/net income/i);
+    const netValue = within(totalsSection).getByText("$16,824.67");
+
+    // The net is visually emphasized (larger + bolder than the sub-totals).
+    expect(netLabel.className).toMatch(/font-bold/);
+    expect(netValue.className).toMatch(/font-bold/);
+    expect(netValue.className).toMatch(/text-xl/);
+  });
+
+  it("labels a negative net as a loss with the same emphasis", async () => {
+    const user = userEvent.setup();
+    const api = makeApi({
+      getReport: vi.fn().mockResolvedValue(
+        makeReport({
+          totals: {
+            total_income: "1000.00",
+            total_expenses: "1500.00",
+            net: "-500.00",
+          },
+        }),
+      ),
+    });
+    renderPage(api);
+
+    await user.selectOptions(screen.getByLabelText(/tax year/i), "2024");
+    await screen.findByText("Maple Duplex");
+
+    const totalsSection = screen
+      .getByRole("heading", { name: /^totals$/i })
+      .closest("section") as HTMLElement;
+    const netLabel = within(totalsSection).getByText(/net loss/i);
+    expect(netLabel.className).toMatch(/font-bold/);
+  });
+
+  it("hides the report controls and download buttons from print output", async () => {
+    const user = userEvent.setup();
+    const api = makeApi();
+    renderPage(api);
+
+    // The controls region (tax-year selector) is hidden when printing.
+    const controls = screen
+      .getByRole("heading", { name: /report controls/i })
+      .closest("section") as HTMLElement;
+    expect(controls.className).toContain("print:hidden");
+
+    await user.selectOptions(screen.getByLabelText(/tax year/i), "2024");
+    await screen.findByText("Maple Duplex");
+
+    // The download-button group is also excluded from print output.
+    const downloadGroup = screen
+      .getByRole("button", { name: /download csv/i })
+      .closest("div") as HTMLElement;
+    expect(downloadGroup.className).toContain("print:hidden");
   });
 });
 

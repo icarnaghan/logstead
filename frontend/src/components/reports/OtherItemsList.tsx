@@ -1,5 +1,5 @@
 import type { OtherItem } from "../../api/reports";
-import { formatMoney } from "../transactions/money";
+import { formatMoney } from "../../lib/money";
 
 interface OtherItemsListProps {
   /** Accessible caption describing the itemization. */

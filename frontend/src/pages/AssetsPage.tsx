@@ -1,9 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { lazy, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PropertySection } from "../components/PropertySection";
 import { AssetList } from "../components/assets/AssetList";
 import { AssetForm, type AssetFormValues } from "../components/assets/AssetForm";
 import { ScheduleTable } from "../components/assets/ScheduleTable";
+import { ConfirmDialog, StateBlock, useToast } from "../components/ui";
+import { ChartCard } from "../components/charts/ChartCard";
+import { LazyChart } from "../components/charts/LazyChart";
+import { depreciationSeries } from "../components/charts/prepare";
 import { ApiError } from "../lib/apiClient";
 import * as assetsApiDefault from "../api/assets";
 import type {
@@ -12,6 +16,16 @@ import type {
   ScheduleRow,
   UpdateAssetInput,
 } from "../api/assets";
+
+/**
+ * The depreciation-schedule chart is the lazy boundary: Recharts is reached only
+ * through this `React.lazy` import, so it code-splits into its own async chunk
+ * absent from the initial paint (Requirement 14). The always-present schedule
+ * data table (`ScheduleTable`) is Recharts-free and imported eagerly above.
+ */
+const DepreciationChart = lazy(
+  () => import("../components/charts/DepreciationChart"),
+);
 
 /**
  * Subset of the assets API this page depends on. Injectable so tests can
@@ -79,6 +93,7 @@ function toFieldErrors(error: unknown): {
 export default function AssetsPage({ api }: AssetsPageProps = {}) {
   const { propertyId = "" } = useParams();
   const assetsApiImpl: AssetsApi = api ?? assetsApiDefault;
+  const { notify } = useToast();
 
   const [assets, setAssets] = useState<DepreciableAsset[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,6 +103,12 @@ export default function AssetsPage({ api }: AssetsPageProps = {}) {
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
+
+  // Asset pending deletion (drives the ConfirmDialog); null when closed.
+  const [pendingDelete, setPendingDelete] = useState<DepreciableAsset | null>(
+    null,
+  );
+  const [deleting, setDeleting] = useState(false);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [schedule, setSchedule] = useState<ScheduleRow[]>([]);
@@ -117,6 +138,7 @@ export default function AssetsPage({ api }: AssetsPageProps = {}) {
     setFieldErrors({});
     setFormError(null);
     try {
+      const wasEditing = editing !== null;
       if (editing) {
         await assetsApiImpl.updateAsset(propertyId, editing.id, values);
       } else {
@@ -128,16 +150,28 @@ export default function AssetsPage({ api }: AssetsPageProps = {}) {
         void loadSchedule(editing.id);
       }
       await reload();
+      notify({
+        variant: "success",
+        title: wasEditing ? "Asset updated" : "Asset added",
+      });
     } catch (error) {
       const { fieldErrors: fe, message } = toFieldErrors(error);
       setFieldErrors(fe);
       setFormError(message);
+      // 400 field errors surface in the form; a non-field failure also toasts.
+      if (Object.keys(fe).length === 0) {
+        notify({ variant: "error", title: "Could not save the asset" });
+      }
     } finally {
       setSubmitting(false);
     }
   }
 
-  async function handleDelete(asset: DepreciableAsset) {
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    const asset = pendingDelete;
+    setDeleting(true);
+    setFormError(null);
     try {
       await assetsApiImpl.deleteAsset(propertyId, asset.id);
       if (expandedId === asset.id) {
@@ -148,8 +182,13 @@ export default function AssetsPage({ api }: AssetsPageProps = {}) {
         setEditing(null);
       }
       await reload();
+      setPendingDelete(null);
+      notify({ variant: "success", title: "Asset deleted" });
     } catch {
       setFormError("Unable to delete the asset. Please try again.");
+      notify({ variant: "error", title: "Could not delete the asset" });
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -231,11 +270,19 @@ export default function AssetsPage({ api }: AssetsPageProps = {}) {
             Assets
           </h2>
           {loading ? (
-            <p className="mt-3 text-fg-muted">Loading assets…</p>
+            <StateBlock kind="loading" title="Loading assets…" />
           ) : loadError ? (
             <p role="alert" className="mt-3 text-sm text-danger">
               {loadError}
             </p>
+          ) : assets.length === 0 ? (
+            <div className="mt-3">
+              <StateBlock
+                kind="empty"
+                title="No depreciable assets yet"
+                description="Add a depreciable asset using the form above to track its year-by-year depreciation schedule."
+              />
+            </div>
           ) : (
             <div className="mt-3 space-y-4">
               <AssetList
@@ -246,7 +293,7 @@ export default function AssetsPage({ api }: AssetsPageProps = {}) {
                   setFieldErrors({});
                   setFormError(null);
                 }}
-                onDelete={handleDelete}
+                onDelete={(asset) => setPendingDelete(asset)}
                 onToggleSchedule={handleToggleSchedule}
               />
 
@@ -269,6 +316,33 @@ export default function AssetsPage({ api }: AssetsPageProps = {}) {
                     <p role="alert" className="mt-2 text-sm text-danger">
                       {scheduleError}
                     </p>
+                  ) : schedule.length > 0 ? (
+                    <div className="mt-3">
+                      <ChartCard
+                        title="Depreciation & remaining basis"
+                        ariaLabel={`Year-by-year depreciation and remaining basis for ${expandedAsset.description}`}
+                        chart={
+                          <LazyChart
+                            fallbackTable={
+                              <ScheduleTable
+                                caption={`Year-by-year depreciation schedule for ${expandedAsset.description}`}
+                                rows={schedule}
+                              />
+                            }
+                          >
+                            <DepreciationChart
+                              data={depreciationSeries(schedule)}
+                            />
+                          </LazyChart>
+                        }
+                        dataTable={
+                          <ScheduleTable
+                            caption={`Year-by-year depreciation schedule for ${expandedAsset.description}`}
+                            rows={schedule}
+                          />
+                        }
+                      />
+                    </div>
                   ) : (
                     <ScheduleTable
                       caption={`Year-by-year depreciation schedule for ${expandedAsset.description}`}
@@ -281,6 +355,25 @@ export default function AssetsPage({ api }: AssetsPageProps = {}) {
           )}
         </section>
       </div>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        title="Delete asset"
+        description={
+          pendingDelete ? (
+            <>
+              Delete &quot;{pendingDelete.description}&quot;? This permanently
+              removes the asset and its depreciation schedule.
+            </>
+          ) : null
+        }
+        confirmLabel="Delete"
+        onConfirm={() => void confirmDelete()}
+        pending={deleting}
+      />
     </>
   );
 }

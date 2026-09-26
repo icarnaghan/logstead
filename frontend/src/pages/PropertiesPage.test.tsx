@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import PropertiesPage from "./PropertiesPage";
 import type { Property } from "../api/properties";
+import { ToastProvider } from "../components/ui";
 
 /**
  * Page tests for the properties list (Requirements 2.1, 2.3).
@@ -10,9 +11,11 @@ import type { Property } from "../api/properties";
 
 function renderPage(load: () => Promise<Property[]>) {
   render(
-    <MemoryRouter>
-      <PropertiesPage load={load} loadPhotos={async () => []} />
-    </MemoryRouter>,
+    <ToastProvider>
+      <MemoryRouter>
+        <PropertiesPage load={load} loadPhotos={async () => []} />
+      </MemoryRouter>
+    </ToastProvider>,
   );
 }
 

@@ -5,6 +5,7 @@ import type {
   DraftTransaction,
   TransactionType,
 } from "../../api/imports";
+import { Button } from "../ui";
 
 interface DraftRowProps {
   draft: DraftTransaction;
@@ -217,22 +218,24 @@ export function DraftRow({
       )}
 
       <div className="mt-3 flex gap-2">
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="sm"
           onClick={handleSave}
           disabled={controlsDisabled}
-          className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-fg disabled:opacity-50"
         >
           Save draft
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
           onClick={handleRemove}
           disabled={controlsDisabled}
-          className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-fg-muted disabled:opacity-50"
         >
           Remove
-        </button>
+        </Button>
       </div>
     </li>
   );

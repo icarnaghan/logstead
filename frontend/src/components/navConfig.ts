@@ -33,6 +33,7 @@ export interface PropertyNavItem {
 export const PRIMARY_NAV: readonly NavItem[] = [
   { to: "/", label: "Dashboard", end: true },
   { to: "/properties", label: "Properties" },
+  { to: "/reports", label: "Reports" },
 ];
 
 /** Sub-sections available under a selected property. */

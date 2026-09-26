@@ -171,7 +171,7 @@ export function AddressAutocomplete({
         aria-label="Address suggestions"
         className={
           open && suggestions.length > 0
-            ? "absolute z-10 mt-1 w-full overflow-hidden rounded-md border border-border bg-surface shadow-lg"
+            ? "absolute z-10 mt-1 w-full overflow-hidden rounded-md border border-border bg-surface shadow-card"
             : "hidden"
         }
       >

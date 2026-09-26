@@ -7,6 +7,7 @@ import {
   photosApi as defaultPhotosApi,
   type PhotoWithUrl,
 } from "../../api/photos";
+import { Button } from "../ui";
 
 interface PropertyPhotosProps {
   /** The property whose photos are managed. */
@@ -195,13 +196,14 @@ export function PropertyPhotos({
           <p role="alert" className="text-sm text-danger">
             {listStatus.message}
           </p>
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="sm"
             onClick={() => void refresh()}
-            className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Retry
-          </button>
+          </Button>
         </div>
       )}
 

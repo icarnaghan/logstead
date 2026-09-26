@@ -12,6 +12,21 @@
 STACK   ?= logstead
 REGION  ?= us-east-1
 PY      ?= python3.12
+# App origin the SPA is built for (OAuth redirect/logout + expected CORS origin).
+# The SPA must be built for the exact origin it is served from, or sign-in
+# and API calls fail with a state/CORS error. Set this to your deployed
+# custom domain (e.g. https://app.example.com). For a no-custom-domain
+# deploy, leave it empty and deploy-spa.sh falls back to the CloudFront domain.
+#
+# Keep your real value out of version control: put it in an untracked
+# `local.mk` (gitignored), which is included below and overrides this default:
+#     APP_ORIGIN = https://app.example.com
+APP_ORIGIN ?= https://app.example.com
+
+# Optional developer-local overrides (gitignored). Lets you set machine- or
+# deployment-specific values (e.g. APP_ORIGIN, STACK, REGION) without editing
+# or committing this Makefile. Silent no-op when the file is absent.
+-include local.mk
 
 ROOT      := $(shell pwd)
 BACKEND   := $(ROOT)/backend
@@ -77,7 +92,7 @@ deploy-infra: build ## Build + deploy the AWS stack (SAM)
 
 .PHONY: deploy-spa
 deploy-spa: ## Build + publish the SPA and invalidate CloudFront
-	$(INFRA)/deploy-spa.sh $(STACK) $(REGION)
+	APP_ORIGIN=$(APP_ORIGIN) $(INFRA)/deploy-spa.sh $(STACK) $(REGION)
 
 .PHONY: deploy
 deploy: deploy-infra deploy-spa ## Full deploy: infra then SPA

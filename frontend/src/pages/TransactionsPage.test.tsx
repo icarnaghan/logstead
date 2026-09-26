@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import TransactionsPage from "./TransactionsPage";
 import { ApiError } from "../lib/apiClient";
+import { ToastProvider } from "../components/ui";
 import type {
   Category,
   ReceiptDocument,
@@ -76,14 +77,16 @@ function makeApi(overrides: Partial<TransactionsApi> = {}) {
 
 function renderPage(api: TransactionsApi) {
   return render(
-    <MemoryRouter initialEntries={["/properties/p1/transactions"]}>
-      <Routes>
-        <Route
-          path="/properties/:propertyId/transactions"
-          element={<TransactionsPage api={api} />}
-        />
-      </Routes>
-    </MemoryRouter>,
+    <ToastProvider>
+      <MemoryRouter initialEntries={["/properties/p1/transactions"]}>
+        <Routes>
+          <Route
+            path="/properties/:propertyId/transactions"
+            element={<TransactionsPage api={api} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    </ToastProvider>,
   );
 }
 
@@ -100,6 +103,46 @@ describe("TransactionsPage — list (Req 5.4)", () => {
     expect(within(firstData).getByText("2024-06-15")).toBeInTheDocument();
     const secondData = rows[2];
     expect(within(secondData).getByText("2024-01-05")).toBeInTheDocument();
+  });
+});
+
+describe("TransactionsPage — empty/loading states (Req 9.1, 9.2, 9.3)", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("shows a role=status loading state while transactions are fetching", async () => {
+    let resolve: (rows: Transaction[]) => void = () => {};
+    const api = makeApi({
+      listTransactions: vi.fn().mockImplementation(
+        () =>
+          new Promise<Transaction[]>((r) => {
+            resolve = r;
+          }),
+      ),
+    });
+    renderPage(api);
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      /loading transactions/i,
+    );
+
+    // Let the fetch settle so the test exits cleanly.
+    resolve([]);
+    await screen.findByRole("heading", { name: /no transactions yet/i });
+  });
+
+  it("renders an empty state with a next action when there are none", async () => {
+    const api = makeApi({
+      listTransactions: vi.fn().mockResolvedValue([] as Transaction[]),
+    });
+    renderPage(api);
+
+    expect(
+      await screen.findByRole("heading", { name: /no transactions yet/i }),
+    ).toBeInTheDocument();
+    // The empty state offers the add-transaction action (Req 9.2/9.3).
+    expect(
+      screen.getAllByRole("button", { name: /add transaction/i }).length,
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -139,6 +182,9 @@ describe("TransactionsPage — create (Req 5.1, 7.3)", () => {
       type: "expense",
       category_id: "repairs",
     });
+
+    // A success toast confirms the outcome (Req 5.1).
+    expect(await screen.findByText(/transaction added/i)).toBeInTheDocument();
   });
 
   it("shows the Schedule E line for the selected category (Req 7.3)", async () => {
@@ -271,10 +317,10 @@ describe("TransactionsPage — receipts (Req 5.8)", () => {
   });
 });
 
-describe("TransactionsPage — delete (Req 5.7)", () => {
+describe("TransactionsPage — delete (Req 4, 5.1, 5.7)", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("calls deleteTransaction for the chosen row", async () => {
+  it("confirms before deleting, then calls deleteTransaction and toasts success", async () => {
     const user = userEvent.setup();
     const api = makeApi();
     renderPage(api);
@@ -285,8 +331,32 @@ describe("TransactionsPage — delete (Req 5.7)", () => {
     });
     await user.click(deleteButtons[0]);
 
+    // A confirmation dialog appears; nothing is deleted yet.
+    const dialog = await screen.findByRole("dialog");
+    expect(api.deleteTransaction).not.toHaveBeenCalled();
+
+    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+
     await waitFor(() =>
       expect(api.deleteTransaction).toHaveBeenCalledWith("p1", "t-newer"),
     );
+    expect(await screen.findByText(/transaction deleted/i)).toBeInTheDocument();
+  });
+
+  it("does not delete when the confirmation is cancelled", async () => {
+    const user = userEvent.setup();
+    const api = makeApi();
+    renderPage(api);
+    await screen.findAllByRole("row");
+
+    const deleteButtons = screen.getAllByRole("button", {
+      name: /delete transaction from/i,
+    });
+    await user.click(deleteButtons[0]);
+
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: /cancel/i }));
+
+    expect(api.deleteTransaction).not.toHaveBeenCalled();
   });
 });

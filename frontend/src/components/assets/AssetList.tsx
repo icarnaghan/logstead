@@ -1,4 +1,6 @@
 import type { DepreciableAsset } from "../../api/assets";
+import { formatMoney } from "../../lib/money";
+import { Button, ResponsiveTable, type ResponsiveTableColumn } from "../ui";
 
 interface AssetListProps {
   assets: DepreciableAsset[];
@@ -9,13 +11,22 @@ interface AssetListProps {
   onToggleSchedule: (asset: DepreciableAsset) => void;
 }
 
+const COLUMNS: ResponsiveTableColumn[] = [
+  { key: "description", header: "Description" },
+  { key: "cost_basis", header: "Cost basis", align: "right" },
+  { key: "placed_in_service", header: "Placed in service" },
+  { key: "recovery_period", header: "Recovery period", align: "right" },
+  { key: "actions", header: "Actions" },
+];
+
 /**
  * Tabular list of a property's depreciable assets (Requirement 8.7).
  *
  * Each row shows the asset's description, cost basis, placed-in-service date,
  * and recovery period, with actions to edit, delete, or view the year-by-year
  * depreciation schedule (Requirements 8.5, 8.6, 9.4). The schedule itself is
- * rendered by the page below the corresponding row.
+ * rendered by the page below the corresponding row. Layout is delegated to the
+ * shared {@link ResponsiveTable} primitive (Requirement 6.3).
  */
 export function AssetList({
   assets,
@@ -32,75 +43,63 @@ export function AssetList({
     );
   }
 
+  const rows = assets.map((asset) => {
+    const expanded = expandedAssetId === asset.id;
+    return {
+      id: asset.id,
+      cells: {
+        description: <span className="text-fg">{asset.description}</span>,
+        cost_basis: (
+          <span className="tabular-nums text-fg">
+            {formatMoney(asset.cost_basis)}
+          </span>
+        ),
+        placed_in_service: (
+          <span className="text-fg">{asset.placed_in_service_date}</span>
+        ),
+        recovery_period: (
+          <span className="tabular-nums text-fg">
+            {asset.recovery_period_years}
+          </span>
+        ),
+        actions: (
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => onToggleSchedule(asset)}
+              aria-expanded={expanded}
+            >
+              {expanded ? "Hide schedule" : "View schedule"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => onEdit(asset)}
+            >
+              Edit
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              onClick={() => onDelete(asset)}
+            >
+              Delete
+            </Button>
+          </div>
+        ),
+      },
+    };
+  });
+
   return (
-    <table className="w-full border-collapse text-sm">
-      <caption className="sr-only">Depreciable assets for this property</caption>
-      <thead>
-        <tr className="border-b border-border text-left text-fg-muted">
-          <th scope="col" className="py-2 pr-4 font-medium">
-            Description
-          </th>
-          <th scope="col" className="py-2 pr-4 text-right font-medium">
-            Cost basis
-          </th>
-          <th scope="col" className="py-2 pr-4 font-medium">
-            Placed in service
-          </th>
-          <th scope="col" className="py-2 pr-4 text-right font-medium">
-            Recovery period
-          </th>
-          <th scope="col" className="py-2 font-medium">
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {assets.map((asset) => {
-          const expanded = expandedAssetId === asset.id;
-          return (
-            <tr key={asset.id} className="border-b border-border align-top">
-              <th scope="row" className="py-2 pr-4 font-normal text-fg">
-                {asset.description}
-              </th>
-              <td className="py-2 pr-4 text-right tabular-nums text-fg">
-                {asset.cost_basis}
-              </td>
-              <td className="py-2 pr-4 text-fg">
-                {asset.placed_in_service_date}
-              </td>
-              <td className="py-2 pr-4 text-right tabular-nums text-fg">
-                {asset.recovery_period_years}
-              </td>
-              <td className="py-2">
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onToggleSchedule(asset)}
-                    aria-expanded={expanded}
-                    className="rounded-md border border-border px-2 py-1 text-xs font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  >
-                    {expanded ? "Hide schedule" : "View schedule"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onEdit(asset)}
-                    className="rounded-md border border-border px-2 py-1 text-xs font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(asset)}
-                    className="rounded-md border border-danger px-2 py-1 text-xs font-medium text-danger hover:bg-danger-subtle focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <ResponsiveTable
+      caption="Depreciable assets for this property"
+      columns={COLUMNS}
+      rows={rows}
+    />
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { deleteProperty, ApiError, type Property } from "../../api/properties";
 import { listPhotos, type PhotoWithUrl } from "../../api/photos";
+import { Button, Card, ConfirmDialog, useToast } from "../ui";
 
 interface PropertyListProps {
   properties: Property[];
@@ -100,7 +101,7 @@ function PropertyCard({
   const detailPath = `/properties/${property.id}`;
 
   return (
-    <li className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-card">
+    <Card as="li" className="flex flex-col overflow-hidden">
       <div className="aspect-[3/2] w-full overflow-hidden bg-surface-muted">
         {photoUrl ? (
           <img
@@ -128,24 +129,22 @@ function PropertyCard({
         ) : null}
 
         <div className="mt-4 flex items-center gap-2">
-          <Link
-            to={detailPath}
-            className="inline-flex rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-fg hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            Dashboard
-          </Link>
+          <Button asChild variant="primary" size="sm">
+            <Link to={detailPath}>Dashboard</Link>
+          </Button>
 
           <div className="relative" ref={menuRef}>
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={() => setMenuOpen((open) => !open)}
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               aria-label={`More actions for ${property.name}`}
-              className="inline-flex rounded-md border border-border px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               More
-            </button>
+            </Button>
             {menuOpen ? (
               <div
                 role="menu"
@@ -182,7 +181,7 @@ function PropertyCard({
           </p>
         ) : null}
       </div>
-    </li>
+    </Card>
   );
 }
 
@@ -202,10 +201,21 @@ export function PropertyList({
   remove = deleteProperty,
   loadPhotos = listPhotos,
 }: PropertyListProps) {
+  const { notify } = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [cardErrors, setCardErrors] = useState<Record<string, string>>({});
+  // The property awaiting delete confirmation, if any (ConfirmDialog is
+  // controlled). Clicking Delete in the More menu opens the dialog; only
+  // confirming performs the deletion (Requirements 4.1–4.3).
+  const [pendingDelete, setPendingDelete] = useState<Property | null>(null);
 
-  async function handleDelete(property: Property) {
+  function requestDelete(property: Property) {
+    setPendingDelete(property);
+  }
+
+  async function confirmDelete() {
+    const property = pendingDelete;
+    if (!property) return;
     setCardErrors((prev) => {
       const next = { ...prev };
       delete next[property.id];
@@ -214,33 +224,61 @@ export function PropertyList({
     setDeletingId(property.id);
     try {
       await remove(property.id);
+      setPendingDelete(null);
       onDeleted(property.id);
+      notify({ variant: "success", title: "Property deleted" });
     } catch (err) {
-      const message =
-        err instanceof ApiError && err.status === 409
-          ? err.message ||
-            "Remove associated transactions and assets before deleting this property."
-          : err instanceof ApiError
-            ? err.message
-            : "Could not delete the property.";
+      const isConflict = err instanceof ApiError && err.status === 409;
+      const message = isConflict
+        ? err.message ||
+          "Remove associated transactions and assets before deleting this property."
+        : err instanceof ApiError
+          ? err.message
+          : "Could not delete the property.";
+      // Keep the inline conflict message on the card (Requirement 2.7) …
       setCardErrors((prev) => ({ ...prev, [property.id]: message }));
+      // … and also surface a failure toast (Requirement 5.4).
+      notify({
+        variant: "error",
+        title: "Could not delete property",
+        description: message,
+      });
+      setPendingDelete(null);
     } finally {
       setDeletingId(null);
     }
   }
 
   return (
-    <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {properties.map((property) => (
-        <PropertyCard
-          key={property.id}
-          property={property}
-          deleting={deletingId === property.id}
-          error={cardErrors[property.id]}
-          onDelete={handleDelete}
-          loadPhotos={loadPhotos}
-        />
-      ))}
-    </ul>
+    <>
+      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {properties.map((property) => (
+          <PropertyCard
+            key={property.id}
+            property={property}
+            deleting={deletingId === property.id}
+            error={cardErrors[property.id]}
+            onDelete={requestDelete}
+            loadPhotos={loadPhotos}
+          />
+        ))}
+      </ul>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        title="Delete property"
+        description={
+          pendingDelete
+            ? `Delete "${pendingDelete.name}"? This permanently removes the property and cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        onConfirm={confirmDelete}
+        pending={pendingDelete !== null && deletingId === pendingDelete.id}
+      />
+    </>
   );
 }

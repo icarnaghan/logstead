@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import DashboardPage from "./DashboardPage";
 import type { DashboardApi, DashboardSummary } from "../api/dashboard";
 import type { CombinedScheduleEReport, ScheduleEReport } from "../api/reports";
+import { ThemeProvider } from "../theme/ThemeProvider";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -120,13 +121,17 @@ function renderPage(
   > = async () => [],
 ) {
   return render(
-    <MemoryRouter initialEntries={["/"]}>
-      <DashboardPage
-        api={api}
-        loadCombined={loadCombined}
-        loadAssets={loadAssets}
-      />
-    </MemoryRouter>,
+    // The dashboard now renders charts, which read `useChartColors → useTheme`;
+    // without a ThemeProvider that hook throws, so every render is wrapped here.
+    <ThemeProvider>
+      <MemoryRouter initialEntries={["/"]}>
+        <DashboardPage
+          api={api}
+          loadCombined={loadCombined}
+          loadAssets={loadAssets}
+        />
+      </MemoryRouter>
+    </ThemeProvider>,
   );
 }
 
@@ -139,9 +144,11 @@ describe("DashboardPage — portfolio snapshot (Req 11.1)", () => {
     const totals = await screen.findByRole("region", {
       name: new RegExp(`Portfolio totals for ${CURRENT_YEAR}`),
     });
-    expect(within(totals).getByText("$1,500.00")).toBeInTheDocument();
-    expect(within(totals).getByText("$250.00")).toBeInTheDocument();
-    expect(within(totals).getByText("$1,250.00")).toBeInTheDocument();
+    // Amounts now appear in both the numeric headline and the chart's
+    // always-present data table within this tile, so query for at least one.
+    expect(within(totals).getAllByText("$1,500.00").length).toBeGreaterThan(0);
+    expect(within(totals).getAllByText("$250.00").length).toBeGreaterThan(0);
+    expect(within(totals).getAllByText("$1,250.00").length).toBeGreaterThan(0);
     expect(within(totals).getByText(/net income/i)).toBeInTheDocument();
   });
 
@@ -171,7 +178,8 @@ describe("DashboardPage — portfolio snapshot (Req 11.1)", () => {
       name: /portfolio totals/i,
     });
     expect(within(totals).getByText(/net loss/i)).toBeInTheDocument();
-    expect(within(totals).getByText("-$800.00")).toBeInTheDocument();
+    // Appears in both the headline and the tile's chart data table.
+    expect(within(totals).getAllByText("-$800.00").length).toBeGreaterThan(0);
   });
 });
 
@@ -355,16 +363,71 @@ describe("DashboardPage — empty state (Req 11.4)", () => {
   });
 });
 
-describe("DashboardPage — numbers-first, no charts", () => {
+describe("DashboardPage — charts (Req 11.6, 17.1, 18.1)", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("renders no chart/canvas/svg elements", async () => {
-    const { container } = renderPage(makeApi());
+  it("shows the income/expenses/net chart inside the portfolio snapshot tile", async () => {
+    renderPage(makeApi());
 
-    await screen.findByRole("region", { name: /portfolio totals/i });
+    const totals = await screen.findByRole("region", {
+      name: /portfolio totals/i,
+    });
+    // The compact income/expenses/net chart region (role=img) lives inside the
+    // portfolio snapshot tile, with its always-present data table alongside.
+    const chart = within(totals).getByRole("img", {
+      name: /income, expenses, and net/i,
+    });
+    expect(chart).toBeInTheDocument();
+    expect(within(totals).getByRole("table")).toBeInTheDocument();
+  });
 
-    expect(container.querySelector("canvas")).toBeNull();
-    expect(container.querySelector("svg")).toBeNull();
+  it("shows the net-by-property chart in its own tile with a data table", async () => {
+    renderPage(makeApi());
+
+    const netTile = await screen.findByRole("region", {
+      name: /net contribution by property/i,
+    });
+    expect(
+      within(netTile).getByRole("img", {
+        name: /net contribution by property/i,
+      }),
+    ).toBeInTheDocument();
+    // The always-present data table carries one row per property.
+    const table = within(netTile).getByRole("table");
+    expect(within(table).getByText("Maple Duplex")).toBeInTheDocument();
+    expect(within(table).getByText("Oak Cottage")).toBeInTheDocument();
+  });
+
+  it("re-renders the charts after a theme toggle keeps them present (Req 11.3)", async () => {
+    const { rerender } = renderPage(makeApi());
+
+    const totals = await screen.findByRole("region", {
+      name: /portfolio totals/i,
+    });
+    expect(
+      within(totals).getByRole("img", { name: /income, expenses, and net/i }),
+    ).toBeInTheDocument();
+
+    rerender(
+      <ThemeProvider>
+        <MemoryRouter initialEntries={["/"]}>
+          <DashboardPage
+            api={makeApi()}
+            loadCombined={vi.fn().mockResolvedValue(COMBINED)}
+            loadAssets={async () => []}
+          />
+        </MemoryRouter>
+      </ThemeProvider>,
+    );
+
+    const totalsAfter = await screen.findByRole("region", {
+      name: /portfolio totals/i,
+    });
+    expect(
+      within(totalsAfter).getByRole("img", {
+        name: /income, expenses, and net/i,
+      }),
+    ).toBeInTheDocument();
   });
 });
 

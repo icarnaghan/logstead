@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Button } from "../ui";
 
 interface DashboardEmptyStateProps {
   /**
@@ -22,12 +23,9 @@ export function DashboardEmptyState({ prompt }: DashboardEmptyStateProps) {
   return (
     <div className="mt-6 rounded-lg border border-dashed border-border bg-surface p-8 text-center">
       <p className="text-fg-muted">{message}</p>
-      <Link
-        to="/properties"
-        className="mt-4 inline-block rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-fg hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-      >
-        Add your first property
-      </Link>
+      <Button asChild variant="primary" className="mt-4">
+        <Link to="/properties">Add your first property</Link>
+      </Button>
     </div>
   );
 }

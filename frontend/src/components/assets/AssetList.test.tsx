@@ -56,7 +56,7 @@ describe("AssetList — rendering (Req 8.7)", () => {
 
     const table = screen.getByRole("table");
     expect(within(table).getByText("HVAC unit")).toBeInTheDocument();
-    expect(within(table).getByText("8000.00")).toBeInTheDocument();
+    expect(within(table).getByText("$8,000.00")).toBeInTheDocument();
     expect(within(table).getByText("2022-05-01")).toBeInTheDocument();
     expect(within(table).getByText("15")).toBeInTheDocument();
   });
@@ -79,13 +79,19 @@ describe("AssetList — actions (Req 8.5, 8.6, 9.4)", () => {
     const a = asset({ id: "a1" });
     render(<AssetList assets={[a]} {...h} />);
 
-    await user.click(screen.getByRole("button", { name: /view schedule/i }));
+    // ResponsiveTable renders both a <table> and a card fallback, so each
+    // action button appears twice; scope to the table representation.
+    const table = screen.getByRole("table");
+
+    await user.click(
+      within(table).getByRole("button", { name: /view schedule/i }),
+    );
     expect(h.onToggleSchedule).toHaveBeenCalledWith(a);
 
-    await user.click(screen.getByRole("button", { name: /edit/i }));
+    await user.click(within(table).getByRole("button", { name: /edit/i }));
     expect(h.onEdit).toHaveBeenCalledWith(a);
 
-    await user.click(screen.getByRole("button", { name: /delete/i }));
+    await user.click(within(table).getByRole("button", { name: /delete/i }));
     expect(h.onDelete).toHaveBeenCalledWith(a);
   });
 
@@ -98,15 +104,33 @@ describe("AssetList — actions (Req 8.5, 8.6, 9.4)", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: /view schedule/i }),
+      within(screen.getByRole("table")).getByRole("button", {
+        name: /view schedule/i,
+      }),
     ).toHaveAttribute("aria-expanded", "false");
 
     // When this asset is the expanded one, the toggle flips to collapse/expanded.
     rerender(<AssetList assets={[a]} expandedAssetId="a1" {...h} />);
 
     expect(
-      screen.getByRole("button", { name: /hide schedule/i }),
+      within(screen.getByRole("table")).getByRole("button", {
+        name: /hide schedule/i,
+      }),
     ).toHaveAttribute("aria-expanded", "true");
+  });
+});
+
+describe("AssetList — responsive layout (Req 6.1, 6.2, 6.3)", () => {
+  it("renders the desktop table and a card fallback container hidden at >= sm", () => {
+    const h = handlers();
+    const { container } = render(
+      <AssetList assets={[asset({ id: "a1" })]} {...h} />,
+    );
+
+    // The scroll-wrapped table is present at desktop widths.
+    expect(screen.getByRole("table")).toBeInTheDocument();
+    // The card list coexists in the DOM, CSS-hidden at >= sm.
+    expect(container.querySelector("ul.sm\\:hidden")).not.toBeNull();
   });
 });
 

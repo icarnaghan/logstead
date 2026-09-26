@@ -36,6 +36,9 @@ credentials
 # infra/samconfig.toml.example as a template.
 infra/samconfig.toml
 
+# Developer-local Makefile overrides (e.g. APP_ORIGIN, STACK, REGION).
+local.mk
+
 # OS / editor
 .DS_Store
 Thumbs.db

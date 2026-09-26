@@ -10,9 +10,9 @@ import type { ScheduleRow } from "../../api/assets";
  *
  * The schedule is deliberately a numeric data table — never a chart. These
  * tests assert the tax_year / amount / remaining_basis columns render in
- * order, money strings render verbatim (no float drift), the empty state
- * message appears, the table exposes an accessible caption, and there is no
- * canvas/svg chart element.
+ * order, money amounts render through the canonical formatMoney (Req 7.3)
+ * with no float drift, the empty state message appears, the table exposes an
+ * accessible caption, and there is no canvas/svg chart element.
  */
 
 function row(overrides: Partial<ScheduleRow> = {}): ScheduleRow {
@@ -47,15 +47,15 @@ describe("ScheduleTable — numeric table (Req 9.4)", () => {
     expect(within(dataRows[2]).getByText("2025")).toBeInTheDocument();
   });
 
-  it("renders money strings verbatim (no float coercion)", () => {
+  it("formats money amounts through formatMoney (no float coercion)", () => {
     render(<ScheduleTable caption="Depreciation schedule" rows={rows} />);
 
     const table = screen.getByRole("table");
-    expect(within(table).getByText("5833.33")).toBeInTheDocument();
-    expect(within(table).getByText("269166.67")).toBeInTheDocument();
-    expect(within(table).getByText("249166.67")).toBeInTheDocument();
-    // Trailing-zero amounts are preserved exactly.
-    expect(within(table).getAllByText("10000.00").length).toBeGreaterThan(0);
+    expect(within(table).getByText("$5,833.33")).toBeInTheDocument();
+    expect(within(table).getByText("$269,166.67")).toBeInTheDocument();
+    expect(within(table).getByText("$249,166.67")).toBeInTheDocument();
+    // Trailing-zero amounts are preserved exactly through formatting.
+    expect(within(table).getAllByText("$10,000.00").length).toBeGreaterThan(0);
   });
 
   it("exposes an accessible caption", () => {
