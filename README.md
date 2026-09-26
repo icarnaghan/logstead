@@ -11,7 +11,8 @@ You record one entry per Schedule E line per tax year (the transaction form
 defaults new entries to Dec 31 of the selected year) and attach the year-end
 statement PDF as evidence under each entry's "supporting documents". A PDF
 expense-import flow exists in the backend but is not currently surfaced in the
-UI.
+UI. Your Schedule E data can also be exported to a JSON backup, restored from
+one, or cleared.
 
 It is built as a **serverless AWS application**:
 
@@ -19,7 +20,8 @@ It is built as a **serverless AWS application**:
   Radix UI), hosted as static assets (S3 + CloudFront). It has Monarch-style
   theming with light/dark/system modes, a profile menu (signed-in email,
   Profile & settings, Sign out), and a per-property detail page showing stored
-  enrichment.
+  enrichment. The Profile & settings page also hosts Backup & restore - download
+  a JSON backup, restore from a backup file, clear all data, or load sample data.
 - **Backend** - a single monolithic Python 3.12 AWS Lambda behind an API
   Gateway HTTP API with a Cognito JWT authorizer, over a single-table DynamoDB
   design, with binary files (photos, receipts, uploaded PDFs, exported reports)

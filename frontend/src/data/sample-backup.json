@@ -1,0 +1,297 @@
+{
+  "schema_version": "1",
+  "exported_at": "2025-01-15T12:00:00+00:00",
+  "properties": [
+    {
+      "id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+      "name": "Maple Street Duplex",
+      "address_text": "142 Maple Street, Springfield, IL 62704",
+      "property_type": "residential",
+      "details": {
+        "city": "Springfield",
+        "state": "IL",
+        "zip_code": "62704",
+        "latitude": "39.78173",
+        "longitude": "-89.650148",
+        "bedrooms": 4,
+        "bathrooms": "2.5",
+        "year_built": 1998,
+        "hoa": {
+          "fee": "0.00"
+        }
+      },
+      "note": "Long-term tenants; roof replaced 2021.",
+      "usage": [
+        {
+          "tax_year": 2020,
+          "fair_rental_days": 365,
+          "personal_use_days": 0
+        },
+        {
+          "tax_year": 2021,
+          "fair_rental_days": 365,
+          "personal_use_days": 0
+        },
+        {
+          "tax_year": 2022,
+          "fair_rental_days": 365,
+          "personal_use_days": 0
+        },
+        {
+          "tax_year": 2023,
+          "fair_rental_days": 365,
+          "personal_use_days": 0
+        },
+        {
+          "tax_year": 2024,
+          "fair_rental_days": 365,
+          "personal_use_days": 0
+        }
+      ],
+      "transactions": [
+        {
+          "id": "54462a5a-5f59-4efe-8160-85077c086346",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2020-01-15",
+          "amount": "18000.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2020"
+        },
+        {
+          "id": "68e490e4-69ea-4624-849c-5459c6ff5e2d",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2020-06-20",
+          "amount": "1250.00",
+          "type": "expense",
+          "category_id": "repairs",
+          "description": "repairs expense 2020"
+        },
+        {
+          "id": "70b39e4b-b560-4259-872c-4f4de8451d05",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2021-01-15",
+          "amount": "18600.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2021"
+        },
+        {
+          "id": "f73b9917-f1f1-4a40-8d7c-0f512ca7f024",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2021-06-20",
+          "amount": "1287.50",
+          "type": "expense",
+          "category_id": "insurance",
+          "description": "insurance expense 2021"
+        },
+        {
+          "id": "cd6348d4-c74c-4d15-8b9c-f444eb5a38f1",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2022-01-15",
+          "amount": "19200.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2022"
+        },
+        {
+          "id": "03dc3903-8dbb-4709-bf0b-1c37484f7d00",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2022-06-20",
+          "amount": "1325.00",
+          "type": "expense",
+          "category_id": "taxes",
+          "description": "taxes expense 2022"
+        },
+        {
+          "id": "66e3194d-9e52-4f4d-ab03-aa51ed4dbf2d",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2023-01-15",
+          "amount": "19800.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2023"
+        },
+        {
+          "id": "8c9602ea-67bb-44fc-9890-6eb7f13a4c07",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2023-06-20",
+          "amount": "1362.50",
+          "type": "expense",
+          "category_id": "utilities",
+          "description": "utilities expense 2023"
+        },
+        {
+          "id": "000d777f-00b9-4057-8166-ebda1981ca33",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2024-01-15",
+          "amount": "20400.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2024"
+        },
+        {
+          "id": "63543a9c-1328-48d8-8d94-fb8d1e50c3cd",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "date": "2024-06-20",
+          "amount": "1400.00",
+          "type": "expense",
+          "category_id": "repairs",
+          "description": "repairs expense 2024"
+        }
+      ],
+      "assets": [
+        {
+          "id": "018e8262-6c33-4205-af03-526db9dacc15",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "description": "Building structure (residential rental)",
+          "cost_basis": "225000.00",
+          "placed_in_service_date": "2019-04-01",
+          "recovery_period_years": "27.5"
+        },
+        {
+          "id": "ecd2f53b-a472-4c09-a58d-767082f8fa64",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "description": "New HVAC system",
+          "cost_basis": "8500.00",
+          "placed_in_service_date": "2021-07-15",
+          "recovery_period_years": "27.5"
+        }
+      ]
+    },
+    {
+      "id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+      "name": "Lakeview Condo",
+      "address_text": "88 Harbor Drive Unit 3B, Madison, WI 53703",
+      "usage": [
+        {
+          "tax_year": 2020,
+          "fair_rental_days": 300,
+          "personal_use_days": 20
+        },
+        {
+          "tax_year": 2021,
+          "fair_rental_days": 300,
+          "personal_use_days": 20
+        },
+        {
+          "tax_year": 2022,
+          "fair_rental_days": 300,
+          "personal_use_days": 20
+        },
+        {
+          "tax_year": 2023,
+          "fair_rental_days": 300,
+          "personal_use_days": 20
+        },
+        {
+          "tax_year": 2024,
+          "fair_rental_days": 300,
+          "personal_use_days": 20
+        }
+      ],
+      "transactions": [
+        {
+          "id": "f4fb3357-f88a-46be-9dad-61cf35228bda",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2020-01-15",
+          "amount": "14400.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2020"
+        },
+        {
+          "id": "3254b94a-de4c-4877-bf9b-db0ff9f307a2",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2020-06-20",
+          "amount": "980.00",
+          "type": "expense",
+          "category_id": "management-fees",
+          "description": "management-fees expense 2020"
+        },
+        {
+          "id": "0cbdcd24-3a1b-4921-8040-db7b51e65ba1",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2021-01-15",
+          "amount": "14880.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2021"
+        },
+        {
+          "id": "01c752c3-e0be-4551-b654-eed098d5af77",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2021-06-20",
+          "amount": "1017.50",
+          "type": "expense",
+          "category_id": "insurance",
+          "description": "insurance expense 2021"
+        },
+        {
+          "id": "bd5e5601-4804-4396-9f9a-a5fc3138c563",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2022-01-15",
+          "amount": "15360.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2022"
+        },
+        {
+          "id": "dc76b600-bee5-4bf7-b49a-692d910b0294",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2022-06-20",
+          "amount": "1055.00",
+          "type": "expense",
+          "category_id": "taxes",
+          "description": "taxes expense 2022"
+        },
+        {
+          "id": "927ebad2-0479-4412-909c-67af9a98f510",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2023-01-15",
+          "amount": "15840.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2023"
+        },
+        {
+          "id": "483be4e3-ade4-462e-b030-1729744cd29f",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2023-06-20",
+          "amount": "1092.50",
+          "type": "expense",
+          "category_id": "repairs",
+          "description": "repairs expense 2023"
+        },
+        {
+          "id": "0ef575eb-8b54-4c26-b8e5-9cd7c166f010",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2024-01-15",
+          "amount": "16320.00",
+          "type": "income",
+          "category_id": "rents-received",
+          "description": "Annual rent 2024"
+        },
+        {
+          "id": "8b7f637f-96d2-45a5-ae88-ed2fc3f4cf92",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "date": "2024-06-20",
+          "amount": "1130.00",
+          "type": "expense",
+          "category_id": "management-fees",
+          "description": "management-fees expense 2024"
+        }
+      ],
+      "assets": [
+        {
+          "id": "6d35b746-b804-459c-b49f-b5dc3c1313b7",
+          "property_id": "354bba3d-b7da-467a-9114-51b0cc4431a0",
+          "description": "Condo unit structure",
+          "cost_basis": "162500.00",
+          "placed_in_service_date": "2020-02-10",
+          "recovery_period_years": "27.5"
+        }
+      ]
+    }
+  ]
+}

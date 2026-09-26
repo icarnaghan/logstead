@@ -159,6 +159,26 @@ drafts and only become transactions after `POST /imports/{sessionId}/confirm`.
 | GET | `/dashboard` |
 | GET | `/dashboard/properties` |
 
+### Backup & data portability
+
+| Method | Path |
+| --- | --- |
+| GET | `/backup` |
+| POST | `/backup/restore` |
+| POST | `/backup/clear` |
+
+`GET /backup` returns a full JSON export of the caller's Schedule E data
+(properties, details, notes, usage years, transactions, assets), with money as
+two-decimal strings and a `schema_version` and `exported_at` on the document.
+`POST /backup/restore` validates the document first and only then performs a
+replace-all: it clears the user's existing data and rewrites the document,
+preserving original ids and timestamps; depreciation schedules are recomputed
+rather than trusted from the document. An invalid document returns `400` naming
+the offending field. `POST /backup/clear` removes all of the user's DynamoDB
+rows and their S3 binaries (property photos and transaction receipts). Restore
+and clear require the S3 bucket to be configured (`503` otherwise). All three
+routes are user-scoped and require auth.
+
 ## Schedule E mapping
 
 Reports map categorized transactions to IRS Schedule E lines: income on lines

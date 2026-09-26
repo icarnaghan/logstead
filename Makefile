@@ -88,7 +88,7 @@ build: clean-icloud clean-venv ## SAM build in a container (Docker required)
 
 .PHONY: deploy-infra
 deploy-infra: build ## Build + deploy the AWS stack (SAM)
-	cd $(INFRA) && sam deploy
+	cd $(INFRA) && sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
 
 .PHONY: deploy-spa
 deploy-spa: ## Build + publish the SPA and invalidate CloudFront

@@ -100,6 +100,7 @@ src/
                 PropertySection, navConfig, ProfileMenu, ThemeToggle
   theme/        ThemeProvider (light/dark/system) and theme context
   pages/        Routed page views (incl. PropertyDetailPage, ProfilePage)
+  data/         Bundled fixtures (e.g. sample-backup.json for "Load sample data")
   lib/          Shared helpers
   test/         Test setup and utilities
 ```
@@ -115,6 +116,10 @@ Notable frontend features:
   toggle, and offers Sign out.
 - **Property detail page.** `/properties/:propertyId` (`PropertyDetailPage`)
   shows the stored enrichment details for a property.
+- **Backup & restore.** A section on the Profile & settings page (`/profile`)
+  offers four flows: download a JSON backup, restore from a backup file, clear
+  all data, and load sample data. The bundled sample fixture lives at
+  `frontend/src/data/sample-backup.json`.
 
 ### Year-end Schedule E model
 

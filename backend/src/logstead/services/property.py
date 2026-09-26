@@ -67,7 +67,13 @@ if TYPE_CHECKING:
     from logstead.repository.dynamo_repo import DynamoRepository
 
 
-__all__ = ["PropertyService"]
+__all__ = [
+    "PropertyService",
+    "property_details_row",
+    "property_note_row",
+    "property_to_rows",
+    "property_usage_row",
+]
 
 
 def _now_iso() -> str:
@@ -78,6 +84,99 @@ def _now_iso() -> str:
 def _blank(value: str | None) -> bool:
     """True when a required text field is missing or whitespace-only."""
     return value is None or value.strip() == ""
+
+
+# --- Module-level item builders (importable, id/timestamp-preserving) --------
+#
+# These pure functions render a property (and its DETAILS / NOTE / USAGE child
+# rows) to their single-table item shapes. They depend only on their arguments
+# (never on service instance state), so a caller such as ``BackupService.restore``
+# can build the exact same items with a document-supplied id, timestamps, and
+# ``user_id`` rather than freshly generated ones. The service methods below
+# delegate to these builders so item shapes have a single source of truth.
+
+
+def property_to_rows(prop: Property) -> list[dict[str, object]]:
+    """Render a property as its two single-table rows (list row + META mirror).
+
+    Both rows carry identical GSI1 keys so a user's properties are reachable via
+    the reverse index as well as the base-table ``USER#`` partition. Ids,
+    timestamps, and ``user_id`` are taken verbatim from ``prop`` so a restore can
+    preserve the original values.
+    """
+    gsi1_pk, gsi1_sk = keys.gsi1_property_keys(prop.user_id, prop.id)
+    common = {
+        "id": prop.id,
+        "userId": prop.user_id,
+        "name": prop.name,
+        "addressText": prop.address_text,
+        "propertyType": prop.property_type,
+        "createdAt": prop.created_at,
+        "updatedAt": prop.updated_at,
+        "GSI1PK": gsi1_pk,
+        "GSI1SK": gsi1_sk,
+    }
+    list_row = {
+        "PK": keys.user_pk(prop.user_id),
+        "SK": keys.property_user_sk(prop.id),
+        **common,
+    }
+    meta_row = {
+        "PK": keys.property_scoped_pk(prop.id),
+        "SK": keys.property_meta_sk(),
+        **common,
+    }
+    return [list_row, meta_row]
+
+
+def property_details_row(
+    user_id: str, property_id: str, details: PropertyDetails
+) -> dict[str, object]:
+    """Render the ``PROPERTY#<id> / DETAILS`` row for a details object.
+
+    The whole sparse details tree is serialized into a single ``detailsJson``
+    string (money as two-decimal strings, lat/long full precision), so the
+    provider-driven field set needs no rigid table schema. ``userId`` is carried
+    so reads can enforce the same ownership scope as the META mirror.
+    """
+    return {
+        "PK": keys.property_scoped_pk(property_id),
+        "SK": keys.property_details_sk(),
+        "userId": user_id,
+        "propertyId": property_id,
+        "detailsJson": details_to_json(details),
+    }
+
+
+def property_note_row(
+    user_id: str, property_id: str, text: str, updated_at: str
+) -> dict[str, object]:
+    """Render the ``PROPERTY#<id> / NOTE`` row for a property's free-text note."""
+    return {
+        "PK": keys.property_scoped_pk(property_id),
+        "SK": keys.property_note_sk(),
+        "propertyId": property_id,
+        "userId": user_id,
+        "text": text,
+        "updatedAt": updated_at,
+    }
+
+
+def property_usage_row(
+    property_id: str,
+    tax_year: int,
+    fair_rental_days: int,
+    personal_use_days: int,
+) -> dict[str, object]:
+    """Render the ``PROPERTY#<id> / USAGE#<year>`` row for a usage-year record."""
+    return {
+        "PK": keys.property_scoped_pk(property_id),
+        "SK": keys.usage_sk(tax_year),
+        "propertyId": property_id,
+        "taxYear": tax_year,
+        "fairRentalDays": fair_rental_days,
+        "personalUseDays": personal_use_days,
+    }
 
 
 class PropertyService:
@@ -96,34 +195,12 @@ class PropertyService:
     # --- Serialization boundary ---------------------------------------------
 
     def _to_rows(self, prop: Property) -> list[dict[str, object]]:
-        """Render a property as its two single-table rows (list row + META mirror).
+        """Render a property as its two single-table rows (thin wrapper).
 
-        Both rows carry identical GSI1 keys so a user's properties are reachable
-        via the reverse index as well as the base-table ``USER#`` partition.
+        Delegates to the module-level :func:`property_to_rows` so the item shapes
+        have a single source of truth shared with the restore write path.
         """
-        gsi1_pk, gsi1_sk = keys.gsi1_property_keys(prop.user_id, prop.id)
-        common = {
-            "id": prop.id,
-            "userId": prop.user_id,
-            "name": prop.name,
-            "addressText": prop.address_text,
-            "propertyType": prop.property_type,
-            "createdAt": prop.created_at,
-            "updatedAt": prop.updated_at,
-            "GSI1PK": gsi1_pk,
-            "GSI1SK": gsi1_sk,
-        }
-        list_row = {
-            "PK": keys.user_pk(prop.user_id),
-            "SK": keys.property_user_sk(prop.id),
-            **common,
-        }
-        meta_row = {
-            "PK": keys.property_scoped_pk(prop.id),
-            "SK": keys.property_meta_sk(),
-            **common,
-        }
-        return [list_row, meta_row]
+        return property_to_rows(prop)
 
     @staticmethod
     def _from_item(item: dict[str, object]) -> Property:
@@ -149,21 +226,13 @@ class PropertyService:
     def _details_row(
         self, property_id: str, details: PropertyDetails
     ) -> dict[str, object]:
-        """Render the ``PROPERTY#<id> / DETAILS`` row for a details object.
+        """Render the ``PROPERTY#<id> / DETAILS`` row (thin wrapper).
 
-        The whole sparse details tree is serialized into a single ``detailsJson``
-        string (money as two-decimal strings, lat/long full precision), so the
-        provider-driven field set needs no rigid table schema. ``userId`` is
-        carried so ``get_details`` can enforce the same ownership scope as the
-        META mirror.
+        Delegates to the module-level :func:`property_details_row`, passing this
+        service's scoped ``user_id``, so the item shape has a single source of
+        truth shared with the restore write path.
         """
-        return {
-            "PK": keys.property_scoped_pk(property_id),
-            "SK": keys.property_details_sk(),
-            "userId": self._user_id,
-            "propertyId": property_id,
-            "detailsJson": details_to_json(details),
-        }
+        return property_details_row(self._user_id, property_id, details)
 
     def _owned_meta(self, property_id: str) -> dict[str, object] | None:
         """Return the property's META item iff it exists and this user owns it.
@@ -304,14 +373,7 @@ class PropertyService:
             return Result.failure("not_found", "Property not found.")
         clean = (text or "").strip()
         self._repo.put_item(
-            {
-                "PK": keys.property_scoped_pk(property_id),
-                "SK": keys.property_note_sk(),
-                "propertyId": property_id,
-                "userId": self._user_id,
-                "text": clean,
-                "updatedAt": _now_iso(),
-            }
+            property_note_row(self._user_id, property_id, clean, _now_iso())
         )
         return Result.success(clean)
 
@@ -439,14 +501,9 @@ class PropertyService:
             personal_use_days=personal_use_days,
         )
         self._repo.put_item(
-            {
-                "PK": keys.property_scoped_pk(property_id),
-                "SK": keys.usage_sk(tax_year),
-                "propertyId": property_id,
-                "taxYear": tax_year,
-                "fairRentalDays": fair_rental_days,
-                "personalUseDays": personal_use_days,
-            }
+            property_usage_row(
+                property_id, tax_year, fair_rental_days, personal_use_days
+            )
         )
         return Result.success(usage)
 

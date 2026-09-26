@@ -122,6 +122,11 @@ These rules hold across the whole system:
   `export_combined_report`).
 - **dashboard** - `DashboardService` builds portfolio and per-property summaries.
 - **category** - the Schedule E category catalog and seeding/listing.
+- **backup** - `BackupService` exports, restores, and clears a user's data. Restore
+  validates the document, then does a replace-all preserving original ids and
+  timestamps with depreciation schedules recomputed; clear also purges the user's
+  S3 binaries (photos + receipts). A pure `validate_document` checks a document
+  before any read/write.
 
 See [Data model](data-model.md) for entities and the DynamoDB key scheme, and
 [API reference](api.md) for the full route table.

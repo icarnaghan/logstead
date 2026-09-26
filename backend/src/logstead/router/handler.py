@@ -485,6 +485,15 @@ def _enrichment_service(wiring: _Wiring) -> Any:
     return AddressEnrichmentService(wiring.autocomplete, wiring.rentcast)
 
 
+def _backup_service(wiring: _Wiring, user: Any) -> Any:
+    from logstead.services.backup import BackupService
+
+    # Backup clear/restore purge and rewrite S3 binaries, so the S3 adapter is
+    # required: an unconfigured bucket surfaces the standard 503 here, just like
+    # the photo/receipt routes (design "Route surface + wiring").
+    return BackupService(wiring.repo, _require_files(wiring), user)
+
+
 # --- Input mapping helpers ---------------------------------------------------
 
 
@@ -904,6 +913,29 @@ def _dashboard_per_property(wiring, user, params, body, query) -> dict[str, Any]
     return _response(200, service.per_property_summary(tax_year))
 
 
+# -- Backup / restore / clear --
+
+def _export_backup(wiring, user, params, body, query) -> dict[str, Any]:
+    # Export reads everything the authenticated user owns and returns a
+    # BackupDocument dataclass; _to_jsonable renders it field-by-field with money
+    # as two-decimal strings (design "Router" / Requirement 1, 13.1).
+    service = _backup_service(wiring, user)
+    return _response(200, service.export())
+
+
+def _restore_backup(wiring, user, params, body, query) -> dict[str, Any]:
+    # The parsed JSON object body is the backup document. The service validates
+    # fully before any mutation; a validation failure maps to 400 with the
+    # offending field via _result_response (Requirements 3/4/5).
+    service = _backup_service(wiring, user)
+    return _result_response(service.restore(body))
+
+
+def _clear_backup(wiring, user, params, body, query) -> dict[str, Any]:
+    service = _backup_service(wiring, user)
+    return _result_response(service.clear())
+
+
 # --- Route table -------------------------------------------------------------
 #
 # Ordered (METHOD, path-template) -> handler. Path templates use {name} segments.
@@ -963,6 +995,10 @@ _ROUTES: tuple[tuple[str, str, _Handler, bool], ...] = (
     # Reports
     ("GET", "/properties/{propertyId}/report", _property_report, False),
     ("GET", "/reports/combined", _combined_report, False),
+    # Backup / restore / clear
+    ("GET", "/backup", _export_backup, False),
+    ("POST", "/backup/restore", _restore_backup, False),
+    ("POST", "/backup/clear", _clear_backup, False),
     # Dashboard
     ("GET", "/dashboard", _dashboard_portfolio, False),
     ("GET", "/dashboard/properties", _dashboard_per_property, False),

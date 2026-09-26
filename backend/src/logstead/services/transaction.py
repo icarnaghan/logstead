@@ -57,7 +57,14 @@ if TYPE_CHECKING:
     from logstead.repository.dynamo_repo import DynamoRepository
 
 
-__all__ = ["ReceiptUpload", "ReceiptWithUrl", "TransactionService"]
+__all__ = [
+    "ReceiptUpload",
+    "ReceiptWithUrl",
+    "TransactionService",
+    "category_by_id",
+    "transaction_to_item",
+    "document_to_item",
+]
 
 # The document-row marker inside a transaction's sort key namespace. Receipt
 # rows live under ``TXN#<invDate>#<txnId>#DOC#<docId>``; base-table transaction
@@ -158,7 +165,7 @@ class TransactionService:
             created_at=now,
             updated_at=now,
         )
-        self._repo.put_item(_to_item(txn, parsed))
+        self._repo.put_item(transaction_to_item(txn, parsed))
         return Result.success(txn)
 
     # --- Read one ------------------------------------------------------------
@@ -250,7 +257,7 @@ class TransactionService:
             description=_clean_description(data.description),
             updated_at=_now_iso(),
         )
-        new_item = _to_item(updated, new_parsed)
+        new_item = transaction_to_item(updated, new_parsed)
         new_sk = new_item["SK"]
 
         if new_sk == old_sk:
@@ -343,7 +350,7 @@ class TransactionService:
             original_filename=clean_name,
             uploaded_at=_now_iso(),
         )
-        self._repo.put_item(_document_to_item(document, txn.date))
+        self._repo.put_item(document_to_item(document, txn.date))
         upload_url = self._files.presigned_put_url(s3_key, clean_type)
         return Result.success(
             ReceiptUpload(upload_url=upload_url, document=document)
@@ -535,8 +542,14 @@ def _clean_description(description: str | None) -> str | None:
 # GSI2 tax-year keys so tax-year queries work. ``amount`` is a default money
 # attribute (stored as a two-decimal string by the repository).
 
-def _to_item(txn: Transaction, txn_date: date) -> dict[str, Any]:
-    """Render a :class:`Transaction` as its DynamoDB item (with GSI2 keys)."""
+def transaction_to_item(txn: Transaction, txn_date: date) -> dict[str, Any]:
+    """Render a :class:`Transaction` as its DynamoDB item (with GSI2 keys).
+
+    A module-level pure function of the transaction plus its parsed date: it
+    emits the base-table inverted-date sort key **and** the GSI2 tax-year keys.
+    Ids and timestamps are taken verbatim from ``txn`` so a restore can preserve
+    the original values rather than generating fresh ones.
+    """
     return {
         "PK": keys.property_scoped_pk(txn.property_id),
         "SK": keys.transaction_sk(txn_date, txn.id),
@@ -577,7 +590,7 @@ def _from_item(item: dict[str, Any]) -> Transaction:
     )
 
 
-def _document_to_item(document: Document, txn_date_str: str) -> dict[str, Any]:
+def document_to_item(document: Document, txn_date_str: str) -> dict[str, Any]:
     """Render a receipt :class:`Document` as its DynamoDB item.
 
     Co-located under its transaction: ``SK=TXN#<invDate>#<txnId>#DOC#<docId>``.

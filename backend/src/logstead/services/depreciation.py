@@ -74,7 +74,12 @@ from logstead.repository import keys
 from logstead.repository.dynamo_repo import DynamoRepository
 from logstead.util.money import Money, to_money
 
-__all__ = ["DepreciationService", "compute_schedule_rows"]
+__all__ = [
+    "DepreciationService",
+    "asset_to_item",
+    "compute_schedule_rows",
+    "schedule_row_to_item",
+]
 
 # Only the cost basis is money for asset items. The recovery period is a plain
 # Decimal period (e.g. 27.5, 5, 39) and must not be money-quantized, so every
@@ -199,6 +204,63 @@ def compute_schedule_rows(asset: DepreciableAsset) -> list[DepreciationScheduleR
     return rows
 
 
+# --- Module-level item builders (importable, id/timestamp-preserving) --------
+#
+# These pure functions render an asset / schedule row to its single-table item
+# shape. They depend only on the model fields (never on service instance state),
+# so a caller such as ``BackupService.restore`` can build the exact same items
+# with a caller-supplied id and timestamps rather than freshly generated ones.
+# The service methods below delegate to these builders so item shapes have a
+# single source of truth.
+
+
+def asset_to_item(asset: DepreciableAsset) -> dict[str, Any]:
+    """Render an asset as its DynamoDB item (design camelCase attributes).
+
+    ``costBasis`` is left as a ``Decimal`` for the repository's money serializer
+    to render as a two-decimal string (write with ``money_attrs={"costBasis"}``).
+    ``recoveryPeriodYears`` is stored as a plain ``Decimal`` string (not money)
+    so periods keep their natural precision. Ids and timestamps are taken
+    verbatim from ``asset`` so a restore can preserve the original values.
+    """
+    return {
+        "PK": keys.property_scoped_pk(asset.property_id),
+        "SK": keys.asset_sk(asset.id),
+        "id": asset.id,
+        "propertyId": asset.property_id,
+        "description": asset.description,
+        "costBasis": asset.cost_basis,
+        "placedInServiceDate": asset.placed_in_service_date,
+        "recoveryPeriodYears": str(asset.recovery_period_years),
+        "createdAt": asset.created_at,
+        "updatedAt": asset.updated_at,
+    }
+
+
+def schedule_row_to_item(row: DepreciationScheduleRow) -> dict[str, Any]:
+    """Render one depreciation schedule row as its DynamoDB item.
+
+    Schedule rows live under the owning property's partition, keyed
+    ``ASSET#<assetId>#SCHED#<taxYear>``, and carry a GSI2 tax-year partition
+    (``PROPERTY#<id>#YEAR#<taxYear>`` / ``SCHED#<assetId>``) so a property's
+    per-year depreciation can be read with a single GSI2 query. Write with
+    ``money_attrs={"amount", "remainingBasis"}``.
+    """
+    return {
+        "PK": keys.property_scoped_pk(row.property_id),
+        "SK": keys.schedule_row_sk(row.asset_id, row.tax_year),
+        "GSI2PK": keys.gsi2_year_pk(row.property_id, row.tax_year),
+        "GSI2SK": keys.gsi2_schedule_sk(row.asset_id),
+        "assetId": row.asset_id,
+        "propertyId": row.property_id,
+        "taxYear": row.tax_year,
+        "amount": row.amount,
+        "remainingBasis": row.remaining_basis,
+        "method": row.method,
+        "convention": row.convention,
+    }
+
+
 class DepreciationService:
     """CRUD + schedule engine for depreciable assets under a property (Reqs 8, 9).
 
@@ -214,25 +276,12 @@ class DepreciationService:
     # --- Serialization boundary ---------------------------------------------
 
     def _to_item(self, asset: DepreciableAsset) -> dict[str, Any]:
-        """Render an asset as its DynamoDB item (design camelCase attributes).
+        """Render an asset as its DynamoDB item (thin wrapper over the builder).
 
-        ``costBasis`` is left as a ``Decimal`` for the repository's money
-        serializer to render as a two-decimal string. ``recoveryPeriodYears``
-        is stored as a plain ``Decimal`` string (not money) so periods keep
-        their natural precision.
+        Delegates to the module-level :func:`asset_to_item` so the item shape
+        has a single source of truth shared with the restore write path.
         """
-        return {
-            "PK": keys.property_scoped_pk(asset.property_id),
-            "SK": keys.asset_sk(asset.id),
-            "id": asset.id,
-            "propertyId": asset.property_id,
-            "description": asset.description,
-            "costBasis": asset.cost_basis,
-            "placedInServiceDate": asset.placed_in_service_date,
-            "recoveryPeriodYears": str(asset.recovery_period_years),
-            "createdAt": asset.created_at,
-            "updatedAt": asset.updated_at,
-        }
+        return asset_to_item(asset)
 
     def _from_item(self, item: dict[str, Any]) -> DepreciableAsset:
         """Reconstruct an asset from a stored item.
@@ -359,26 +408,12 @@ class DepreciationService:
     # --- Schedule-row storage helpers ---------------------------------------
 
     def _schedule_row_item(self, row: DepreciationScheduleRow) -> dict[str, Any]:
-        """Render one schedule row as its DynamoDB item.
+        """Render one schedule row as its DynamoDB item (thin wrapper).
 
-        Schedule rows live under the owning property's partition, keyed
-        ``ASSET#<assetId>#SCHED#<taxYear>``, and carry a GSI2 tax-year partition
-        (``PROPERTY#<id>#YEAR#<taxYear>`` / ``SCHED#<assetId>``) so a property's
-        per-year depreciation can be read with a single GSI2 query.
+        Delegates to the module-level :func:`schedule_row_to_item` so the item
+        shape has a single source of truth shared with the restore write path.
         """
-        return {
-            "PK": keys.property_scoped_pk(row.property_id),
-            "SK": keys.schedule_row_sk(row.asset_id, row.tax_year),
-            "GSI2PK": keys.gsi2_year_pk(row.property_id, row.tax_year),
-            "GSI2SK": keys.gsi2_schedule_sk(row.asset_id),
-            "assetId": row.asset_id,
-            "propertyId": row.property_id,
-            "taxYear": row.tax_year,
-            "amount": row.amount,
-            "remainingBasis": row.remaining_basis,
-            "method": row.method,
-            "convention": row.convention,
-        }
+        return schedule_row_to_item(row)
 
     def _schedule_row_from_item(
         self, item: dict[str, Any]

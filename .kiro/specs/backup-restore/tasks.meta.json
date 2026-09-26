@@ -1,0 +1,496 @@
+{
+  "pbtResults": {
+    "1.4 Property test: invalid-in-exactly-one-way documents are rejected without mutation": {
+      "status": "passed",
+      "lastRunTimestamp": 1790446459501
+    }
+  },
+  "executionHistory": {
+    "1.1 Define typed backup structures and schema version": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446177899
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446186874
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790447523587
+      }
+    ],
+    "1.2 Implement pure `validate_document(raw) -> Result[BackupDocument]`": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446177980
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790447524988
+      }
+    ],
+    "2.1 Promote/confirm module-level builders for restore reuse": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178017
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446187901
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790447525925
+      }
+    ],
+    "3.1 Implement `BackupService.__init__` and `export()`": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178056
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790447548761
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790448395138
+      }
+    ],
+    "4.1 Implement `clear()`": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178110
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790448614382
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450238476
+      }
+    ],
+    "5.1 Implement `restore(raw_document)`": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178201
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450243116
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450849161
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454123245
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454826593
+      }
+    ],
+    "7. Backend checkpoint — service layer green": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178234
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450854798
+      }
+    ],
+    "8.1 Add routes, `_backup_service` constructor, and thin handlers": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178273
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450855641
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790451480743
+      }
+    ],
+    "9. Backend checkpoint — routes green": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178315
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790451481233
+      }
+    ],
+    "10.1 Implement `frontend/src/api/backup.ts`": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178352
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790447550960
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790448395887
+      }
+    ],
+    "11.1 Create `frontend/src/data/sample-backup.json`": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178390
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790447550179
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790448592381
+      }
+    ],
+    "12.1 Add the Backup & restore section with all four flows": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178429
+      },
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790448615379
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450239141
+      }
+    ],
+    "13. Final checkpoint — full suite + build": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790446178486
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790451487986
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452153496
+      }
+    ],
+    "1. Backup document model + pure validation": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790447525038
+      }
+    ],
+    "2. Promote reusable id/timestamp-accepting item-mapping builders": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790447525964
+      }
+    ],
+    "3. BackupService.export": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790448395236
+      }
+    ],
+    "10. Frontend API module": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790448395930
+      }
+    ],
+    "11. Sample fixture": [
+      {
+        "executionId": "1fa28f00-e796-4fe7-a152-fa7c29d190b4",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790448592445
+      }
+    ],
+    "4. BackupService.clear": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450238518
+      }
+    ],
+    "12. ProfilePage Backup & restore section": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450239242
+      }
+    ],
+    "5. BackupService.restore": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790450849223
+      }
+    ],
+    "8. Routes + wiring": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790451480821
+      }
+    ],
+    "1.3 Unit tests for each validation rule": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452260106
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452373365
+      }
+    ],
+    "1.4 Property test: invalid-in-exactly-one-way documents are rejected without mutation": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452261335
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452374274
+      }
+    ],
+    "10.2 Unit tests for `api/backup.ts`": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452262292
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452375638
+      }
+    ],
+    "10.3 Property test: money fields never coerced to number": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452263688
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452376601
+      }
+    ],
+    "11.2 Unit test: fixture is a structurally valid BackupDocument": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452264659
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452378031
+      }
+    ],
+    "3.2 moto unit/example tests for export": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452379215
+      }
+    ],
+    "4.2 Property test: clear empties the user's store": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452387745
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454833817
+      }
+    ],
+    "5.2 Property test: restore is replace-all with no leftovers": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452388746
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454827947
+      }
+    ],
+    "6.1 Property test: backup round-trip preserves ids, timestamps, money, coordinates, structure": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452390148
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454838811
+      }
+    ],
+    "8.2 Handler/integration tests": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452391545
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454841380
+      }
+    ],
+    "12.2 RTL + vitest-axe tests for the four flows": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790452392307
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454842091
+      }
+    ],
+    "5.4 Property test: mid-restore failure after clear surfaces a retryable error": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454604205
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454830346
+      }
+    ],
+    "5.3 Property test: restore recomputes each asset's depreciation schedule": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454828899
+      }
+    ],
+    "5.5 Property test: restore batches documents exceeding the atomic-write cap": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454831737
+      }
+    ],
+    "5.6 Example test: empty-document restore": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454832761
+      }
+    ],
+    "4.3 Property test: clear removes every S3 binary with its metadata row": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454835065
+      }
+    ],
+    "4.4 Property test: clear continues past S3 delete failures and reports them": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454836492
+      }
+    ],
+    "4.5 Example tests for clear ordering": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454837448
+      }
+    ],
+    "6. Round-trip property test (export → restore → re-export)": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454838872
+      }
+    ],
+    "8.3 Sample-fixture backend acceptance test": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454841407
+      }
+    ],
+    "2.2 Keep existing service tests green after promotion": [
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454843118
+      },
+      {
+        "executionId": "b12739e9-1df3-4aac-b01e-630379496144",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1790454913758
+      }
+    ]
+  }
+}

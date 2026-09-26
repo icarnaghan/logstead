@@ -110,3 +110,17 @@ The reporting service (`ReportingService`) builds per-property
 (`export_report`, `export_combined_report`, returning a `ReportExport`). The
 depreciation service computes schedule rows with `compute_schedule_rows`
 (straight-line, mid-month convention).
+
+## Backup documents
+
+A backup is a versioned JSON document (`schema_version` `"1"`, plus an
+`exported_at` timestamp) holding a sparse per-property tree - each property
+carries only what it has (details, note, usage years, transactions, assets).
+Money is written as two-decimal strings, consistent with the rest of the system.
+
+The document deliberately **excludes** photo/receipt metadata, import sessions,
+PDF drafts, the category catalog, and depreciation schedule rows - schedules are
+recomputed on restore rather than trusted from the document. Restore preserves
+original ids and timestamps, so a restored dataset is indistinguishable from one
+that was hand-entered. See `backend/src/logstead/models/backup.py` and
+`backend/src/logstead/services/backup.py`.
