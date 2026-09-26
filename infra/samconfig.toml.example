@@ -1,0 +1,37 @@
+# SAM CLI configuration template for Logstead.
+#
+# Copy this file to `samconfig.toml` and fill in your own values.
+# `samconfig.toml` is gitignored because it holds account-specific values
+# (AWS account ID, ACM certificate ARN, custom domain). Run sam commands from
+# this directory (infra/) so the config is picked up.
+version = 0.1
+
+[default.global.parameters]
+stack_name = "logstead"
+region = "us-east-1"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.deploy.parameters]
+stack_name = "logstead"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+# RentCastApiKeyParam is the NAME of an SSM SecureString parameter (not the
+# secret itself); the Lambda reads and decrypts it at runtime.
+#
+# For a default deployment WITHOUT a custom domain, drop the domain/cert
+# overrides and set UseCustomDomain="false":
+#   parameter_overrides = "UseCustomDomain=\"false\" RentCastApiKeyParam=\"/logstead/rentcast-api-key\""
+#
+# For a custom domain, supply your own values:
+parameter_overrides = "DomainName=\"app.example.com\" UseCustomDomain=\"true\" CertificateArn=\"<CERT_ARN>\" CognitoDomainPrefix=\"<COGNITO_PREFIX>\" RentCastApiKeyParam=\"/logstead/rentcast-api-key\""
+
+[default.sync.parameters]
+stack_name = "logstead"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+watch = true

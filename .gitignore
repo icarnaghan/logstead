@@ -1,25 +1,43 @@
-
-# Root .gitignore
-.env
-.DS_Store
-*.log
-sbom.xml
-*.pyc
-*.pyo
-*.pyd
+# Python
 __pycache__/
-node_modules/
-build/
-*.env.*
-*.local
-*.swp
-*.swo
-*.bak
-*.tmp
-/.vscode/
-/.idea/
-*.iml
-coverage/
-dist/
+*.py[cod]
 *.egg-info/
-poetry.lock
+.eggs/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.vite/
+*.local
+
+# Secrets and environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+aws.json
+credentials
+
+# AWS SAM
+.aws-sam/
+# Account-specific SAM config (account ID, cert ARN, domain). Use the checked-in
+# infra/samconfig.toml.example as a template.
+infra/samconfig.toml
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/

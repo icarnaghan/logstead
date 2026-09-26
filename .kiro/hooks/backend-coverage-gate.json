@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Backend Coverage Gate",
+      "trigger": "PostTaskExec",
+      "action": {
+        "type": "command",
+        "command": "if [ -d backend ] && { [ -f backend/pyproject.toml ] || [ -f backend/requirements.txt ]; }; then cd backend && python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80; else echo 'Backend test suite not set up yet; skipping coverage gate.'; fi"
+      }
+    }
+  ]
+}

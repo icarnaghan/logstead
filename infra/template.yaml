@@ -1,0 +1,502 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Logstead - serverless Schedule E rental tax app. Provisions the DynamoDB
+  single table (GSI1/GSI2), the S3 file bucket, the SPA bucket + CloudFront
+  distribution, the Cognito User Pool + Hosted UI, and the API Gateway HTTP API
+  with a native Cognito JWT authorizer fronting a single Python 3.12 Lambda.
+
+Metadata:
+  AWSToolsMetrics:
+    AWSAgentToolkit: aws-cloudformation@3
+  com.aws.cloudformation.Context:
+    why: >-
+      Single-user Schedule E rental tax app. Stateful resources hold
+      irreplaceable financial records, so the DynamoDB table and the S3 files
+      bucket are retained on stack/resource delete.
+    must:
+      - The DynamoDB table name is hard-coded "Logstead" because
+        backend/src/logstead/repository/keys.py and the seeded category catalog
+        depend on that exact name; it must not be parameterised.
+      - The RentCast API key is a secret and must never be stored in a plain
+        template parameter or Lambda env var; it lives in an SSM SecureString
+        parameter read at runtime.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: ""
+    Description: >
+      Custom domain for the SPA (CloudFront alias and Cognito callback host).
+      Leave blank unless UseCustomDomain=true. Set your value in samconfig.toml
+      (see samconfig.toml.example).
+  CertificateArn:
+    Type: String
+    Default: ""
+    Description: >
+      ARN of an ACM certificate in us-east-1 covering DomainName. Required for
+      the CloudFront custom domain. Leave blank to deploy CloudFront on its
+      default *.cloudfront.net domain (set UseCustomDomain=false).
+  UseCustomDomain:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: Attach DomainName + CertificateArn to CloudFront. Requires CertificateArn.
+  CognitoDomainPrefix:
+    Type: String
+    Default: logstead-auth
+    Description: Globally-unique prefix for the Cognito Hosted UI domain.
+  RentCastApiKeyParam:
+    Type: String
+    Default: ""
+    Description: >
+      Name of an SSM Parameter Store SecureString holding the RentCast API key
+      (e.g. /logstead/rentcast-api-key). The secret itself is never stored in
+      this template or the Lambda env; the function reads it at runtime with
+      decryption. Leave blank to run without enrichment (routes 503).
+
+Conditions:
+  HasCustomDomain: !Equals [!Ref UseCustomDomain, "true"]
+  HasRentCastParam: !Not [!Equals [!Ref RentCastApiKeyParam, ""]]
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.12
+    Tracing: Active  # X-Ray active tracing (observability)
+
+Resources:
+
+  # --- DynamoDB single table -------------------------------------------------
+  LogsteadTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: Holds all durable app data (properties, transactions, assets, reports).
+        must:
+          - TableName is fixed "Logstead"; keys.py and seeded data depend on it.
+          - Retained on delete so tax records are never lost with the stack.
+    Properties:
+      TableName: Logstead
+      DeletionProtectionEnabled: true
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: GSI1PK
+          AttributeType: S
+        - AttributeName: GSI1SK
+          AttributeType: S
+        - AttributeName: GSI2PK
+          AttributeType: S
+        - AttributeName: GSI2SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: GSI1
+          KeySchema:
+            - AttributeName: GSI1PK
+              KeyType: HASH
+            - AttributeName: GSI1SK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: GSI2
+          KeySchema:
+            - AttributeName: GSI2PK
+              KeyType: HASH
+            - AttributeName: GSI2SK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  # --- S3: file bucket (photos, receipts, uploaded PDFs, exports) ------------
+  FilesBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: Stores property photos, receipts, uploaded PDFs, and exports.
+        must:
+          - Retained on delete so uploaded tax documents are never lost.
+    Properties:
+      BucketName: !Sub "logstead-files-${AWS::AccountId}-${AWS::Region}"
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods: [GET, PUT, POST, HEAD]
+            AllowedOrigins:
+              - !If [HasCustomDomain, !Sub "https://${DomainName}", "*"]
+            AllowedHeaders: ["*"]
+            ExposedHeaders: [ETag]
+            MaxAge: 3000
+      LifecycleConfiguration:
+        Rules:
+          - Id: AbortIncompleteMultipartUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+          - Id: ExpireExports
+            Status: Enabled
+            Prefix: exports/
+            ExpirationInDays: 30
+
+  FilesBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FilesBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt FilesBucket.Arn
+              - !Sub "${FilesBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
+  # --- S3: SPA static asset bucket -------------------------------------------
+  SpaBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "logstead-spa-${AWS::AccountId}-${AWS::Region}"
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  SpaBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SpaBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontOAC
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${SpaBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${SpaDistribution}"
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt SpaBucket.Arn
+              - !Sub "${SpaBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
+  # --- CloudFront in front of the SPA bucket ---------------------------------
+  SpaOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "logstead-spa-oac-${AWS::Region}"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  SpaDistribution:
+    Type: AWS::CloudFront::Distribution
+    Metadata:
+      # CertificateArn is only referenced when UseCustomDomain=true, when the
+      # user supplies a real ACM ARN. The linter cannot see the condition, so
+      # it flags the empty default; suppress that specific rule here.
+      cfn-lint:
+        config:
+          ignore_checks:
+            - W1030
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Aliases: !If [HasCustomDomain, [!Ref DomainName], !Ref "AWS::NoValue"]
+        ViewerCertificate: !If
+          - HasCustomDomain
+          - AcmCertificateArn: !Ref CertificateArn
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
+          - CloudFrontDefaultCertificate: true
+        Origins:
+          - Id: SpaS3Origin
+            DomainName: !GetAtt SpaBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !Ref SpaOriginAccessControl
+        DefaultCacheBehavior:
+          TargetOriginId: SpaS3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+  # --- Cognito User Pool + Hosted UI -----------------------------------------
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: logstead-users
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true  # single-user app; no public sign-up
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 12
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref CognitoDomainPrefix
+      UserPoolId: !Ref UserPool
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientName: logstead-spa
+      GenerateSecret: false  # public SPA client (Authorization Code + PKCE)
+      AllowedOAuthFlows: [code]
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes: [openid, email, profile]
+      SupportedIdentityProviders: [COGNITO]
+      # Always register the CloudFront origin (the SPA host when there is no
+      # custom domain) and localhost for dev. When a custom domain is enabled,
+      # register it too. Cognito rejects any redirect_uri not in these lists.
+      CallbackURLs:
+        - !Sub "https://${SpaDistribution.DomainName}/auth/callback"
+        - "http://localhost:5173/auth/callback"
+        - !If [HasCustomDomain, !Sub "https://${DomainName}/auth/callback", !Ref "AWS::NoValue"]
+      LogoutURLs:
+        - !Sub "https://${SpaDistribution.DomainName}/"
+        - "http://localhost:5173/"
+        - !If [HasCustomDomain, !Sub "https://${DomainName}/", !Ref "AWS::NoValue"]
+
+  # --- API Gateway HTTP API with native Cognito JWT authorizer ---------------
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      LogGroupName: /logstead/http-api/access
+      RetentionInDays: 90
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiAccessLogGroup.Arn
+        Format: >-
+          {"requestId":"$context.requestId","ip":"$context.identity.sourceIp","method":"$context.httpMethod","path":"$context.path","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength","integrationError":"$context.integrationErrorMessage"}
+      CorsConfiguration:
+        AllowOrigins:
+          - !If [HasCustomDomain, !Sub "https://${DomainName}", "http://localhost:5173"]
+        AllowHeaders: [authorization, content-type]
+        AllowMethods: [GET, POST, PUT, DELETE, OPTIONS]
+      Auth:
+        Authorizers:
+          CognitoJwt:
+            IdentitySource: "$request.header.Authorization"
+            JwtConfiguration:
+              issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}"
+              audience:
+                - !Ref UserPoolClient
+        DefaultAuthorizer: CognitoJwt
+
+  # --- API Lambda (single monolithic function) -------------------------------
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      # The backend uses a src/ layout (pyproject: packages.find where=["src"]),
+      # so the default Python builder would leave the package under src/ and the
+      # handler import would fail. A makefile build pip-installs the package so
+      # logstead/ lands at the artifact root alongside its dependencies.
+      BuildMethod: makefile
+    Properties:
+      FunctionName: logstead-api
+      CodeUri: ../backend/
+      Handler: logstead.router.handler.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref LogsteadTable
+          FILES_BUCKET: !Ref FilesBucket
+          # Only the SSM parameter NAME is passed; the Lambda reads the secret
+          # value at runtime with decryption (never plaintext in the env).
+          RENTCAST_API_KEY_PARAM: !Ref RentCastApiKeyParam
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LogsteadTable
+        - S3CrudPolicy:
+            BucketName: !Ref FilesBucket
+        # Address autocomplete uses Amazon Location Service (geo-places), called
+        # with the Lambda's IAM role (SigV4) - no API key. geo-places is a
+        # resource-less API, so the action is granted on "*".
+        - Statement:
+            - Effect: Allow
+              Action:
+                - geo-places:Autocomplete
+                - geo-places:Geocode
+              Resource: "*"
+        # Read the RentCast API key from its SSM SecureString parameter (only
+        # granted when a parameter name is configured). SSM decrypts with the
+        # account's default SSM KMS key, so no explicit kms:Decrypt is needed.
+        - !If
+          - HasRentCastParam
+          - Statement:
+              - Effect: Allow
+                Action: ssm:GetParameter
+                Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${RentCastApiKeyParam}"
+          - !Ref "AWS::NoValue"
+      Events:
+        # Public reference data - no authorizer.
+        Categories:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /categories
+            Auth:
+              Authorizer: NONE
+        # All other routes fall through to this catch-all under the default
+        # Cognito JWT authorizer. The in-Lambda router matches the exact path.
+        ProxyAny:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: ANY
+            Path: /{proxy+}
+        # CORS preflight: browsers send OPTIONS with no Authorization header, so
+        # it must NOT be behind the JWT authorizer. Without this explicit route,
+        # the ANY /{proxy+} route above catches OPTIONS and the authorizer 401s
+        # the preflight, which the browser reports as a CORS failure. API Gateway
+        # auto-CORS answers this route from the CorsConfiguration.
+        CorsPreflight:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: OPTIONS
+            Path: /{proxy+}
+            Auth:
+              Authorizer: NONE
+
+  # --- Observability alarms --------------------------------------------------
+  LambdaErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-api-lambda-errors
+      AlarmDescription: The API Lambda reported function errors.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ApiFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+  LambdaThrottlesAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-api-lambda-throttles
+      AlarmDescription: The API Lambda is being throttled.
+      Namespace: AWS/Lambda
+      MetricName: Throttles
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ApiFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+  Api5xxAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-http-api-5xx
+      AlarmDescription: The HTTP API returned 5xx responses.
+      Namespace: AWS/ApiGateway
+      MetricName: 5xx
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref HttpApi
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+Outputs:
+  ApiBaseUrl:
+    Description: Base URL for VITE_API_BASE_URL.
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+  CloudFrontDomain:
+    Description: CloudFront distribution domain (SPA host if no custom domain).
+    Value: !GetAtt SpaDistribution.DomainName
+  SpaBucketName:
+    Description: Upload the built SPA (frontend/dist) here.
+    Value: !Ref SpaBucket
+  FilesBucketName:
+    Value: !Ref FilesBucket
+  UserPoolId:
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Description: VITE_COGNITO_CLIENT_ID.
+    Value: !Ref UserPoolClient
+  CognitoHostedUiDomain:
+    Description: VITE_COGNITO_DOMAIN (Hosted UI base).
+    Value: !Sub "https://${CognitoDomainPrefix}.auth.${AWS::Region}.amazoncognito.com"

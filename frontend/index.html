@@ -2,9 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>Logstead</title>
+    <script>
+      // Apply the persisted (or system) theme before paint to avoid a flash.
+      (function () {
+        try {
+          var pref = localStorage.getItem("logstead.theme");
+          var dark =
+            pref === "dark" ||
+            (pref !== "light" &&
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

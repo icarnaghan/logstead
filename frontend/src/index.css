@@ -1,68 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Semantic color tokens. Values are space-separated RGB channels so Tailwind's
+ * `rgb(var(--token) / <alpha-value>)` can apply opacity. Light theme is the
+ * default on :root; the `.dark` class (set on <html> by the ThemeProvider)
+ * overrides them. A Monarch-style palette: soft neutral canvas, clean white
+ * surfaces, and a refined indigo accent.
+ */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --color-canvas: 248 250 252;
+  --color-surface: 255 255 255;
+  --color-surface-muted: 241 245 249;
+  --color-border: 226 232 240;
+  --color-fg: 15 23 42;
+  --color-fg-muted: 71 85 105;
+  --color-fg-subtle: 148 163 184;
+  --color-accent: 79 70 229;
+  --color-accent-hover: 67 56 202;
+  --color-accent-fg: 255 255 255;
+  --color-accent-subtle: 238 242 255;
+  --color-success: 21 128 61;
+  --color-success-subtle: 240 253 244;
+  --color-danger: 185 28 28;
+  --color-danger-subtle: 254 242 242;
+  --color-warning: 146 64 14;
+  --color-warning-subtle: 255 251 235;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  color-scheme: light;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+.dark {
+  --color-canvas: 15 23 42;
+  --color-surface: 30 41 59;
+  --color-surface-muted: 51 65 85;
+  --color-border: 51 65 85;
+  --color-fg: 241 245 249;
+  --color-fg-muted: 148 163 184;
+  --color-fg-subtle: 100 116 139;
+  --color-accent: 129 140 248;
+  --color-accent-hover: 165 180 252;
+  --color-accent-fg: 15 23 42;
+  --color-accent-subtle: 30 27 75;
+  --color-success: 74 222 128;
+  --color-success-subtle: 20 41 33;
+  --color-danger: 248 113 113;
+  --color-danger-subtle: 51 24 24;
+  --color-warning: 251 191 36;
+  --color-warning-subtle: 48 39 17;
+
+  color-scheme: dark;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+@layer base {
+  html {
+    background-color: rgb(var(--color-canvas));
+    color: rgb(var(--color-fg));
   }
 }

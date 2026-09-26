@@ -1,29 +1,39 @@
-[[tool.poetry.packages]]
-include = "app"
-[tool.poetry]
-name = "logstead-backend"
-version = "0.1.0"
-description = "Logstead FastAPI backend"
-authors = ["Your Name <you@example.com>"]
-
-
-[tool.poetry.dependencies]
-python = ">=3.13"
-fastapi = "*"
-uvicorn = {extras = ["standard"], version = "*"}
-greenlet = "^3.2.4"
-sqlalchemy = "^2.0.43"
-asyncpg = "^0.30.0"
-alembic = "^1.16.4"
-
-
-[tool.poetry.dev-dependencies]
-flake8 = "*"
-pytest = "*"
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^4.3.0"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "logstead"
+version = "0.1.0"
+description = "Logstead backend: a single monolithic Python 3.12 Lambda for Schedule E rental tax preparation."
+requires-python = ">=3.12"
+dependencies = [
+    "boto3",
+    "pdfplumber",
+    "pypdf",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "hypothesis",
+    "moto",
+    "pytest-xdist",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+# Discover tests in the source tree (co-located `*.test`-style) and a top-level
+# tests/ directory. Source lives under src/ so it is importable in tests.
+testpaths = ["tests", "src"]
+pythonpath = ["src"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra"
+
+[tool.hypothesis]
+# Hypothesis reads profiles registered in code; this section documents intent.
+# The default profile (see tests/conftest.py) runs a minimum of 100 examples.

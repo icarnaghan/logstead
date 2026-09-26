@@ -1,66 +1,115 @@
 # Logstead
 
-Logstead is a property and equipment tracking application for homeowners and property investors. It helps manage maintenance, repairs, and service records for multiple properties.
+Logstead is a single-user, single-LLC web application for preparing an IRS
+**Schedule E (Form 1040)** rental tax return. It captures **year-end Schedule E
+totals** and their supporting documents, computes straight-line depreciation
+schedules, enriches property data from RentCast (persisted and shown on a
+property detail page), and produces per-property and combined Schedule E
+reports.
 
-## Monorepo Structure
-- `frontend/` — React 19 + Vite app
-- `backend/` — FastAPI backend (all code in `backend/app/`, Poetry-managed venv in `backend/.venv`)
-- `docker-compose.yml` — Orchestrates all services from the project root
+You record one entry per Schedule E line per tax year (the transaction form
+defaults new entries to Dec 31 of the selected year) and attach the year-end
+statement PDF as evidence under each entry's "supporting documents". A PDF
+expense-import flow exists in the backend but is not currently surfaced in the
+UI.
 
-## Features
-- Property portfolio dashboard
-- Equipment/appliance tracking (age, model, warranty, service history)
-- Maintenance log and reminders
-- Document upload (receipts, manuals, warranties)
-- Smart notifications for recurring maintenance
-- API integrations (e.g., Zillow)
-- Keycloak authentication (planned)
-- AI features (LangChain, planned)
-- Queueing system (RabbitMQ/Kafka, planned)
-- Observability stack (Prometheus, Grafana, Loki)
+It is built as a **serverless AWS application**:
 
-## Tech Stack
-- Frontend: React 19 (with Vite, TypeScript)
-- Backend: FastAPI (Python, Poetry)
-- Auth: Keycloak
-- CI/CD: GitLab CI
-- Containerization: Docker, Kubernetes (K3s/EKS)
-- Infrastructure as Code: Terraform/Pulumi
+- **Frontend** - a React + Vite + TypeScript single-page app (Tailwind CSS +
+  Radix UI), hosted as static assets (S3 + CloudFront). It has Monarch-style
+  theming with light/dark/system modes, a profile menu (signed-in email,
+  Profile & settings, Sign out), and a per-property detail page showing stored
+  enrichment.
+- **Backend** - a single monolithic Python 3.12 AWS Lambda behind an API
+  Gateway HTTP API with a Cognito JWT authorizer, over a single-table DynamoDB
+  design, with binary files (photos, receipts, uploaded PDFs, exported reports)
+  in S3.
 
-## Local Development
-- Use Docker Compose or K3s for local orchestration
-- See `docker-compose.yml` for service definitions
+> Scope: the initial release is deliberately narrow - everything needed to
+> prepare the federal Schedule E for the rental activity, and nothing more.
 
-### Frontend (React 19 + Vite)
+## Repository layout
 
-#### Run locally (development, hot reload):
+```
+logstead/
+  backend/            Python 3.12 Lambda: services, repository, adapters, router
+    src/logstead/     Application package (router, services, repository, adapters, models, util)
+    tests/            pytest + Hypothesis + moto (unit, property, integration)
+    pyproject.toml    Package + pytest/hypothesis config
+    requirements*.txt
+  frontend/           React + Vite + TypeScript SPA
+    src/              api/, components/, pages/, auth/, lib/
+  infra/              AWS SAM template, samconfig, and SPA deploy script
+  docs/               Developer, architecture, API, testing, and deployment guides
+  .kiro/specs/logstead/   requirements.md, design.md, tasks.md (the source spec)
+```
+
+## Quick start
+
+Prerequisites: **Python 3.12**, **Node 18+** (Node 20+ recommended), and npm.
+
+### Backend
+
+```bash
+cd backend
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"      # or: pip install -r requirements-dev.txt
+pytest -q -n auto            # runs the suite in parallel (pytest-xdist)
+```
+
+### Frontend
+
 ```bash
 cd frontend
 npm install
-npm run dev
-```
-App will be available at http://localhost:5173 (default Vite port).
-
-### Backend (FastAPI)
-
-#### Run locally (development, hot reload):
-```bash
-cd backend
-poetry config virtualenvs.in-project true  # recommended, one-time
-poetry install
-source .venv/bin/activate
-poetry run uvicorn app.main:app --reload
-```
-App will be available at http://localhost:8000
-
-#### Build and run with Docker Compose:
-```bash
-docker compose up --build
+npm test                     # vitest run
+npm run build                # type-check (tsc -b) + production bundle
+npm run dev                  # local dev server
 ```
 
----
+Copy `frontend/.env.example` to `frontend/.env` and fill in the Cognito / API
+values before running the SPA against a real backend. See
+[docs/developer-guide.md](docs/developer-guide.md).
 
-For more details, see the `backend/README.md` and `frontend/README.md`.
+## Documentation
+
+- [Architecture overview](docs/architecture.md) - components, data flow, and the
+  single-table DynamoDB design.
+- [Developer guide](docs/developer-guide.md) - environment setup, project
+  conventions, and day-to-day workflow.
+- [API reference](docs/api.md) - the HTTP API routes, auth, and error model.
+- [Data model](docs/data-model.md) - domain entities and the DynamoDB key scheme.
+- [Testing guide](docs/testing.md) - unit, property-based, and integration tests.
+- [Deployment](docs/deployment.md) - how the pieces map onto AWS.
+
+## Key design rules
+
+These invariants run through the whole codebase (see
+[docs/architecture.md](docs/architecture.md) for detail):
+
+- **Money is exact.** Monetary values are `decimal.Decimal` in code and stored
+  as fixed two-decimal **strings** in DynamoDB - never floats, never DynamoDB
+  `Number`.
+- **Reports are reproducible from persisted data alone.** Aggregations are
+  derived on demand, never cached as the source of truth.
+- **RentCast is optional enrichment, never a gate.** Property creation always
+  succeeds regardless of enrichment availability. Enrichment details captured at
+  creation are persisted and returned on read (shown on the property detail
+  page).
+- **Drafts are not transactions.** In the backend, imported PDF line items stay
+  as draft staging items until explicitly confirmed. (The import flow is not
+  part of the current UI.)
+- **Authentication is delegated.** Cognito Hosted UI handles sign-in; the API
+  trusts the JWT authorizer verified claims and performs no token verification
+  itself.
+
+## Status
+
+All spec tasks are implemented and tested: the backend service layer, single
+Lambda router, and the SPA are complete, with unit, property-based (Hypothesis),
+and integration coverage. See [docs/testing.md](docs/testing.md).
 
 ## License
-[MIT](LICENSE)
+
+Not yet specified.

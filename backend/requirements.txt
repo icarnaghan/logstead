@@ -1,0 +1,4 @@
+# Runtime dependencies for the Logstead API Lambda.
+boto3
+pdfplumber
+pypdf

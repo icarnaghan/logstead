@@ -1,0 +1,6 @@
+# Development / test dependencies for the Logstead backend.
+-r requirements.txt
+pytest
+hypothesis
+moto
+pytest-xdist
