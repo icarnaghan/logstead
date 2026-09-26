@@ -1,6 +1,6 @@
 # Logstead
 
-Logstead is a single-user, single-LLC web application for preparing an IRS
+Logstead is a single-user web application for preparing an IRS
 **Schedule E (Form 1040)** rental tax return. It captures **year-end Schedule E
 totals** and their supporting documents, computes straight-line depreciation
 schedules, enriches property data from RentCast (persisted and shown on a
@@ -39,14 +39,27 @@ logstead/
     requirements*.txt
   frontend/           React + Vite + TypeScript SPA
     src/              api/, components/, pages/, auth/, lib/
-  infra/              AWS SAM template, samconfig, and SPA deploy script
+  infra/              AWS SAM template, deploy/seed scripts, and samconfig.toml.example
   docs/               Developer, architecture, API, testing, and deployment guides
+  Makefile            Top-level dev + deploy commands (run `make help`)
   .kiro/specs/logstead/   requirements.md, design.md, tasks.md (the source spec)
 ```
 
 ## Quick start
 
 Prerequisites: **Python 3.12**, **Node 18+** (Node 20+ recommended), and npm.
+
+The quickest path is the top-level `Makefile` (run `make help` for the full
+list). Common commands:
+
+```bash
+make install        # backend venv (dev extras) + frontend deps
+make test           # backend (pytest) + frontend (vitest)
+make dev            # frontend dev server
+make deploy         # build + deploy infra (SAM) then publish the SPA
+```
+
+The steps below are the equivalent manual commands.
 
 ### Backend
 

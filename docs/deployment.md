@@ -5,9 +5,21 @@ in the **`infra/`** directory:
 
 ```
 infra/
-  template.yaml     SAM template for the whole stack
-  samconfig.toml    Default deploy config (stack name, region, parameters)
-  deploy-spa.sh     Build + publish the SPA and invalidate CloudFront
+  template.yaml            SAM template for the whole stack
+  samconfig.toml.example   Deploy-config template (copy to samconfig.toml)
+  samconfig.toml           Your deploy config - gitignored (account id, cert, domain)
+  deploy-spa.sh            Build + publish the SPA and invalidate CloudFront
+  seed-categories.sh       Seed the Schedule E category catalog
+```
+
+`samconfig.toml` is **gitignored** because it holds account-specific values
+(AWS account id, ACM certificate ARN, custom domain). Copy the checked-in
+template and fill in your own values before the first deploy:
+
+```bash
+cp infra/samconfig.toml.example infra/samconfig.toml
+# then edit infra/samconfig.toml (or drop the domain overrides for a
+# default, no-custom-domain deploy)
 ```
 
 Target region: **us-east-1**.
@@ -61,6 +73,24 @@ basic (no-custom-domain) deploy.
     running) - no local 3.12 needed. This is what the `deploy:infra` npm script
     uses by default.
 - Node 18+ for the SPA.
+
+## One-command deploy (Makefile)
+
+The top-level `Makefile` wraps the whole flow (run `make help` for everything):
+
+```bash
+make deploy         # build + deploy infra (SAM), then build + publish the SPA
+# or the halves:
+make deploy-infra   # sam build --use-container + sam deploy
+make deploy-spa     # build SPA, sync to S3, invalidate CloudFront
+make validate       # sam validate --lint
+make outputs        # show stack outputs
+make seed           # seed the category catalog
+make create-user EMAIL=you@example.com
+```
+
+`make deploy-infra`/`make build` automatically clear iCloud `* 2.*` duplicate
+files and the backend venv first (both otherwise break `sam build`).
 
 ## One-command deploy (from frontend/)
 

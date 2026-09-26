@@ -10,6 +10,9 @@ day-to-day workflow for the backend and frontend.
 - No AWS account is required for local development or the test suites; external
   services and AWS resources are faked in tests.
 
+> Tip: a top-level `Makefile` wraps the common commands below. Run `make help`
+> for the full list - e.g. `make install`, `make test`, `make dev`, `make deploy`.
+
 ## Backend
 
 The backend is a Python package at `backend/src/logstead/`, packaged with
@@ -46,7 +49,8 @@ The Lambda reads its configuration from the environment:
 | `TABLE_NAME` | DynamoDB single-table name |
 | `FILES_BUCKET` | S3 bucket for photos, receipts, PDFs, exports |
 | `AWS_REGION` | AWS region |
-| `RENTCAST_API_KEY` | RentCast enrichment API key (optional feature) |
+| `RENTCAST_API_KEY` | RentCast enrichment API key, read directly (optional; used for local runs and tests) |
+| `RENTCAST_API_KEY_PARAM` | Name of an SSM SecureString holding the RentCast key (how deploys pass it; the Lambda reads + decrypts at runtime). `RENTCAST_API_KEY` wins if both are set |
 
 Address autocomplete uses **Amazon Location Service** (`geo-places`) via the
 Lambda's IAM role - there is no autocomplete API key.

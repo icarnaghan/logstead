@@ -15,7 +15,7 @@ keys directly.
 
 ## Domain entities
 
-- **User** - the single authenticated operator of the LLC.
+- **User** - the single authenticated operator of the app.
 - **Property** - a rental unit; one column of Schedule E Part I. Has a name,
   address, and property type, plus optional enriched details and usage days.
 - **PropertyDetails** - optional RentCast-enriched attributes for a property.
