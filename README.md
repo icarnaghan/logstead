@@ -97,6 +97,7 @@ values before running the SPA against a real backend. See
 - [Data model](docs/data-model.md) - domain entities and the DynamoDB key scheme.
 - [Testing guide](docs/testing.md) - unit, property-based, and integration tests.
 - [Deployment](docs/deployment.md) - how the pieces map onto AWS.
+- [Changelog](CHANGELOG.md) - notable changes per release.
 
 ## Key design rules
 
