@@ -28,6 +28,9 @@ class TransactionInput:
     type: TransactionType | None
     category_id: str | None
     description: str | None = None
+    imported: bool = False
+    itemized: bool = False
+    notes: str | None = None
 
 
 @dataclass
@@ -46,6 +49,12 @@ class Transaction:
         description: Free-text; required for the Other category (Line 19).
         created_at: ISO-8601 creation timestamp.
         updated_at: ISO-8601 last-update timestamp.
+        imported: Whether this transaction was synthesized by Schedule E Import
+            (the imported marker). Defaults to ``False`` so user-tracked
+            transactions and pre-existing stored rows are never marked.
+        itemized: Whether this expense is itemized into line items. Defaults
+            to ``False``.
+        notes: Optional free-text notes. Defaults to ``None``.
     """
 
     id: str
@@ -58,6 +67,9 @@ class Transaction:
     description: str | None = None
     created_at: str | None = None
     updated_at: str | None = None
+    imported: bool = False
+    itemized: bool = False
+    notes: str | None = None
 
 
 @dataclass

@@ -7,6 +7,7 @@ import {
   restoreBackup,
   setBackupClient,
   type BackupDocument,
+  type BackupLoan,
   type ClearSummary,
   type RestoreSummary,
 } from "./backup";
@@ -145,6 +146,95 @@ describe("backup api module", () => {
     const result = await clearData();
     expect(result).toEqual(summary);
     expect(fetchImpl).toHaveBeenCalledOnce();
+  });
+
+  it("keeps loan money and rate as strings through fetch", async () => {
+    const doc = sampleDocument();
+    const loan: BackupLoan = {
+      id: "loan-1",
+      property_id: "prop-1",
+      description: "Primary mortgage",
+      annual_interest_rate: "6.125000",
+      monthly_payment: "1900.00",
+      anchor_balance: "214500.00",
+      anchor_date: "2025-06-01",
+      extra_principal: "50.00",
+      original_principal: "300000.00",
+      closing_date: "2023-01-15",
+      payoff_date: null,
+      include_in_report: true,
+      interest_overrides: { "2023": "5400.25" },
+    };
+    doc.properties[0].loans = [loan];
+    const fetchImpl = makeFetch(() => jsonResponse(200, doc));
+    setBackupClient(new ApiClient({ baseUrl: "https://api.test", fetchImpl }));
+
+    const result = await fetchBackup();
+    const got = result.properties[0].loans?.[0];
+    expect(got).toEqual(loan);
+    expect(typeof got?.original_principal).toBe("string");
+    expect(typeof got?.annual_interest_rate).toBe("string");
+    expect(typeof got?.monthly_payment).toBe("string");
+    expect(typeof got?.anchor_balance).toBe("string");
+    expect(typeof got?.anchor_date).toBe("string");
+    expect(got).not.toHaveProperty("term_months");
+    expect(got).not.toHaveProperty("first_payment_date");
+    expect(got).not.toHaveProperty("payment_override");
+    expect(typeof got?.extra_principal).toBe("string");
+    expect(typeof got?.interest_overrides?.["2023"]).toBe("string");
+  });
+
+  it("restores a document with loans verbatim and returns a loans count", async () => {
+    const doc = sampleDocument();
+    doc.properties[0].loans = [
+      {
+        id: "loan-1",
+        property_id: "prop-1",
+        description: "Primary mortgage",
+        annual_interest_rate: "6.125000",
+        monthly_payment: "1900.00",
+        anchor_balance: "214500.00",
+        anchor_date: "2025-06-01",
+        original_principal: "300000.00",
+      },
+    ];
+    const summary: RestoreSummary = {
+      properties: 1,
+      transactions: 1,
+      assets: 1,
+      usage_years: 1,
+      loans: 1,
+    };
+    const fetchImpl = makeFetch((_url, init) => {
+      const sent = JSON.parse(String(init.body)) as BackupDocument;
+      expect(sent).toEqual(doc);
+      expect(sent.properties[0].loans?.[0].original_principal).toBe("300000.00");
+      expect(sent.properties[0].loans?.[0].annual_interest_rate).toBe("6.125000");
+      expect(sent.properties[0].loans?.[0].anchor_balance).toBe("214500.00");
+      return jsonResponse(200, summary);
+    });
+    setBackupClient(new ApiClient({ baseUrl: "https://api.test", fetchImpl }));
+
+    const result = await restoreBackup(doc);
+    expect(result.loans).toBe(1);
+    expect(result).toEqual(summary);
+  });
+
+  it("returns a loans count on the clear summary", async () => {
+    const summary: ClearSummary = {
+      properties: 1,
+      transactions: 0,
+      assets: 0,
+      photos: 0,
+      receipts: 0,
+      loans: 2,
+      failed_s3_keys: [],
+    };
+    const fetchImpl = makeFetch(() => jsonResponse(200, summary));
+    setBackupClient(new ApiClient({ baseUrl: "https://api.test", fetchImpl }));
+
+    const result = await clearData();
+    expect(result.loans).toBe(2);
   });
 
   it("surfaces a 400 restore validation failure as an ApiError with status + message", async () => {

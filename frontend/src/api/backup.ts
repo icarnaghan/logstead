@@ -42,6 +42,12 @@ export interface BackupTransaction {
   description?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  /** True when synthesized by Schedule E Import; absent means false. */
+  imported?: boolean;
+  /** True when the expense is itemized; absent means false. */
+  itemized?: boolean;
+  /** Optional free-text notes (max 1000 chars). */
+  notes?: string | null;
 }
 
 /**
@@ -152,6 +158,30 @@ export interface BackupPropertyDetails {
   sale_history?: BackupSaleEvent[] | null;
 }
 
+/**
+ * A mortgage Loan inside a backup. Money and the rate stay strings.
+ * Derived values (rollups, payment rows, remaining payments, payoff dates,
+ * payoff balance, status) are never part of a backup. `interest_overrides`
+ * maps a tax year (as a string key) to a two-decimal amount string.
+ */
+export interface BackupLoan {
+  id: string;
+  property_id: string;
+  description: string;
+  annual_interest_rate: string;
+  monthly_payment: string;
+  anchor_balance: string;
+  anchor_date: string;
+  extra_principal?: string;
+  payoff_date?: string | null;
+  original_principal?: string | null;
+  closing_date?: string | null;
+  include_in_report?: boolean;
+  interest_overrides?: Record<string, string>;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 /** A property and all of its child records inside a backup. */
 export interface BackupProperty {
   id: string;
@@ -165,6 +195,7 @@ export interface BackupProperty {
   usage: BackupUsageYear[];
   transactions: BackupTransaction[];
   assets: BackupAsset[];
+  loans?: BackupLoan[];
 }
 
 /** The versioned backup document exchanged with the backend. */
@@ -180,6 +211,7 @@ export interface RestoreSummary {
   transactions: number;
   assets: number;
   usage_years: number;
+  loans?: number;
 }
 
 /** Counts (and any S3 failures) returned after clearing all data. */
@@ -189,6 +221,7 @@ export interface ClearSummary {
   assets: number;
   photos: number;
   receipts: number;
+  loans?: number;
   failed_s3_keys: string[];
 }
 

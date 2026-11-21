@@ -21,6 +21,17 @@ import { apiClient, type ApiClient } from "../lib/apiClient";
 /** The default recovery period (years) for residential rental building assets. */
 export const DEFAULT_RECOVERY_PERIOD_YEARS = 27.5;
 
+/**
+ * Per-year depreciation overrides (Requirement 1.1, 1.4): a JSON object keyed by
+ * tax-year string (the object-key form the backend emits and accepts) whose
+ * values are two-decimal money strings, e.g. `{ "2010": "1952.00" }`.
+ *
+ * Values are always strings, never numbers — this preserves the "no float"
+ * money contract shared across this module. An absent or empty map means the
+ * asset has no overrides.
+ */
+export type DepreciationOverrides = Record<string, string>;
+
 /** A depreciable asset as returned by the backend. */
 export interface DepreciableAsset {
   id: string;
@@ -30,6 +41,8 @@ export interface DepreciableAsset {
   /** ISO date (YYYY-MM-DD) the asset was placed in service. */
   placed_in_service_date: string;
   recovery_period_years: number;
+  /** Optional per-year overrides; absent/empty == no overrides. */
+  depreciation_overrides?: DepreciationOverrides;
   created_at: string;
   updated_at: string;
 }
@@ -41,6 +54,8 @@ export interface CreateAssetInput {
   cost_basis: string;
   placed_in_service_date: string;
   recovery_period_years?: number;
+  /** Optional per-year overrides; absent/empty == no overrides. */
+  depreciation_overrides?: DepreciationOverrides;
 }
 
 /** Body for updating an asset. */
@@ -49,6 +64,8 @@ export interface UpdateAssetInput {
   cost_basis: string;
   placed_in_service_date: string;
   recovery_period_years: number;
+  /** Optional per-year overrides; absent/empty == no overrides. */
+  depreciation_overrides?: DepreciationOverrides;
 }
 
 /** One row of a computed straight-line / mid-month depreciation schedule. */
@@ -126,4 +143,45 @@ export function getSchedule(
   return client.get<ScheduleRow[]>(
     `${assetPath(propertyId, assetId)}/schedule`,
   );
+}
+
+/**
+ * One property's depreciable-asset count and depreciation total for a tax year,
+ * as returned by the dashboard asset-summary aggregation endpoint
+ * (Requirement 3). `depreciation_total` is the authoritative Schedule E Line 18
+ * figure for that property and year (Requirement 6.1).
+ */
+export interface PropertyAssetSummary {
+  readonly property_id: string;
+  readonly property_name: string;
+  /** Count of {@link DepreciableAsset} records for the property. */
+  readonly asset_count: number;
+  /** Fixed two-decimal money string, e.g. "1250.00"; never a number. */
+  readonly depreciation_total: string;
+}
+
+/**
+ * The read-only per-property depreciable-assets summary for the authenticated
+ * user and a tax year (Requirements 3, 4). One entry per owned property.
+ */
+export interface AssetSummary {
+  /** The tax year every depreciation total is derived for. */
+  readonly tax_year: number;
+  /** Per-property summaries, in the order the property service lists them. */
+  readonly properties: readonly PropertyAssetSummary[];
+}
+
+/**
+ * Fetches the dashboard depreciable-assets summary for a tax year via a single
+ * aggregation read (Requirement 4.1), rather than one `listAssets` call per
+ * property. Money stays a two-decimal string; it is never coerced to `number`
+ * (Requirement 3.5).
+ */
+export function getAssetSummary(
+  taxYear: number,
+  client: ApiClient = apiClient,
+): Promise<AssetSummary> {
+  return client.get<AssetSummary>("/dashboard/assets", {
+    query: { taxYear },
+  });
 }

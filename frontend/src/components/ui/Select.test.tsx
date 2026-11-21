@@ -17,7 +17,7 @@ describe("Select — base styling (Req 1.3, 8.5)", () => {
     );
     const select = screen.getByLabelText("Tax year");
     expect(select).toHaveClass("rounded-md");
-    expect(select).toHaveClass("border-border");
+    expect(select).toHaveClass("border-border-strong");
     expect(select).toHaveClass("bg-surface");
     expect(select).toHaveClass("text-fg");
     expect(select).toHaveClass("focus-visible:outline-accent");

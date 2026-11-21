@@ -65,6 +65,7 @@ from logstead.services.auth import user_id_of
 
 if TYPE_CHECKING:
     from logstead.repository.dynamo_repo import DynamoRepository
+    from logstead.services.business import BusinessService
 
 
 __all__ = [
@@ -111,6 +112,10 @@ def property_to_rows(prop: Property) -> list[dict[str, object]]:
         "name": prop.name,
         "addressText": prop.address_text,
         "propertyType": prop.property_type,
+        # Optional property-business link (Requirement 9/10.1). Carried verbatim
+        # on BOTH rows; the repository drops it when ``None`` so an unlinked
+        # property stays sparse and backward compatible (Requirement 9.4).
+        "businessId": prop.business_id,
         "createdAt": prop.created_at,
         "updatedAt": prop.updated_at,
         "GSI1PK": gsi1_pk,
@@ -186,11 +191,31 @@ class PropertyService:
         repo: The single-table DynamoDB repository.
         user: The authenticated user (a :class:`UserContext`) or a raw user id
             string. All operations are scoped to this user.
+        business_service: Optional collaborator used by :meth:`set_business` to
+            validate that a target business exists and is owned by the user
+            before a property-business link is written (Requirement 9.5). It is
+            an optional trailing parameter so existing call sites that construct
+            ``PropertyService(repo, user)`` keep working unchanged; the router
+            wires it per request. When it is ``None`` and :meth:`set_business`
+            is asked to link to a business, the link is rejected with an
+            ``unavailable`` result rather than silently skipping the ownership
+            check.
     """
 
-    def __init__(self, repo: "DynamoRepository", user: UserContext | str) -> None:
+    def __init__(
+        self,
+        repo: "DynamoRepository",
+        user: UserContext | str,
+        business_service: "BusinessService | None" = None,
+    ) -> None:
         self._repo = repo
         self._user_id = user_id_of(user) if isinstance(user, UserContext) else user
+        self._business_service = business_service
+
+    @property
+    def user_id(self) -> str:
+        """The authenticated user id this service is scoped to (read-only)."""
+        return self._user_id
 
     # --- Serialization boundary ---------------------------------------------
 
@@ -213,6 +238,11 @@ class PropertyService:
             property_type=(
                 str(item["propertyType"])
                 if item.get("propertyType") is not None
+                else None
+            ),
+            business_id=(
+                str(item["businessId"])
+                if item.get("businessId") is not None
                 else None
             ),
             created_at=(
@@ -404,6 +434,80 @@ class PropertyService:
             name=data.name.strip(),
             address_text=data.address_text.strip(),
             property_type=data.property_type,
+            # Preserve any existing property-business link across an edit: the
+            # link is owned by ``set_business`` and is not part of the
+            # property-edit payload, so carry the stored ``businessId`` verbatim
+            # rather than letting a plain update clear it (Requirement 9.4).
+            business_id=(
+                str(existing["businessId"])
+                if existing.get("businessId") is not None
+                else None
+            ),
+            created_at=(
+                str(existing["createdAt"])
+                if existing.get("createdAt") is not None
+                else None
+            ),
+            updated_at=_now_iso(),
+        )
+        self._repo.transact_write(
+            [{"put": row} for row in self._to_rows(prop)]
+        )
+        return Result.success(prop)
+
+    # --- Property-business link (Requirement 9) ------------------------------
+
+    def set_business(
+        self, property_id: str, business_id: str | None
+    ) -> Result[Property]:
+        """Set, change, or clear a property's owning business (Requirement 9).
+
+        Confirms the property is owned by this user first, returning
+        ``not_found`` otherwise. When ``business_id`` is provided, validates that
+        it is a business owned by the same user via the injected
+        :class:`BusinessService` (Requirement 9.5): a non-owned/unknown target
+        yields ``not_found`` (field ``business_id``). When ``business_id`` is
+        ``None`` the existing link is cleared (the ``businessId`` attribute is
+        removed from both rows).
+
+        Both property rows are rewritten atomically with ``businessId`` set
+        (set/change) or removed (clear) and a refreshed ``updated_at``. Replacing
+        an existing link is a plain overwrite, so a property is linked to at most
+        one business (Requirements 9.1-9.3); an unlinked property remains valid
+        with all other fields preserved (Requirement 9.4).
+        """
+        existing = self._owned_meta(property_id)
+        if existing is None:
+            return Result.failure("not_found", "Property not found.")
+
+        if business_id is not None:
+            if self._business_service is None:
+                # No collaborator wired: we cannot verify the target business is
+                # owned, so refuse rather than write an unvalidated link.
+                return Result.failure(
+                    "unavailable",
+                    "Business linking is not available in this context.",
+                )
+            if not self._business_service.owns(business_id):
+                return Result.failure(
+                    "not_found",
+                    "Business not found.",
+                    field="business_id",
+                )
+
+        prop = Property(
+            id=property_id,
+            user_id=self._user_id,
+            name=str(existing["name"]),
+            address_text=str(existing["addressText"]),
+            property_type=(
+                str(existing["propertyType"])
+                if existing.get("propertyType") is not None
+                else None
+            ),
+            # Plain overwrite: a non-None id sets/changes the link, ``None``
+            # clears it (dropped on write, so the attribute is removed).
+            business_id=business_id,
             created_at=(
                 str(existing["createdAt"])
                 if existing.get("createdAt") is not None
@@ -437,11 +541,21 @@ class PropertyService:
         assets = self._repo.query(
             scoped_pk, sk_begins_with=keys.asset_list_prefix()
         )
-        if transactions or assets:
+        # Loan rows share the ``LOAN#`` prefix with their yearly rollups; only
+        # real Loan rows (not rollups) count as an association.
+        loans = [
+            row
+            for row in self._repo.query(
+                scoped_pk, sk_begins_with=keys.loan_list_prefix()
+            )
+            if not keys.is_loan_year_sk(str(row["SK"]))
+        ]
+        if transactions or assets or loans:
             return Result.failure(
                 "conflict",
-                "Property has associated records; remove its transactions and "
-                "depreciable assets before deleting it.",
+                "Property has associated records; remove its transactions, "
+                "depreciable assets and loans first (remove its loans first) "
+                "before deleting it.",
             )
 
         # Safe to delete: gather the property's rows plus any details/note/usage rows.

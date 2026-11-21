@@ -455,7 +455,7 @@ def test_export_combined_report_stores_under_exports_prefix(
     result = export_service.export_combined_report([pid_a, pid_b], TAX_YEAR, "json")
     assert result.is_ok, result.error
     export = result.value
-    assert export.key.startswith("exports/combined/")
+    assert export.key.startswith(f"exports/combined/{USER}/")
     assert export.key in _s3_object_keys(s3)
 
     payload = _json.loads(export.content.decode("utf-8"))

@@ -51,7 +51,9 @@ export interface AuthDeps {
 interface TokenResponse {
   id_token: string;
   access_token: string;
+  /** Ignored: refresh tokens are deliberately never stored. */
   refresh_token?: string;
+  [extra: string]: unknown;
   expires_in?: number;
   token_type?: string;
 }
@@ -213,7 +215,7 @@ export async function handleAuthCallback(
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: body.toString(),
     });
-  } catch (cause) {
+  } catch {
     cleanup();
     throw new AuthError("Token exchange request failed");
   }
@@ -232,7 +234,6 @@ export async function handleAuthCallback(
   const tokens: SessionTokens = {
     idToken: data.id_token,
     accessToken: data.access_token,
-    refreshToken: data.refresh_token,
     expiresAt:
       typeof data.expires_in === "number"
         ? Date.now() + data.expires_in * 1000

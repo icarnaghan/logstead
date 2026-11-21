@@ -222,3 +222,34 @@ def test_transact_write_mixed_put_and_delete(repo):
 def test_transact_write_rejects_bad_entry(repo):
     with pytest.raises(ValueError):
         repo.transact_write([{"oops": {}}])
+
+
+def test_query_limit_returns_at_most_limit_items(repo):
+    from datetime import date
+
+    prop_id = "p1"
+    for i, d in enumerate(
+        [date(2024, 1, 10), date(2024, 6, 15), date(2023, 12, 1), date(2021, 2, 2)]
+    ):
+        repo.put_item(_txn_item(prop_id, f"t{i}", d, Decimal("1.00")))
+    pk = keys.property_scoped_pk(prop_id)
+    prefix = keys.transaction_list_prefix()
+
+    # Descending + limit=1 reads only the largest key: the earliest date.
+    last = repo.query(pk, sk_begins_with=prefix, ascending=False, limit=1)
+    assert len(last) == 1
+    assert keys.date_from_inverted(last[0]["SK"].split("#")[1]).year == 2021
+
+    # limit=2 ascending yields the two newest; limit larger than the data is fine.
+    two = repo.query(pk, sk_begins_with=prefix, limit=2)
+    assert [keys.date_from_inverted(r["SK"].split("#")[1]).year for r in two] == [
+        2024,
+        2024,
+    ]
+    assert len(repo.query(pk, sk_begins_with=prefix, limit=50)) == 4
+
+
+@pytest.mark.parametrize("bad", [0, -1])
+def test_query_limit_below_one_raises_value_error(repo, bad):
+    with pytest.raises(ValueError):
+        repo.query(keys.property_scoped_pk("p1"), limit=bad)

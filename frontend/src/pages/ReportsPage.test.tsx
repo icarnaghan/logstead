@@ -5,7 +5,30 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import ReportsPage, { type ReportsApi } from "./ReportsPage";
 import { ThemeProvider } from "../theme/ThemeProvider";
+import { ToastProvider } from "../components/ui";
+import { startDownload } from "../lib/packageJob";
 import type { ScheduleEReport } from "../api/reports";
+import { latestCompletedTaxYear } from "../lib/taxYears";
+
+// The page loads the property's depreciable assets to size the tax-year range
+// via the module-level `listAssets`. With an injected `years` prop the asset
+// range is overridden, but the fetch still fires on mount, so stub it to an
+// empty list (no network in jsdom).
+vi.mock("../lib/packageJob", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../lib/packageJob")>()),
+  startDownload: vi.fn(),
+}));
+
+vi.mock("../api/assets", () => ({
+  listAssets: vi.fn().mockResolvedValue([]),
+}));
+
+// The year-range hook fetches the earliest data year; resolve null (no
+// activity) so no network is hit. Other exports stay real.
+vi.mock("../api/properties", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../api/properties")>()),
+  getEarliestDataYear: vi.fn().mockResolvedValue(null),
+}));
 
 /**
  * Component tests for the per-property Schedule E report page (task 24.1,
@@ -40,6 +63,10 @@ function makeReport(overrides: Partial<ScheduleEReport> = {}): ScheduleEReport {
       total_expenses: "7175.33",
       net: "16824.67",
     },
+    line12: {
+      source: "transaction-entered",
+      superseded_manual_interest: { amount: "0.00", count: 0 },
+    },
     ...overrides,
   };
 }
@@ -51,12 +78,21 @@ function makeApi(overrides: Partial<ReportsApi> = {}): ReportsApi {
   };
 }
 
-const YEARS = [2024, 2023, 2022] as const;
+// Candidate years offered to the selector: the latest completed tax year (the
+// default the page auto-loads) down through 2024, so both the mount default and
+// an explicit "2024" selection are valid options regardless of the actual
+// calendar year.
+const LATEST_YEAR = latestCompletedTaxYear();
+const YEARS = Array.from(
+  { length: LATEST_YEAR - 2024 + 1 },
+  (_, i) => LATEST_YEAR - i,
+);
 
-function renderPage(api: ReportsApi) {
+function renderPage(api: ReportsApi, search = "") {
   return render(
     <ThemeProvider>
-      <MemoryRouter initialEntries={["/properties/prop-1/reports"]}>
+      <ToastProvider>
+      <MemoryRouter initialEntries={[`/properties/prop-1/reports${search}`]}>
         <Routes>
           <Route
             path="/properties/:propertyId/reports"
@@ -64,6 +100,7 @@ function renderPage(api: ReportsApi) {
           />
         </Routes>
       </MemoryRouter>
+      </ToastProvider>
     </ThemeProvider>,
   );
 }
@@ -101,7 +138,9 @@ describe("ReportsPage — year selection fetches and renders (Req 10.1-10.5)", (
       .getByRole("heading", { name: /^income$/i })
       .closest("section") as HTMLElement;
     expect(within(incomeSection).getByText("Rents received")).toBeInTheDocument();
-    expect(within(incomeSection).getByText("$24,000.00")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // Report line figures render as whole dollars: "24000.00" → "$24,000".
+    expect(within(incomeSection).getByText("$24,000")).toBeInTheDocument();
     // "Repairs" now appears both in the expense line table and the chart's
     // always-present data table, so scope the assertion to the expense section.
     const expenseSection = screen
@@ -113,13 +152,17 @@ describe("ReportsPage — year selection fetches and renders (Req 10.1-10.5)", (
     const depSection = screen
       .getByRole("heading", { name: /depreciation \(line 18\)/i })
       .closest("section") as HTMLElement;
-    expect(within(depSection).getByText("$5,833.33")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // Line 18 rounds to whole dollars: "5833.33" → "$5,833".
+    expect(within(depSection).getByText("$5,833")).toBeInTheDocument();
 
     // Line 19 itemization lists each description + amount (Req 10.5).
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // Line 19 item amounts round: "100.00" → "$100", "42.00" → "$42".
     expect(screen.getByText("HOA dues")).toBeInTheDocument();
-    expect(screen.getByText("$100.00")).toBeInTheDocument();
+    expect(screen.getByText("$100")).toBeInTheDocument();
     expect(screen.getByText("Bank fees")).toBeInTheDocument();
-    expect(screen.getByText("$42.00")).toBeInTheDocument();
+    expect(screen.getByText("$42")).toBeInTheDocument();
   });
 
   it("renders total income, total expenses, and a positive net (Req 10.4)", async () => {
@@ -134,8 +177,10 @@ describe("ReportsPage — year selection fetches and renders (Req 10.1-10.5)", (
       .getByRole("heading", { name: /^totals$/i })
       .closest("section") as HTMLElement;
     expect(within(totalsSection).getByText(/net income/i)).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // The net rounds half-up by magnitude: "16824.67" → "$16,825".
     expect(
-      within(totalsSection).getByText("$16,824.67"),
+      within(totalsSection).getByText("$16,825"),
     ).toBeInTheDocument();
   });
 
@@ -161,8 +206,10 @@ describe("ReportsPage — year selection fetches and renders (Req 10.1-10.5)", (
       .getByRole("heading", { name: /^totals$/i })
       .closest("section") as HTMLElement;
     expect(within(totalsSection).getByText(/net loss/i)).toBeInTheDocument();
-    // toLocaleString currency renders a negative amount as -$500.00.
-    expect(within(totalsSection).getByText("-$500.00")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // The negative net rounds the magnitude and keeps the leading minus:
+    // "-500.00" → "-$500". The "net loss" label above carries the loss cue.
+    expect(within(totalsSection).getByText("-$500")).toBeInTheDocument();
   });
 
   it("surfaces an error message when the fetch fails", async () => {
@@ -181,16 +228,50 @@ describe("ReportsPage — year selection fetches and renders (Req 10.1-10.5)", (
 });
 
 describe("ReportsPage — empty/loading states (Req 9.1, 9.2, 9.3)", () => {
-  it("shows an idle empty state before a year is chosen", () => {
+  it("auto-loads the latest completed year's report on mount (defaults to the latest filable year)", async () => {
     const api = makeApi();
     renderPage(api);
 
+    // The page lands on the latest completed tax year and fetches it
+    // immediately, rather than starting on an empty prompt.
+    expect(await screen.findByText("Maple Duplex")).toBeInTheDocument();
+    expect(api.getReport).toHaveBeenCalledWith("prop-1", LATEST_YEAR);
     expect(
-      screen.getByRole("heading", { name: /no report yet/i }),
-    ).toBeInTheDocument();
+      (screen.getByLabelText(/tax year/i) as HTMLSelectElement).value,
+    ).toBe(String(LATEST_YEAR));
+  });
+
+  it("initializes the year from a valid ?year= and ignores an invalid one", async () => {
+    const api = makeApi();
+    const first = renderPage(api, "?year=2024");
+    await screen.findByText("Maple Duplex");
+    expect(api.getReport).toHaveBeenCalledWith("prop-1", 2024);
+    first.unmount();
+    const api2 = makeApi();
+    renderPage(api2, "?year=02024");
+    await screen.findByText("Maple Duplex");
+    expect(api2.getReport).toHaveBeenCalledWith("prop-1", LATEST_YEAR);
+  });
+  it("returns to the empty state when the year is cleared", async () => {
+    const user = userEvent.setup();
+    const api = makeApi();
+    renderPage(api);
+
+    await screen.findByText("Maple Duplex");
+
+    // Choosing the placeholder clears the selection and the report.
+    await user.selectOptions(screen.getByLabelText(/tax year/i), "");
+
     expect(
-      screen.getByText(/choose a tax year above/i),
+      await screen.findByRole("heading", { name: /no data for this year/i }),
     ).toBeInTheDocument();
+    expect(screen.getByText(/reports are built from/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /go to transactions/i }),
+    ).toHaveAttribute("href", expect.stringMatching(/\/transactions$/));
+    expect(
+      screen.getByRole("link", { name: /import a schedule e/i }),
+    ).toHaveAttribute("href", "/imports/schedule-e");
   });
 
   it("shows a role=status loading state while the report is fetching", async () => {
@@ -208,9 +289,9 @@ describe("ReportsPage — empty/loading states (Req 9.1, 9.2, 9.3)", () => {
 
     await user.selectOptions(screen.getByLabelText(/tax year/i), "2024");
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      /loading report/i,
-    );
+    expect(
+      await screen.findByRole("status", { name: /loading report/i }),
+    ).toBeInTheDocument();
 
     resolve(makeReport());
     await screen.findByText("Maple Duplex");
@@ -334,8 +415,11 @@ describe("ReportsPage — hand-off document + print styling (Req 10.1-10.3)", ()
       .closest("section") as HTMLElement;
 
     // Textual cue distinguishes income vs loss without relying on color.
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // The emphasized net reads as whole dollars: "16824.67" → "$16,825"; the
+    // font-bold/text-xl emphasis below is unchanged by the rounding.
     const netLabel = within(totalsSection).getByText(/net income/i);
-    const netValue = within(totalsSection).getByText("$16,824.67");
+    const netValue = within(totalsSection).getByText("$16,825");
 
     // The net is visually emphasized (larger + bolder than the sub-totals).
     expect(netLabel.className).toMatch(/font-bold/);
@@ -400,5 +484,58 @@ describe("ReportsPage — accessibility", () => {
     await screen.findByText("Maple Duplex");
 
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("ReportsPage — Download PDF (Req 18.1, 18.3, 18.4)", () => {
+  const pdf = {
+    download_url: "https://s3.example/report.pdf",
+    filename: "report.pdf",
+    content_type: "application/pdf",
+    size_bytes: 10,
+    expires_in_seconds: 900,
+  };
+
+  beforeEach(() => {
+    vi.mocked(startDownload).mockClear();
+  });
+
+  it("builds the PDF, shows a busy state, and starts the download", async () => {
+    const user = userEvent.setup();
+    let resolve!: (v: typeof pdf) => void;
+    const createReportPdf = vi.fn(
+      () => new Promise<typeof pdf>((r) => (resolve = r)),
+    );
+    renderPage(makeApi({ createReportPdf }));
+
+    const button = await screen.findByRole("button", { name: /download pdf/i });
+    await user.click(button);
+    expect(createReportPdf).toHaveBeenCalledWith("prop-1", 2024);
+    expect(button).toHaveAttribute("aria-busy", "true");
+
+    resolve(pdf);
+    await vi.waitFor(() =>
+      expect(startDownload).toHaveBeenCalledWith(pdf.download_url),
+    );
+    await vi.waitFor(() => expect(button).not.toHaveAttribute("aria-busy"));
+  });
+
+  it("shows an error toast and re-enables the button on failure", async () => {
+    const user = userEvent.setup();
+    const createReportPdf = vi.fn().mockRejectedValue(new Error("PDF failed"));
+    renderPage(makeApi({ createReportPdf }));
+
+    const button = await screen.findByRole("button", { name: /download pdf/i });
+    await user.click(button);
+
+    expect(await screen.findByText("PDF failed")).toBeInTheDocument();
+    expect(startDownload).not.toHaveBeenCalled();
+    expect(button).toBeEnabled();
+  });
+
+  it("hides the PDF button from print", async () => {
+    renderPage(makeApi());
+    const button = await screen.findByRole("button", { name: /download pdf/i });
+    expect(button.parentElement).toHaveClass("print:hidden");
   });
 });

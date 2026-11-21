@@ -40,6 +40,12 @@ class Property:
         name: Display name.
         address_text: Free-text address used for enrichment and display.
         property_type: Optional property type (e.g., single family).
+        business_id: Optional id of the owning business entity this property is
+            linked to (Requirement 9). ``None`` when the property has no
+            property-business link; set/changed/cleared via
+            ``PropertyService.set_business``. Carried verbatim on both property
+            rows so it survives update/restore and is readable from the META
+            mirror (Requirement 10.1).
         created_at: ISO-8601 creation timestamp.
         updated_at: ISO-8601 last-update timestamp.
         details: Optional stored :class:`PropertyDetails`, populated by
@@ -52,6 +58,7 @@ class Property:
     name: str
     address_text: str
     property_type: str | None = None
+    business_id: str | None = None
     created_at: str | None = None
     updated_at: str | None = None
     details: "PropertyDetails | None" = None
@@ -251,3 +258,7 @@ class PropertyPhoto:
     content_type: str
     original_filename: str
     uploaded_at: str | None = None
+    #: True for the one photo chosen as the property's cover/default image, shown
+    #: on the property card and detail header. At most one photo per property is
+    #: the cover; when none is set, callers fall back to the first-listed photo.
+    is_cover: bool = False

@@ -1,10 +1,11 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { axe } from "vitest-axe";
 import { describe, expect, it } from "vitest";
 import App from "../App";
 import { ToastProvider } from "./ui";
+import { ThemeProvider } from "../theme/ThemeProvider";
 
 /**
  * Component / accessibility tests for the navigation shell (task 19.3).
@@ -22,11 +23,11 @@ import { ToastProvider } from "./ui";
  */
 function renderAt(path: string) {
   return render(
-    <ToastProvider>
+    <ThemeProvider><ToastProvider>
       <MemoryRouter initialEntries={[path]}>
         <App />
       </MemoryRouter>
-    </ToastProvider>,
+    </ToastProvider></ThemeProvider>,
   );
 }
 
@@ -84,8 +85,13 @@ describe("AppLayout — keyboard navigability & focus order (Req 14.4)", () => {
     const skipLink = screen.getByRole("link", {
       name: /skip to main content/i,
     });
-    const dashboardLink = screen.getByRole("link", { name: /dashboard/i });
-    const propertiesLink = screen.getByRole("link", { name: /properties/i });
+    const primary = screen.getByRole("navigation", { name: /primary/i });
+    const dashboardLink = within(primary).getByRole("link", {
+      name: /dashboard/i,
+    });
+    const propertiesLink = within(primary).getByRole("link", {
+      name: /properties/i,
+    });
 
     await user.tab();
     expect(skipLink).toHaveFocus();
@@ -113,6 +119,78 @@ describe("AppLayout — keyboard navigability & focus order (Req 14.4)", () => {
     // A non-active link must not claim to be the current page.
     const dashboardLink = screen.getByRole("link", { name: /dashboard/i });
     expect(dashboardLink).not.toHaveAttribute("aria-current", "page");
+  });
+});
+
+describe("AppLayout — single Import nav entry (Req 11, 12)", () => {
+  for (const path of ["/imports/schedule-e", "/imports/schedule-e/extract"]) {
+    it(`shows one Import link, active, in the desktop nav at ${path}`, () => {
+      renderAt(path);
+
+      const primary = screen.getByRole("navigation", { name: /primary/i });
+      const links = within(primary).getAllByRole("link", { name: /^import$/i });
+      expect(links).toHaveLength(1);
+      expect(links[0]).toHaveAttribute("aria-current", "page");
+      expect(
+        within(primary).queryByRole("link", { name: /import schedule e/i }),
+      ).toBeNull();
+      expect(
+        within(primary).queryByRole("link", { name: /import from pdf/i }),
+      ).toBeNull();
+    });
+
+    it(`shows one Import link, active, in the mobile nav at ${path}`, async () => {
+      const user = userEvent.setup();
+      renderAt(path);
+
+      await user.click(
+        screen.getByRole("button", { name: /open navigation menu/i }),
+      );
+      const dialog = await screen.findByRole("dialog");
+      const links = within(dialog).getAllByRole("link", { name: /^import$/i });
+      expect(links).toHaveLength(1);
+      expect(links[0]).toHaveAttribute("aria-current", "page");
+      expect(
+        within(dialog).queryByRole("link", { name: /import schedule e/i }),
+      ).toBeNull();
+      expect(
+        within(dialog).queryByRole("link", { name: /import from pdf/i }),
+      ).toBeNull();
+    });
+  }
+});
+
+describe("AppLayout — grouped navigation (Req 18.1, 18.6)", () => {
+  it("shows the same groups and links in the desktop nav and the drawer", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+
+    const summarize = (root: HTMLElement) =>
+      within(root)
+        .getAllByRole("group")
+        .map((g) => [
+          g.getAttribute("aria-label") ??
+            document.getElementById(g.getAttribute("aria-labelledby")!)
+              ?.textContent,
+          within(g)
+            .getAllByRole("link")
+            .map((l) => l.textContent),
+        ]);
+
+    const desktop = summarize(
+      screen.getByRole("navigation", { name: /primary/i }),
+    );
+    expect(desktop.map(([label]) => label)).toEqual([
+      "Portfolio",
+      "Tax",
+      "Tools",
+    ]);
+
+    await user.click(
+      screen.getByRole("button", { name: /open navigation menu/i }),
+    );
+    const dialog = await screen.findByRole("dialog");
+    expect(summarize(dialog)).toEqual(desktop);
   });
 });
 
@@ -213,5 +291,36 @@ describe("AppLayout — automated accessibility (Req 14.4)", () => {
       rules: { "color-contrast": { enabled: false } },
     });
     expect(results).toHaveNoViolations();
+  });
+});
+
+describe("AppLayout — shell wiring (Req 6.7, 6.9)", () => {
+  it("opens the palette with Ctrl+K, the help dialog with ?, and ignores both when typing in a field", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+    await user.keyboard("{Control>}k{/Control}");
+    expect(
+      await screen.findByRole("dialog", { name: "Command palette" }),
+    ).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    await user.keyboard("?");
+    expect(
+      await screen.findByRole("dialog", { name: /keyboard shortcuts/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the help dialog from the account menu", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+    await user.click(screen.getByRole("button", { name: /account menu/i }));
+    await user.click(
+      screen.getByRole("menuitem", { name: "Keyboard shortcuts" }),
+    );
+    expect(
+      await screen.findByRole("dialog", { name: /keyboard shortcuts/i }),
+    ).toBeInTheDocument();
   });
 });

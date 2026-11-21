@@ -37,11 +37,16 @@ class Error:
         message: A human-readable message safe to surface to the client.
         field: The offending field name, when the error is field-specific
             (e.g., validation messages that "identify the missing field").
+        errors: Optional ``(field, message)`` pairs for multi-field
+            validation failures; empty when not applicable. When set,
+            ``field`` and ``message`` still carry the first error so
+            existing clients keep working.
     """
 
     kind: ErrorKind
     message: str
     field: str | None = None
+    errors: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -69,9 +74,14 @@ class Result(Generic[T]):
 
     @staticmethod
     def failure(
-        kind: ErrorKind, message: str, field: str | None = None
+        kind: ErrorKind,
+        message: str,
+        field: str | None = None,
+        errors: tuple[tuple[str, str], ...] = (),
     ) -> "Result[T]":
-        return Result(error=Error(kind=kind, message=message, field=field))
+        return Result(
+            error=Error(kind=kind, message=message, field=field, errors=errors)
+        )
 
     @property
     def is_ok(self) -> bool:

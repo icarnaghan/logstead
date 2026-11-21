@@ -1,5 +1,6 @@
 import type { OtherItem } from "../../api/reports";
-import { formatMoney } from "../../lib/money";
+import { formatMoneyWholeDollars } from "../../lib/money";
+import { Badge } from "../ui";
 
 interface OtherItemsListProps {
   /** Accessible caption describing the itemization. */
@@ -45,10 +46,17 @@ export function OtherItemsList({ caption, items }: OtherItemsListProps) {
               scope="row"
               className="py-1.5 pr-4 font-normal text-fg"
             >
-              {item.description}
+              <span className="flex flex-wrap items-center gap-2">
+                {item.description}
+                {item.imported ? (
+                  <Badge label="Imported from a Schedule E import">
+                    Imported
+                  </Badge>
+                ) : null}
+              </span>
             </th>
             <td className="py-1.5 text-right tabular-nums text-fg">
-              {formatMoney(item.amount)}
+              {formatMoneyWholeDollars(item.amount)}
             </td>
           </tr>
         ))}

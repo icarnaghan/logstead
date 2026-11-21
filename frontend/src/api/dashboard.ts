@@ -63,6 +63,55 @@ export interface DashboardSummary {
 }
 
 /**
+ * One property's income / expense / net for a single Data_Year within the
+ * year-over-year trends series (Requirement 7.3).
+ *
+ * Every monetary figure is a fixed two-decimal string. `net` equals
+ * `total_income - total_expenses` and is negative when the property ran at a
+ * loss for the year. A property with no data in a Data_Year still appears here
+ * with all three figures "0.00".
+ */
+export interface PropertyYearPoint {
+  readonly property_id: string;
+  readonly property_name: string;
+  /** Fixed two-decimal string, e.g. "1500.00". */
+  readonly total_income: string;
+  /** Fixed two-decimal string, e.g. "250.00". */
+  readonly total_expenses: string;
+  /** Fixed two-decimal string; negative denotes a loss, e.g. "-125.00". */
+  readonly net: string;
+}
+
+/**
+ * The portfolio figures for a single Data_Year in the trends series
+ * (Requirement 7.3). All money fields are fixed two-decimal strings; only
+ * `tax_year` is a number.
+ */
+export interface TrendYear {
+  /** The four-digit tax year these figures are derived for. */
+  readonly tax_year: number;
+  /** Portfolio total income (sum of per-property income). */
+  readonly total_income: string;
+  /** Portfolio total expenses (sum of per-property expenses). */
+  readonly total_expenses: string;
+  /** Portfolio net = sum of the per-property nets; negative denotes a loss. */
+  readonly net: string;
+  /** Per-property points for this year, one per owned property. */
+  readonly properties: readonly PropertyYearPoint[];
+  /** Portfolio Schedule E Line 18 depreciation total for the year. */
+  readonly depreciation_total: string;
+}
+
+/**
+ * The full year-over-year trends series for the user's portfolio
+ * (Requirement 7.3).
+ */
+export interface TrendsSeries {
+  /** Ascending by `tax_year`; exactly the Data_Years, no gaps, no cap. */
+  readonly years: readonly TrendYear[];
+}
+
+/**
  * The dashboard API surface. An injectable {@link ApiClient} keeps it
  * unit-testable; the default export wires the shared singleton.
  */
@@ -98,6 +147,17 @@ export class DashboardApi {
       query: taxYear === undefined ? undefined : { taxYear },
       signal,
     });
+  }
+
+  /**
+   * Fetch the portfolio's year-over-year trends series (Requirement 7.3).
+   *
+   * Takes no `taxYear` query — the span is the full set of Data_Years derived
+   * by the backend. Money fields on the returned {@link TrendsSeries} are
+   * fixed two-decimal strings end-to-end.
+   */
+  getTrends(signal?: AbortSignal): Promise<TrendsSeries> {
+    return this.client.get<TrendsSeries>("/dashboard/trends", { signal });
   }
 }
 

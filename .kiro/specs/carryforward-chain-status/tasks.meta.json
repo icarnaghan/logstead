@@ -1,0 +1,382 @@
+{
+  "pbtResults": {
+    "1.4 Property test: status precedence and totality": {
+      "status": "passed",
+      "lastRunTimestamp": 1794075630690
+    },
+    "1.8 Property test: drift is exact and null iff unreported": {
+      "status": "passed",
+      "lastRunTimestamp": 1794075644912
+    },
+    "1.6 Property tests: expected unchanged and backward-compatible statuses": {
+      "status": "passed",
+      "lastRunTimestamp": 1794076128036
+    },
+    "6.4 Property test: drift cell text cue": {
+      "status": "failed",
+      "failingExample": "Counterexample: [\"-0.01\"] -> cell renders \"$0 under\" (expected to contain \"-\")",
+      "lastRunTimestamp": 1794076441700
+    }
+  },
+  "executionHistory": {
+    "1.1 Extend `ReconciledYear` in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845189
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068861680
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794069474871
+      }
+    ],
+    "1.2 Factor the balance step into `_apply_year_step` in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845220
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794069476810
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794069626650
+      }
+    ],
+    "1.3 Implement the chain check, `drift` and `carried_from_year` in `reconcile()` in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845271
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794069628459
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070057452
+      }
+    ],
+    "2.1 Update the status oracle in `backend/tests/services/test_carryforward_status_property.py`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845340
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070060541
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070398333
+      }
+    ],
+    "2.2 Update the backward-compatibility oracle in `backend/tests/services/test_carryforward_allowed_balance_property.py`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845388
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070060720
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070399376
+      }
+    ],
+    "2.3 Widen the status-set checks in the router tests": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845455
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070061535
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070400209
+      }
+    ],
+    "4. Checkpoint - backend chain status": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845485
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070722404
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070841686
+      }
+    ],
+    "5.1 Extend `ReconciledYear` in `frontend/src/api/carryforward.ts`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845517
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070061927
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070401118
+      }
+    ],
+    "5.2 Update `ReconciledYear` fixtures in `frontend/src/api/carryforward.test.ts`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845544
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070408303
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070676799
+      }
+    ],
+    "6.1 Add the Drift column and `carried` label in `frontend/src/pages/CarryforwardPage.tsx`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845596
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070408491
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070677273
+      }
+    ],
+    "6.2 Update fixtures and column assertions in `frontend/src/pages/CarryforwardPage.test.tsx`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845635
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070677961
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070719772
+      }
+    ],
+    "7. Final verification - suites green, no float, no deploy": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794068845661
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070842303
+      },
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794072596278
+      }
+    ],
+    "1. Backend: chain check, drift and root-cause attribution in `CarryforwardService`": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070057527
+      }
+    ],
+    "2. Backend: update existing tests that encode the three-way status rule": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070400242
+      }
+    ],
+    "5. Frontend: API types": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070676848
+      }
+    ],
+    "6. Frontend: Drift column and carried status on the page": [
+      {
+        "executionId": "ce567e8e-0204-45ec-a8ca-01cb2890e024",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794070719819
+      }
+    ],
+    "1.6 Property tests: expected unchanged and backward-compatible statuses": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794075558494
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076139066
+      }
+    ],
+    "1.4 Property test: status precedence and totality": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794075558550
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076138920
+      }
+    ],
+    "1.7 Property tests: injected errors and unreported gaps": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794075558595
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076140110
+      }
+    ],
+    "1.8 Property test: drift is exact and null iff unreported": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794075559308
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076140928
+      }
+    ],
+    "1.9 Unit examples: worked example and edge cases": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794075559878
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076461863
+      }
+    ],
+    "1.5 Property tests: carried implies chain relation; root-cause attribution": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076142093
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076395394
+      }
+    ],
+    "3.1 Route tests and wire property": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076143049
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076396142
+      }
+    ],
+    "6.3 RTL examples for the new column and labels": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076143702
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076396935
+      }
+    ],
+    "3. Backend: verify the wire contract": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076396184
+      }
+    ],
+    "6.4 Property test: drift cell text cue": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076398716
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076492238
+      }
+    ],
+    "6.5 Property tests: label, highlight and cell count": [
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076402002
+      },
+      {
+        "executionId": "2641c1ec-da0c-4ad0-93f6-249309823978",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794076462358
+      }
+    ]
+  }
+}

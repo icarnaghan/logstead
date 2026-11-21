@@ -14,13 +14,20 @@ Conventions (see design.md "Single-table key design"):
     PropertyDetails         PK=PROPERTY#<id>        SK=DETAILS
     PropertyUsageYear       PK=PROPERTY#<id>        SK=USAGE#<taxYear>
     PropertyPhoto           PK=PROPERTY#<id>        SK=PHOTO#<photoId>
+    Business (user view)    PK=USER#<userId>        SK=BUSINESS#<businessId>
+    Business (meta mirror)  PK=BUSINESS#<id>        SK=META
+    BusinessDocument        PK=BUSINESS#<id>        SK=DOC#<documentId>
     ScheduleECategory       PK=CATEGORY#<catId>     SK=META
     Transaction             PK=PROPERTY#<id>        SK=TXN#<invDate>#<txnId>
     Document (receipt)      PK=PROPERTY#<id>        SK=TXN#<invDate>#<txnId>#DOC#<docId>
     DepreciableAsset        PK=PROPERTY#<id>        SK=ASSET#<assetId>
     DepreciationScheduleRow PK=PROPERTY#<id>        SK=ASSET#<assetId>#SCHED#<taxYear>
+    Loan                    PK=PROPERTY#<id>        SK=LOAN#<loanId>
+    LoanYearRollup          PK=PROPERTY#<id>        SK=LOAN#<loanId>#YEAR#<taxYear>
     ImportSession           PK=IMPORT#<sessionId>   SK=META
     DraftTransaction        PK=IMPORT#<sessionId>   SK=DRAFT#<draftId>
+    Extraction_Job          PK=USER#<userId>        SK=SEEXTRACT#<jobId>
+    Package_Job             PK=USER#<userId>        SK=ACCTPKG#<jobId>
 
 Global secondary indexes:
 
@@ -30,6 +37,7 @@ Global secondary indexes:
     GSI2  tax-year-scoped access for a property
           Transaction     GSI2PK=PROPERTY#<id>#YEAR#<taxYear>  GSI2SK=TXN#<invDate>#<txnId>
           ScheduleRow     GSI2PK=PROPERTY#<id>#YEAR#<taxYear>  GSI2SK=SCHED#<assetId>
+          LoanYearRollup  GSI2PK=PROPERTY#<id>#YEAR#<taxYear>  GSI2SK=LOANYR#<loanId>
 
 Inverted-date encoding (design.md "Date-descending ordering"):
     invDate = 99999999 - YYYYMMDD
@@ -43,13 +51,14 @@ Standard library only; no boto3 or third-party imports.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime, timezone
 
 # --- Key prefixes / constants ------------------------------------------------
 
 USER_PREFIX = "USER#"
 PROPERTY_PREFIX = "PROPERTY#"
 PROP_PREFIX = "PROP#"
+BUSINESS_PREFIX = "BUSINESS#"
 USAGE_PREFIX = "USAGE#"
 PHOTO_PREFIX = "PHOTO#"
 CATEGORY_PREFIX = "CATEGORY#"
@@ -59,12 +68,20 @@ ASSET_PREFIX = "ASSET#"
 SCHED_PREFIX = "SCHED#"
 IMPORT_PREFIX = "IMPORT#"
 DRAFT_PREFIX = "DRAFT#"
+SEEXTRACT_PREFIX = "SEEXTRACT#"
+PACKAGE_JOB_PREFIX = "ACCTPKG#"
+ACT_PREFIX = "ACT#"
 YEAR_PREFIX = "YEAR#"
+PLCF_PREFIX = "PLCF#"
+LOAN_PREFIX = "LOAN#"
+LOAN_YEAR_MARKER = "#YEAR#"  # separates loan id from tax year inside a rollup SK
+GSI2_LOAN_YEAR_PREFIX = "LOANYR#"
 
 PROFILE_SK = "PROFILE"
 META_SK = "META"
 DETAILS_SK = "DETAILS"
 NOTE_SK = "NOTE"
+PLCF_OPENING_SK = "PLCF_OPENING"
 
 # Largest 8-digit YYYYMMDD (9999-12-31); used to invert dates for descending
 # sort order. invDate = INVERT_BASE - YYYYMMDD.
@@ -152,6 +169,23 @@ def usage_sk(tax_year: int) -> str:
     return f"{USAGE_PREFIX}{tax_year}"
 
 
+# --- Passive loss carryforward -----------------------------------------------
+
+def plcf_year_sk(tax_year: int) -> str:
+    """SK ``PLCF#<taxYear>`` for one per-year carryforward entry."""
+    return f"{PLCF_PREFIX}{tax_year}"
+
+
+def plcf_list_prefix() -> str:
+    """SK ``begins_with`` prefix to list a user's carryforward entries."""
+    return PLCF_PREFIX
+
+
+def plcf_opening_sk() -> str:
+    """SK of the single per-user opening-balance item (``USER#<id> / PLCF_OPENING``)."""
+    return PLCF_OPENING_SK
+
+
 # --- Property photo ----------------------------------------------------------
 
 def photo_sk(photo_id: str) -> str:
@@ -160,6 +194,38 @@ def photo_sk(photo_id: str) -> str:
 
 def photo_list_prefix() -> str:
     return PHOTO_PREFIX
+
+
+# --- Business ----------------------------------------------------------------
+
+def business_scoped_pk(business_id: str) -> str:
+    """PK for a business's child items (meta mirror, documents)."""
+    return f"{BUSINESS_PREFIX}{business_id}"
+
+
+def business_meta_sk() -> str:
+    """SK of the mirrored ``BUSINESS#<id> / META`` item."""
+    return META_SK
+
+
+def business_user_sk(business_id: str) -> str:
+    """SK of the ``USER#<id> / BUSINESS#<businessId>`` list item."""
+    return f"{BUSINESS_PREFIX}{business_id}"
+
+
+def business_list_prefix() -> str:
+    """SK ``begins_with`` prefix to list a user's businesses."""
+    return BUSINESS_PREFIX
+
+
+def business_document_sk(document_id: str) -> str:
+    """SK ``BUSINESS#<id> / DOC#<documentId>`` for one business document."""
+    return f"{DOC_PREFIX}{document_id}"
+
+
+def business_document_list_prefix() -> str:
+    """SK ``begins_with`` prefix to list a business's documents."""
+    return DOC_PREFIX
 
 
 # --- Schedule E category (reference data) ------------------------------------
@@ -212,6 +278,33 @@ def schedule_list_prefix(asset_id: str) -> str:
     return f"{ASSET_PREFIX}{asset_id}#{SCHED_PREFIX}"
 
 
+# --- Loan / loan year rollup -------------------------------------------------
+
+def loan_sk(loan_id: str) -> str:
+    """SK ``LOAN#<loanId>`` for a loan under ``PROPERTY#<id>``."""
+    return f"{LOAN_PREFIX}{loan_id}"
+
+
+def loan_list_prefix() -> str:
+    """SK ``begins_with`` prefix to list loans (filter out rollups with :func:`is_loan_year_sk`)."""
+    return LOAN_PREFIX
+
+
+def loan_year_sk(loan_id: str, tax_year: int) -> str:
+    """SK ``LOAN#<loanId>#YEAR#<taxYear>`` for one yearly rollup row."""
+    return f"{LOAN_PREFIX}{loan_id}{LOAN_YEAR_MARKER}{tax_year}"
+
+
+def loan_year_list_prefix(loan_id: str) -> str:
+    """SK ``begins_with`` prefix for all rollup rows of one loan."""
+    return f"{LOAN_PREFIX}{loan_id}{LOAN_YEAR_MARKER}"
+
+
+def is_loan_year_sk(sk: str) -> bool:
+    """True when ``sk`` is a loan rollup SK (``LOAN#<id>#YEAR#<year>``)."""
+    return sk.startswith(LOAN_PREFIX) and LOAN_YEAR_MARKER in sk
+
+
 # --- Import session / draft transaction --------------------------------------
 
 def import_pk(import_session_id: str) -> str:
@@ -229,6 +322,62 @@ def draft_sk(draft_id: str) -> str:
 def draft_list_prefix() -> str:
     """SK ``begins_with`` prefix to list drafts for an import session."""
     return DRAFT_PREFIX
+
+
+# --- Schedule E extraction job (transient, TTL'd, per-user) ------------------
+
+def extraction_job_sk(job_id: str) -> str:
+    """SK ``SEEXTRACT#<jobId>`` for a transient Schedule E extraction job.
+
+    Keyed under the owning ``USER#<userId>`` partition. The ``SEEXTRACT#``
+    prefix is deliberately distinct from the expense feature's ``IMPORT#`` /
+    ``DRAFT#`` keys so the two features share no storage keys (design.md
+    "Distinct storage keys", Req 13.2).
+    """
+    return f"{SEEXTRACT_PREFIX}{job_id}"
+
+
+def extraction_job_list_prefix() -> str:
+    """SK ``begins_with`` prefix to list a user's extraction jobs."""
+    return SEEXTRACT_PREFIX
+
+
+# --- Accountant package job (transient, TTL'd, per-user) ---------------------
+
+
+def package_job_sk(job_id: str) -> str:
+    """SK ``ACCTPKG#<jobId>`` for a transient accountant package job.
+
+    Keyed under the owning ``USER#<userId>`` partition.
+    """
+    return f"{PACKAGE_JOB_PREFIX}{job_id}"
+
+
+# --- Activity event (TTL'd, per-user) ----------------------------------------
+
+#: Largest 14-digit value; inverted epoch milliseconds = this - epoch_ms.
+ACTIVITY_INVERT_BASE = 99999999999999
+
+
+def activity_sk(at: datetime, event_id: str) -> str:
+    """SK ``ACT#<14-digit inverted ms>#<eventId>`` under ``USER#<userId>``.
+
+    A later ``at`` gives a smaller token, so an ascending scan is newest first.
+    """
+    if at.tzinfo is None:
+        at = at.replace(tzinfo=timezone.utc)
+    epoch_ms = int(at.timestamp() * 1000)
+    return f"{ACT_PREFIX}{ACTIVITY_INVERT_BASE - epoch_ms:014d}#{event_id}"
+
+
+def activity_list_prefix() -> str:
+    """SK ``begins_with`` prefix to list a user's activity events."""
+    return ACT_PREFIX
+
+
+def activity_gsi1_pk(property_id: str) -> str:
+    """GSI1PK ``PROPERTY#<id>`` for a property's activity view."""
+    return property_scoped_pk(property_id)
 
 
 # --- GSI1: reverse / cross-cutting lookups -----------------------------------
@@ -268,3 +417,13 @@ def gsi2_schedule_sk(asset_id: str) -> str:
 def gsi2_schedule_prefix() -> str:
     """GSI2 SK ``begins_with`` prefix for tax-year depreciation queries."""
     return SCHED_PREFIX
+
+
+def gsi2_loan_year_sk(loan_id: str) -> str:
+    """GSI2 sort key ``LOANYR#<loanId>`` for a loan rollup within a tax year."""
+    return f"{GSI2_LOAN_YEAR_PREFIX}{loan_id}"
+
+
+def gsi2_loan_year_prefix() -> str:
+    """GSI2 SK ``begins_with`` prefix for tax-year loan interest queries."""
+    return GSI2_LOAN_YEAR_PREFIX

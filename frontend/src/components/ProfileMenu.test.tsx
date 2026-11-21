@@ -5,6 +5,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProfileMenu } from "./ProfileMenu";
 import { ThemeProvider } from "../theme/ThemeProvider";
 import * as auth from "../lib/auth";
+import { NavigationGuardProvider } from "../lib/navigationGuard";
+import { SetupGuideProvider } from "../lib/setupGuide";
+import { ShortcutsProvider } from "./shortcuts/ShortcutsProvider";
 
 /**
  * Tests for the top-right profile menu. The signed-in user is derived from the
@@ -79,6 +82,54 @@ describe("ProfileMenu", () => {
     renderMenu();
     expect(
       screen.getByRole("button", { name: /account menu for account/i }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("ProfileMenu — setup guide", () => {
+  it("shows 'Show setup guide' only with a provider and calls it", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(auth, "getUserProfile").mockReturnValue(null);
+    const first = renderMenu();
+    await user.click(screen.getByRole("button", { name: /account menu/i }));
+    expect(screen.queryByRole("menuitem", { name: "Show setup guide" })).toBeNull();
+    first.unmount();
+
+    const show = vi.fn();
+    render(
+      <ThemeProvider>
+        <MemoryRouter>
+          <SetupGuideProvider showSetupGuide={show} resetSignal={0}>
+            <ProfileMenu />
+          </SetupGuideProvider>
+        </MemoryRouter>
+      </ThemeProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: /account menu/i }));
+    await user.click(screen.getByRole("menuitem", { name: "Show setup guide" }));
+    expect(show).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("ProfileMenu — keyboard shortcuts", () => {
+  it("offers 'Keyboard shortcuts' and opens the help dialog", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(auth, "getUserProfile").mockReturnValue(null);
+    render(
+      <ThemeProvider>
+        <MemoryRouter>
+          <NavigationGuardProvider>
+            <ShortcutsProvider>
+              <ProfileMenu />
+            </ShortcutsProvider>
+          </NavigationGuardProvider>
+        </MemoryRouter>
+      </ThemeProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: /account menu/i }));
+    await user.click(screen.getByRole("menuitem", { name: "Keyboard shortcuts" }));
+    expect(
+      await screen.findByRole("dialog", { name: /keyboard shortcuts/i }),
     ).toBeInTheDocument();
   });
 });

@@ -1,0 +1,1832 @@
+{
+  "blocks": [
+    {
+      "BlockType": "PAGE",
+      "Id": "page-1",
+      "Page": 1,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "l1",
+            "l2",
+            "l3",
+            "l4",
+            "l5",
+            "l6",
+            "l7",
+            "l8",
+            "l9",
+            "l10",
+            "l11",
+            "l12",
+            "l13",
+            "l14"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l1",
+      "Page": 1,
+      "Text": "Schedule E (Form 1040)",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l2",
+      "Page": 1,
+      "Text": "Income or Loss From Rental Real Estate and Royalties",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l3",
+      "Page": 1,
+      "Text": "For calendar year 2019",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l4",
+      "Page": 1,
+      "Text": "Part I",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l5",
+      "Page": 1,
+      "Text": "Properties:",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l6",
+      "Page": 1,
+      "Text": "3 Rents received",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l7",
+      "Page": 1,
+      "Text": "4 Royalties received",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l8",
+      "Page": 1,
+      "Text": "Physical address of each property (street, city, state, ZIP code)",
+      "Confidence": 99.0,
+      "Geometry": {
+        "BoundingBox": {
+          "Left": 0.096,
+          "Top": 0.194,
+          "Width": 0.35,
+          "Height": 0.011
+        }
+      }
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l9",
+      "Page": 1,
+      "Text": "1a",
+      "Confidence": 99.0,
+      "Geometry": {
+        "BoundingBox": {
+          "Left": 0.063,
+          "Top": 0.195,
+          "Width": 0.015,
+          "Height": 0.011
+        }
+      }
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l10",
+      "Page": 1,
+      "Text": "A",
+      "Confidence": 99.0,
+      "Geometry": {
+        "BoundingBox": {
+          "Left": 0.065,
+          "Top": 0.21,
+          "Width": 0.01,
+          "Height": 0.011
+        }
+      }
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l11",
+      "Page": 1,
+      "Text": "123 FAKE STREET SPRINGFIELD IL 62704",
+      "Confidence": 99.0,
+      "Geometry": {
+        "BoundingBox": {
+          "Left": 0.086,
+          "Top": 0.206,
+          "Width": 0.4,
+          "Height": 0.011
+        }
+      }
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l12",
+      "Page": 1,
+      "Text": "B",
+      "Confidence": 99.0,
+      "Geometry": {
+        "BoundingBox": {
+          "Left": 0.066,
+          "Top": 0.225,
+          "Width": 0.009,
+          "Height": 0.011
+        }
+      }
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l13",
+      "Page": 1,
+      "Text": "456 SAMPLE AVENUE APT 2 SHELBYVILLE IL 62565",
+      "Confidence": 99.0,
+      "Geometry": {
+        "BoundingBox": {
+          "Left": 0.086,
+          "Top": 0.221,
+          "Width": 0.45,
+          "Height": 0.011
+        }
+      }
+    },
+    {
+      "BlockType": "LINE",
+      "Id": "l14",
+      "Page": 1,
+      "Text": "C",
+      "Confidence": 99.0,
+      "Geometry": {
+        "BoundingBox": {
+          "Left": 0.065,
+          "Top": 0.24,
+          "Width": 0.009,
+          "Height": 0.011
+        }
+      }
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w15",
+      "Page": 1,
+      "Text": "A Did you make payments",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c15",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w15"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c17",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 2,
+      "Confidence": 99.0,
+      "Relationships": []
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w18",
+      "Page": 1,
+      "Text": "Yes",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c18",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w18"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c20",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": []
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w21",
+      "Page": 1,
+      "Text": "No",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c21",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 5,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w21"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w23",
+      "Page": 1,
+      "Text": "B If Yes did you file",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c23",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w23"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c25",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 2,
+      "Confidence": 99.0,
+      "Relationships": []
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w26",
+      "Page": 1,
+      "Text": "Yes",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c26",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w26"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c28",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": []
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w29",
+      "Page": 1,
+      "Text": "No",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c29",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 5,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w29"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "TABLE",
+      "Id": "t31",
+      "Page": 1,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "c15",
+            "c17",
+            "c18",
+            "c20",
+            "c21",
+            "c23",
+            "c25",
+            "c26",
+            "c28",
+            "c29"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w32",
+      "Page": 1,
+      "Text": "Income:",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c32",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w32"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w34",
+      "Page": 1,
+      "Text": "Properties:",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c34",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 2,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w34"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w36",
+      "Page": 1,
+      "Text": "A",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c36",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w36"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w38",
+      "Page": 1,
+      "Text": "B",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c38",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w38"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w40",
+      "Page": 1,
+      "Text": "C",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c40",
+      "Page": 1,
+      "RowIndex": 1,
+      "ColumnIndex": 8,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w40"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w42",
+      "Page": 1,
+      "Text": "3 Rents received",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c42",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w42"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w44",
+      "Page": 1,
+      "Text": "3",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c44",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w44"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w46",
+      "Page": 1,
+      "Text": "12000.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c46",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w46"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w48",
+      "Page": 1,
+      "Text": "9000.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c48",
+      "Page": 1,
+      "RowIndex": 2,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w48"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w50",
+      "Page": 1,
+      "Text": "4 Royalties received",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c50",
+      "Page": 1,
+      "RowIndex": 3,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w50"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w52",
+      "Page": 1,
+      "Text": "4",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c52",
+      "Page": 1,
+      "RowIndex": 3,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w52"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w54",
+      "Page": 1,
+      "Text": "0.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c54",
+      "Page": 1,
+      "RowIndex": 3,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w54"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w56",
+      "Page": 1,
+      "Text": "0.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c56",
+      "Page": 1,
+      "RowIndex": 3,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w56"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w58",
+      "Page": 1,
+      "Text": "5 Advertising",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c58",
+      "Page": 1,
+      "RowIndex": 4,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w58"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w60",
+      "Page": 1,
+      "Text": "5",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c60",
+      "Page": 1,
+      "RowIndex": 4,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w60"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w62",
+      "Page": 1,
+      "Text": "150.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c62",
+      "Page": 1,
+      "RowIndex": 4,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w62"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w64",
+      "Page": 1,
+      "Text": "7 Cleaning and maintenance",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c64",
+      "Page": 1,
+      "RowIndex": 5,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w64"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w66",
+      "Page": 1,
+      "Text": "7",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c66",
+      "Page": 1,
+      "RowIndex": 5,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w66"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w68",
+      "Page": 1,
+      "Text": "300.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c68",
+      "Page": 1,
+      "RowIndex": 5,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w68"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w70",
+      "Page": 1,
+      "Text": "450.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c70",
+      "Page": 1,
+      "RowIndex": 5,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w70"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w72",
+      "Page": 1,
+      "Text": "9 Insurance",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c72",
+      "Page": 1,
+      "RowIndex": 6,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w72"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w74",
+      "Page": 1,
+      "Text": "9",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c74",
+      "Page": 1,
+      "RowIndex": 6,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w74"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w76",
+      "Page": 1,
+      "Text": "500.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c76",
+      "Page": 1,
+      "RowIndex": 6,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w76"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w78",
+      "Page": 1,
+      "Text": "200.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c78",
+      "Page": 1,
+      "RowIndex": 6,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w78"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w80",
+      "Page": 1,
+      "Text": "11 Management fees",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c80",
+      "Page": 1,
+      "RowIndex": 7,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w80"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w82",
+      "Page": 1,
+      "Text": "11",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c82",
+      "Page": 1,
+      "RowIndex": 7,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w82"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w84",
+      "Page": 1,
+      "Text": "800.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c84",
+      "Page": 1,
+      "RowIndex": 7,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w84"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w86",
+      "Page": 1,
+      "Text": "600.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c86",
+      "Page": 1,
+      "RowIndex": 7,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w86"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w88",
+      "Page": 1,
+      "Text": "12 Mortgage interest",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c88",
+      "Page": 1,
+      "RowIndex": 8,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w88"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w90",
+      "Page": 1,
+      "Text": "12",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c90",
+      "Page": 1,
+      "RowIndex": 8,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w90"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w92",
+      "Page": 1,
+      "Text": "4000.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c92",
+      "Page": 1,
+      "RowIndex": 8,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w92"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w94",
+      "Page": 1,
+      "Text": "3000.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c94",
+      "Page": 1,
+      "RowIndex": 8,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w94"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w96",
+      "Page": 1,
+      "Text": "14 Repairs",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c96",
+      "Page": 1,
+      "RowIndex": 9,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w96"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w98",
+      "Page": 1,
+      "Text": "14",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c98",
+      "Page": 1,
+      "RowIndex": 9,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w98"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w100",
+      "Page": 1,
+      "Text": "250.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c100",
+      "Page": 1,
+      "RowIndex": 9,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w100"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w102",
+      "Page": 1,
+      "Text": "125.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c102",
+      "Page": 1,
+      "RowIndex": 9,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w102"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w104",
+      "Page": 1,
+      "Text": "16 Taxes",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c104",
+      "Page": 1,
+      "RowIndex": 10,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w104"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w106",
+      "Page": 1,
+      "Text": "16",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c106",
+      "Page": 1,
+      "RowIndex": 10,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w106"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w108",
+      "Page": 1,
+      "Text": "2200.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c108",
+      "Page": 1,
+      "RowIndex": 10,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w108"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w110",
+      "Page": 1,
+      "Text": "1800.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c110",
+      "Page": 1,
+      "RowIndex": 10,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w110"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w112",
+      "Page": 1,
+      "Text": "18 Depreciation expense",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c112",
+      "Page": 1,
+      "RowIndex": 11,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w112"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w114",
+      "Page": 1,
+      "Text": "18",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c114",
+      "Page": 1,
+      "RowIndex": 11,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w114"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w116",
+      "Page": 1,
+      "Text": "9999.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c116",
+      "Page": 1,
+      "RowIndex": 11,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w116"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w118",
+      "Page": 1,
+      "Text": "8888.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c118",
+      "Page": 1,
+      "RowIndex": 11,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w118"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w120",
+      "Page": 1,
+      "Text": "19 Other",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c120",
+      "Page": 1,
+      "RowIndex": 12,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w120"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w122",
+      "Page": 1,
+      "Text": "19",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c122",
+      "Page": 1,
+      "RowIndex": 12,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w122"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w124",
+      "Page": 1,
+      "Text": "100.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c124",
+      "Page": 1,
+      "RowIndex": 12,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w124"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w126",
+      "Page": 1,
+      "Text": "75.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c126",
+      "Page": 1,
+      "RowIndex": 12,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w126"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w128",
+      "Page": 1,
+      "Text": "20 Total expenses. Add lines 5 through 19",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c128",
+      "Page": 1,
+      "RowIndex": 13,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w128"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w130",
+      "Page": 1,
+      "Text": "20",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c130",
+      "Page": 1,
+      "RowIndex": 13,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w130"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w132",
+      "Page": 1,
+      "Text": "8200.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c132",
+      "Page": 1,
+      "RowIndex": 13,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w132"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w134",
+      "Page": 1,
+      "Text": "7250.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c134",
+      "Page": 1,
+      "RowIndex": 13,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w134"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w136",
+      "Page": 1,
+      "Text": "21 Subtract line 20 from line 3 (rents) and/or 4 (royalties)",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c136",
+      "Page": 1,
+      "RowIndex": 14,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w136"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w138",
+      "Page": 1,
+      "Text": "21",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c138",
+      "Page": 1,
+      "RowIndex": 14,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w138"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w140",
+      "Page": 1,
+      "Text": "3800.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c140",
+      "Page": 1,
+      "RowIndex": 14,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w140"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w142",
+      "Page": 1,
+      "Text": "1750.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c142",
+      "Page": 1,
+      "RowIndex": 14,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w142"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w144",
+      "Page": 1,
+      "Text": "22 Deductible rental real estate loss after limitation",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c144",
+      "Page": 1,
+      "RowIndex": 15,
+      "ColumnIndex": 1,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w144"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w146",
+      "Page": 1,
+      "Text": "22",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c146",
+      "Page": 1,
+      "RowIndex": 15,
+      "ColumnIndex": 3,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w146"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w148",
+      "Page": 1,
+      "Text": "0.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c148",
+      "Page": 1,
+      "RowIndex": 15,
+      "ColumnIndex": 4,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w148"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "WORD",
+      "Id": "w150",
+      "Page": 1,
+      "Text": "0.",
+      "Confidence": 99.0
+    },
+    {
+      "BlockType": "CELL",
+      "Id": "c150",
+      "Page": 1,
+      "RowIndex": 15,
+      "ColumnIndex": 6,
+      "Confidence": 99.0,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "w150"
+          ]
+        }
+      ]
+    },
+    {
+      "BlockType": "TABLE",
+      "Id": "t152",
+      "Page": 1,
+      "Relationships": [
+        {
+          "Type": "CHILD",
+          "Ids": [
+            "c32",
+            "c34",
+            "c36",
+            "c38",
+            "c40",
+            "c42",
+            "c44",
+            "c46",
+            "c48",
+            "c50",
+            "c52",
+            "c54",
+            "c56",
+            "c58",
+            "c60",
+            "c62",
+            "c64",
+            "c66",
+            "c68",
+            "c70",
+            "c72",
+            "c74",
+            "c76",
+            "c78",
+            "c80",
+            "c82",
+            "c84",
+            "c86",
+            "c88",
+            "c90",
+            "c92",
+            "c94",
+            "c96",
+            "c98",
+            "c100",
+            "c102",
+            "c104",
+            "c106",
+            "c108",
+            "c110",
+            "c112",
+            "c114",
+            "c116",
+            "c118",
+            "c120",
+            "c122",
+            "c124",
+            "c126",
+            "c128",
+            "c130",
+            "c132",
+            "c134",
+            "c136",
+            "c138",
+            "c140",
+            "c142",
+            "c144",
+            "c146",
+            "c148",
+            "c150"
+          ]
+        }
+      ]
+    }
+  ]
+}

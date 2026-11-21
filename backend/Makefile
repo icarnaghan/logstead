@@ -6,6 +6,13 @@
 # top-level `logstead` package resolves for the handler
 # `logstead.router.handler.handler`. The recipe runs with the function
 # CodeUri (backend/) as the working directory.
+#
+# PackageWorkerFunction (accountant package builder) is built from the same
+# source with the same recipe; its handler is
+# `logstead.worker.package_worker.handler`.
 
 build-ApiFunction:
+	pip install . --target "$(ARTIFACTS_DIR)"
+
+build-PackageWorkerFunction:
 	pip install . --target "$(ARTIFACTS_DIR)"

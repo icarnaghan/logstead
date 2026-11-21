@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   centsToMoney,
   formatMoney,
+  formatMoneyWholeDollars,
   isLoss,
   isPositiveAmount,
   sumMoney,
@@ -191,5 +192,37 @@ describe("formatMoney", () => {
   it("returns non-numeric input unchanged", () => {
     expect(formatMoney("not-a-number")).toBe("not-a-number");
     expect(formatMoney("12.3x")).toBe("12.3x");
+  });
+});
+
+
+// Feature: depreciation-override-and-whole-dollar-display, Req 8.1, 8.2, 8.4, 8.5, 8.6
+describe("formatMoneyWholeDollars — nearest-dollar display (Req 8)", () => {
+  it("rounds to the nearest whole dollar, half-up by magnitude", () => {
+    expect(formatMoneyWholeDollars("5090.91")).toBe("$5,091");
+    expect(formatMoneyWholeDollars("5090.10")).toBe("$5,090");
+    expect(formatMoneyWholeDollars("5090.50")).toBe("$5,091");
+    expect(formatMoneyWholeDollars("5090.49")).toBe("$5,090");
+    expect(formatMoneyWholeDollars("0.50")).toBe("$1");
+    expect(formatMoneyWholeDollars("0.49")).toBe("$0");
+  });
+
+  it("preserves the sign for losses, rounding the magnitude", () => {
+    expect(formatMoneyWholeDollars("-125.50")).toBe("-$126");
+    expect(formatMoneyWholeDollars("-125.49")).toBe("-$125");
+  });
+
+  it("renders a sub-dollar loss that rounds to zero as $0, not -$0", () => {
+    expect(formatMoneyWholeDollars("-0.01")).toBe("$0");
+    expect(formatMoneyWholeDollars("-0.49")).toBe("$0");
+    // Just over half a dollar still rounds (in magnitude) to -$1.
+    expect(formatMoneyWholeDollars("-0.50")).toBe("-$1");
+  });
+
+  it("passes through empty/null/undefined as '' and non-numeric unchanged", () => {
+    expect(formatMoneyWholeDollars("")).toBe("");
+    expect(formatMoneyWholeDollars(null)).toBe("");
+    expect(formatMoneyWholeDollars(undefined)).toBe("");
+    expect(formatMoneyWholeDollars("abc")).toBe("abc");
   });
 });

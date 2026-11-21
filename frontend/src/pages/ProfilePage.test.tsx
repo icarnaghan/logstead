@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
+import { MemoryRouter } from "react-router-dom";
 import ProfilePage from "./ProfilePage";
 import { ToastProvider } from "../components/ui";
 import type { UserProfile } from "../lib/auth";
@@ -18,10 +19,12 @@ import sampleBackup from "../data/sample-backup.json";
  * inside one. The toast APIs are portalled and do not affect the assertions
  * below.
  */
-function renderProfilePage() {
+function renderProfilePage(url = "/profile") {
   return render(
     <ToastProvider>
-      <ProfilePage />
+      <MemoryRouter initialEntries={[url]}>
+        <ProfilePage />
+      </MemoryRouter>
     </ToastProvider>,
   );
 }
@@ -273,15 +276,18 @@ describe("ProfilePage — Backup & restore: Download (Req 1.12)", () => {
 });
 
 describe("ProfilePage — Backup & restore: Restore from file (Req 6.1, 6.2)", () => {
-  /** Grab the hidden file input the "Restore from file" button proxies to. */
+  /** The labelled "Restore from file" input. */
   function fileInput(): HTMLInputElement {
-    // The only file input on the page is the restore uploader.
-    const input = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement | null;
-    if (!input) throw new Error("file input not found");
-    return input;
+    return screen.getByLabelText(/restore from file/i) as HTMLInputElement;
   }
+
+  it("labels the file input and names the accepted file type in its hint", () => {
+    renderProfilePage();
+
+    const input = fileInput();
+    expect(input).toHaveAttribute("type", "file");
+    expect(input).toHaveAccessibleDescription(/json/i);
+  });
 
   it("opens the confirm dialog when a valid JSON file is selected", async () => {
     const user = userEvent.setup();
@@ -339,6 +345,23 @@ describe("ProfilePage — Backup & restore: Restore from file (Req 6.1, 6.2)", (
     ).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(restoreBackup).not.toHaveBeenCalled();
+  });
+});
+
+describe("ProfilePage — focus=backup", () => {
+  it("focuses the backup heading and starts no download", () => {
+    renderProfilePage("/profile?focus=backup");
+    const heading = screen.getByRole("heading", { name: /backup & restore/i });
+    expect(heading).toHaveAttribute("tabindex", "-1");
+    expect(heading).toHaveFocus();
+    expect(fetchBackup).not.toHaveBeenCalled();
+  });
+
+  it("leaves focus alone without the parameter", () => {
+    renderProfilePage();
+    expect(
+      screen.getByRole("heading", { name: /backup & restore/i }),
+    ).not.toHaveFocus();
   });
 });
 

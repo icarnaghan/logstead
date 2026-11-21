@@ -1,4 +1,6 @@
 # Runtime dependencies for the Logstead API Lambda.
-boto3
-pdfplumber
-pypdf
+# Direct dependencies are pinned exactly; see docs/dependency-policy.md.
+boto3==1.44.3
+pdfplumber==0.11.10
+pypdf==7.1.0
+reportlab==5.1.0

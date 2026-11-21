@@ -20,7 +20,7 @@ export interface BreadcrumbProps {
 }
 
 const LINK_CLASSES = cn(
-  "rounded-sm text-fg-muted hover:text-accent hover:underline",
+  "relative rounded-sm text-fg-muted hover:text-accent hover:underline before:absolute before:-inset-2 before:content-['']",
   FOCUS_RING,
 );
 

@@ -1,0 +1,1052 @@
+{
+  "pbtResults": {
+    "7.3 Write property test for the preview": {
+      "status": "passed",
+      "lastRunTimestamp": 1794319131184
+    },
+    "8.6 Write property test for the add-override form": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321235238
+    },
+    "8.4 Write property test for yearly table formatting": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321240663
+    },
+    "1.6 Write property test for row arithmetic and balance recurrence": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321266032
+    },
+    "1.9 Write property test for extra principal monotonicity": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321322109
+    },
+    "1.7 Write property test for schedule shape, dates, termination, and determinism": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321324500
+    },
+    "1.10 Write property test for payoff-date prefix truncation": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321324565
+    },
+    "1.11 Write property test for re-anchoring consistency": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321324602
+    },
+    "1.8 Write property test for principal conservation": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321325395
+    },
+    "1.12 Write property test for yearly rollups, anchor year, and override-only rows": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321371305
+    },
+    "5.3 Write property test for backup round trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321829498
+    },
+    "3.6 Write property test for payoff set and clear round trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321894670
+    },
+    "3.10 Write property test for override set then clear": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321914056
+    },
+    "3.4 Write property test for serialization round trips": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321938797
+    },
+    "3.8 Write property test for override scope": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321941289
+    },
+    "3.5 Write property test for stored rollups equal engine output": {
+      "status": "passed",
+      "lastRunTimestamp": 1794321990105
+    },
+    "3.13 Write property test for informational fields": {
+      "status": "passed",
+      "lastRunTimestamp": 1794322070532
+    },
+    "4.1 Write property test for Line 12 with override-only years": {
+      "status": "passed",
+      "lastRunTimestamp": 1794322088204
+    },
+    "3.14 Write property test for validation": {
+      "status": "passed",
+      "lastRunTimestamp": 1794322152730
+    },
+    "5.4 Write property test for invalid Loan rejection": {
+      "status": "passed",
+      "lastRunTimestamp": 1794322222181
+    },
+    "4.2 Write property test for data years and carryforward": {
+      "status": "passed",
+      "lastRunTimestamp": 1794322300706
+    },
+    "3.9 Write property test for override retention on update": {
+      "status": "passed",
+      "lastRunTimestamp": 1794322363992
+    },
+    "3.11 Write property test for invalid overrides": {
+      "status": "passed",
+      "lastRunTimestamp": 1794322379232
+    },
+    "3.7 Write property test for exact, scoped delete and list": {
+      "status": "passed",
+      "lastRunTimestamp": 1794322380260
+    }
+  },
+  "executionHistory": {
+    "1.1 Update `backend/src/logstead/models/loan.py` to the anchor shape": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318966722
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318972576
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794319072242
+      }
+    ],
+    "1.2 Rewrite the projection engine in `backend/src/logstead/services/loan.py`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318966768
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794319077154
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320461560
+      }
+    ],
+    "1.3 Rewrite `validate_loan_fields` and `ValidatedLoan` for the anchor shape": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318966805
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321194140
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321274794
+      }
+    ],
+    "1.4 Update item builders and strict readers in `services/loan.py`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318966888
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321380651
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321524605
+      }
+    ],
+    "1.5 Generate the shared projection vectors": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318966923
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321531416
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321732718
+      }
+    ],
+    "1.6 Write property test for row arithmetic and balance recurrence": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318966968
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321196481
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321276232
+      }
+    ],
+    "1.7 Write property test for schedule shape, dates, termination, and determinism": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967006
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321278920
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321336119
+      }
+    ],
+    "1.8 Write property test for principal conservation": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967089
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321279683
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321336850
+      }
+    ],
+    "1.9 Write property test for extra principal monotonicity": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967136
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321280623
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321337660
+      }
+    ],
+    "1.10 Write property test for payoff-date prefix truncation": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967187
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321281278
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321338693
+      }
+    ],
+    "1.11 Write property test for re-anchoring consistency": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967237
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321281967
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321339743
+      }
+    ],
+    "1.12 Write property test for yearly rollups, anchor year, and override-only rows": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967322
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321340498
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321377222
+      }
+    ],
+    "1.14 Write golden-vector test for the engine": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967365
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321738538
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321840175
+      }
+    ],
+    "2. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967402
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322391945
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794327789537
+      }
+    ],
+    "3.1 Update `LoanService` create, update, delete, list, get, and `_write_loan`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967487
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321531506
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321734408
+      }
+    ],
+    "3.2 Update `schedule_for`, `set_interest_override`, and `clear_interest_override`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967520
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321738656
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321840308
+      }
+    ],
+    "3.3 Update the router in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967556
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321532167
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321731676
+      }
+    ],
+    "3.4 Write property test for serialization round trips": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967627
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321846042
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322000098
+      }
+    ],
+    "3.5 Write property test for stored rollups equal engine output": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967683
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321846166
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322000913
+      }
+    ],
+    "3.6 Write property test for payoff set and clear round trip": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967721
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321847029
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322001972
+      }
+    ],
+    "3.7 Write property test for exact, scoped delete and list": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967756
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322313354
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322385806
+      }
+    ],
+    "3.8 Write property test for override scope": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967818
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321847592
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322002826
+      }
+    ],
+    "3.9 Write property test for override retention on update": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967877
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322314388
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322386895
+      }
+    ],
+    "3.10 Write property test for override set then clear": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967918
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321848161
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322003477
+      }
+    ],
+    "3.11 Write property test for invalid overrides": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318967956
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322315125
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322387731
+      }
+    ],
+    "3.13 Write property test for informational fields": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968029
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322007507
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322180714
+      }
+    ],
+    "3.14 Write property test for validation": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968086
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322007630
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322181507
+      }
+    ],
+    "3.15 Update `backend/tests/services/test_loan_service.py` to the anchor shape": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968122
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322008478
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322182565
+      }
+    ],
+    "3.16 Update router tests to the anchor shape": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968158
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322009513
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322183355
+      }
+    ],
+    "4.1 Write property test for Line 12 with override-only years": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968246
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322010237
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322183997
+      }
+    ],
+    "4.2 Write property test for data years and carryforward": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968285
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322186770
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322309253
+      }
+    ],
+    "4.3 Update remaining report-side test fixtures": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968326
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322187594
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322308544
+      }
+    ],
+    "5.1 Update `backend/src/logstead/models/backup.py` `BackupLoan`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968371
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794319077327
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320459937
+      }
+    ],
+    "5.2 Update `backend/src/logstead/services/backup.py` export, validation, and restore": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968465
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321532941
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321733627
+      }
+    ],
+    "5.3 Write property test for backup round trip": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968502
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321739175
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321841108
+      }
+    ],
+    "5.4 Write property test for invalid Loan rejection": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968537
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322188300
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322310034
+      }
+    ],
+    "5.6 Update the sample backup and backup test fixtures": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968626
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321740232
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321840045
+      }
+    ],
+    "6. Checkpoint - Ensure all backend tests pass": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968669
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794327791921
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794330180345
+      }
+    ],
+    "7.1 Replace `defaultMonthlyPayment` with `projectLoan` in `frontend/src/lib/amortization.ts`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968708
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318973657
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794319072921
+      }
+    ],
+    "7.2 Add golden-vector assertions and remove the old vectors": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968749
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321740906
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321841825
+      }
+    ],
+    "7.3 Write property test for the preview": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968788
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794319077794
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320463111
+      }
+    ],
+    "7.4 Update `frontend/src/api/loans.ts` and `frontend/src/api/backup.ts` types": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968863
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318974134
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794319071384
+      }
+    ],
+    "7.5 Update `frontend/src/components/loans/loanFormModel.ts`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968903
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794319078645
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320462396
+      }
+    ],
+    "8.1 Update `LoanForm.tsx` and `LoanForm.test.tsx`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968937
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321194286
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321273749
+      }
+    ],
+    "8.2 Update `LoanList.tsx` and `LoanList.test.tsx`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318968971
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794319079325
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320460544
+      }
+    ],
+    "8.3 Update `YearlyRollupTable.tsx` and `YearlyRollupTable.test.tsx`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318969004
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320469194
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321188002
+      }
+    ],
+    "8.4 Write property test for yearly table formatting": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318969038
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321195135
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321275650
+      }
+    ],
+    "8.5 Add `PastYearOverrideForm.tsx` and `AnchorYearNotice.tsx`; update `EstimateNotice.tsx`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318969117
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320469542
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321188211
+      }
+    ],
+    "8.6 Write property test for the add-override form": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318969154
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321195878
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321273021
+      }
+    ],
+    "8.7 Wire hooks and `LoansPage`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318969187
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321381412
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321524387
+      }
+    ],
+    "9.1 Update `docs/data-model.md` and `backend/tests/infra/test_loan_docs.py`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318969221
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320470293
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321189058
+      }
+    ],
+    "9.2 Update `docs/api.md`, `CHANGELOG.md`, and `README.md`": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318969254
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794320471089
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321189644
+      }
+    ],
+    "10. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794318969304
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794330182736
+      },
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794330282902
+      }
+    ],
+    "9. Documentation and changelog": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321189680
+      }
+    ],
+    "8. Frontend components and page": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321524532
+      }
+    ],
+    "1. Backend models and pure engine": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321840243
+      }
+    ],
+    "7. Frontend projection, API types, and form model": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794321841871
+      }
+    ],
+    "4. Reports, dashboard, and carryforward": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322309305
+      }
+    ],
+    "5. Backup and restore": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322310079
+      }
+    ],
+    "3. LoanService, router, and loan tests": [
+      {
+        "executionId": "76992cd3-ca5a-4fa7-b409-e109b8178743",
+        "chatSessionId": "sess_6a1cf11f-2010-45d7-9f17-2095b1fac65e",
+        "timestamp": 1794322387795
+      }
+    ]
+  }
+}

@@ -1,0 +1,774 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Add the `SEEXTRACT#` key helpers to `repository/keys.py`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271962707
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271975599
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272156951
+      }
+    ],
+    "1.3 Add the Textract IAM statement to `ApiFunction` in `infra/template.yaml`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271962759
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271976995
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272151287
+      }
+    ],
+    "1.4 Add the `ExpireScheduleEImports` S3 lifecycle rule to `FilesBucket` in `infra/template.yaml`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271962806
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271978477
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272152651
+      }
+    ],
+    "1.5 Enable DynamoDB TTL on the `ttl` attribute of the `Logstead` table in `infra/template.yaml`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271962858
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271979891
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272154068
+      }
+    ],
+    "2.1 Define the extraction service-layer models": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271962905
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271981293
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272159301
+      }
+    ],
+    "3.1 Implement Schedule E Part I page location and the no-Schedule-E outcome": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271962956
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272174067
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272527678
+      }
+    ],
+    "3.2 Implement property-column + line-amount reading for the allow-set {3,4,5-17,19}": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963066
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272175515
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272528998
+      }
+    ],
+    "3.3 Implement per-column physical-address reading": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963127
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272176516
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272529926
+      }
+    ],
+    "3.4 Implement tax-year detection and per-value confidence": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963194
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272177935
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272531408
+      }
+    ],
+    "4.1 Implement `best_match(address, candidates) -> AddressMatch | None`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963263
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271982200
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272161583
+      }
+    ],
+    "5.1 Implement the `TextractAdapter` thin boto3 wrapper": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963315
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272179267
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272533657
+      }
+    ],
+    "6.1 Implement `Extraction_Job` persistence (serialize / deserialize)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963394
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272542771
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272898391
+      }
+    ],
+    "6.3 Implement `start_extraction(filename, content_type)`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963446
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272544300
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272897190
+      }
+    ],
+    "6.5 Implement `begin_extraction(job_id)`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963492
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272545185
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272897076
+      }
+    ],
+    "6.7 Implement `get_status(job_id)` polling with parse-once caching": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963544
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272546569
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272894644
+      }
+    ],
+    "6.9 Implement terminal-state auto-delete of the uploaded PDF": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963612
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272548040
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272893275
+      }
+    ],
+    "7.1 Add the lazy Textract adapter to the container wiring": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963663
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272918535
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273476644
+      }
+    ],
+    "7.2 Add `_require_textract` and `_extraction_service` constructors": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963713
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272913832
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273475662
+      }
+    ],
+    "7.3 Add the three thin extraction handlers": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963782
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272916197
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273474338
+      }
+    ],
+    "7.4 Register the extraction routes in `_ROUTES`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963925
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272921424
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273479454
+      }
+    ],
+    "9. Backend checkpoint": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271963981
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273884545
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792277287183
+      }
+    ],
+    "10.1 Implement the typed injectable extraction api module": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964043
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271983175
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272164384
+      }
+    ],
+    "11.1 Add the page shell, route, and nav entry": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964097
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272180320
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272536557
+      }
+    ],
+    "11.2 Implement the file picker + presign → PUT → begin flow": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964161
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272548924
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272906853
+      }
+    ],
+    "11.3 Implement the job-status poller hook and status rendering": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964220
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272550184
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272905950
+      }
+    ],
+    "12.1 Add additive seed props to `ScheduleEImportForm`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964265
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272181318
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272537247
+      }
+    ],
+    "12.2 Render the review screen seeded from the draft on `complete`/`draft`": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964316
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272919933
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273483238
+      }
+    ],
+    "12.3 Surface per-value confidence / \"please verify\" indicators": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964378
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272914785
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273481823
+      }
+    ],
+    "12.4 Wire confirm handoff to the unchanged `importScheduleE` and route layer-1 errors": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964441
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272922352
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273480846
+      }
+    ],
+    "12.5 Implement the manual-form fallback on no-Schedule-E / failure": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964493
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272917585
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273484589
+      }
+    ],
+    "13. Final checkpoint": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792271964549
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792277288266
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792277328461
+      }
+    ],
+    "1.6 Write an infra assertion test for the lifecycle rule and TTL": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272155508
+      }
+    ],
+    "1. Infra and key scaffolding": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272156999
+      }
+    ],
+    "1.2 Write unit tests for the `SEEXTRACT#` key helpers": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272158271
+      }
+    ],
+    "2. Service-layer models (`models/schedule_e_extraction.py`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272159385
+      }
+    ],
+    "2.2 Write unit tests for the extraction models": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272160740
+      }
+    ],
+    "4. Pure fuzzy address matcher (`services/address_match.py`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272161633
+      }
+    ],
+    "4.2 Write unit tests for the fuzzy matcher": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272162990
+      }
+    ],
+    "10. Frontend API module (`api/scheduleEExtraction.ts`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272164454
+      }
+    ],
+    "10.2 Write unit tests for the extraction api module": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272165116
+      }
+    ],
+    "3. Pure parser (`services/schedule_e_parser.py`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272531467
+      }
+    ],
+    "3.5 Write parser unit tests driven by canned Textract JSON fixtures": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272532690
+      }
+    ],
+    "5. Textract adapter (`adapters/textract.py`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272533695
+      }
+    ],
+    "5.2 Write adapter tests with a moto/fake Textract client": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272535056
+      }
+    ],
+    "6. ExtractionService (`services/schedule_e_extraction.py`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272898435
+      }
+    ],
+    "6.2 Write unit tests for job persistence round-trip (moto DynamoDB)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272899788
+      }
+    ],
+    "6.4 Write unit tests for `start_extraction` (moto S3/DynamoDB)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272900803
+      }
+    ],
+    "6.6 Write unit tests for `begin_extraction` (moto + fake Textract)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272902139
+      }
+    ],
+    "6.8 Write unit tests for `get_status` (moto + fake Textract)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272903547
+      }
+    ],
+    "6.10 Write unit tests for terminal-state PDF deletion": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272904494
+      }
+    ],
+    "11. Frontend upload + extract page (`pages/ScheduleEExtractionPage.tsx`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272906897
+      }
+    ],
+    "11.4 Write RTL + axe tests for the upload page and poller": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792272908069
+      }
+    ],
+    "7.5 Write handler/integration tests incl. a routing regression guard": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273478006
+      }
+    ],
+    "7. Routes and per-request wiring (`router/handler.py`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273479492
+      }
+    ],
+    "12. Frontend review screen (seed the existing layer-1 form)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273484629
+      }
+    ],
+    "12.6 Write RTL + axe tests for the review screen": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273485580
+      }
+    ],
+    "8.1 Property 1 — extraction never writes a transaction or property": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273490240
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273877973
+      }
+    ],
+    "8.5 Property 5 — no Line 18 (Depreciation) ever appears in a Review_Draft": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273491865
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273883135
+      }
+    ],
+    "8.2 Property 2 — the uploaded PDF is always deleted on a terminal state": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273492677
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273879382
+      }
+    ],
+    "8.3 Property 3 — amounts normalize to two-decimal money with no drift; unreadable values flagged, not dropped": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273494003
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273880729
+      }
+    ],
+    "8.4 Property 4 — per-user scoping isolates jobs, drafts, and uploaded objects": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273495303
+      },
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273881645
+      }
+    ],
+    "8. Backend correctness property tests (Hypothesis, `@settings(max_examples=100)`)": [
+      {
+        "executionId": "e714980d-21fb-4d92-80a0-24a80189960e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792273878015
+      }
+    ]
+  }
+}

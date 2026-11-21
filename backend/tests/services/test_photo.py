@@ -249,3 +249,72 @@ def test_delete_without_uploaded_object_still_removes_metadata(service, repo):
         )
         is None
     )
+
+
+# --- Cover selection ---------------------------------------------------------
+
+
+def _by_filename(service, filename):
+    """Return the listed PhotoWithUrl whose original filename matches."""
+    listed = service.list_photos(PROPERTY_ID)
+    assert listed.is_ok
+    return next(pw for pw in listed.value if pw.photo.original_filename == filename)
+
+
+def test_photos_default_to_not_cover(service):
+    service.request_upload(PROPERTY_ID, "front.jpg", "image/jpeg")
+    listed = service.list_photos(PROPERTY_ID)
+    assert listed.is_ok
+    assert all(pw.photo.is_cover is False for pw in listed.value)
+
+
+def test_set_cover_marks_one_photo(service):
+    a = service.request_upload(PROPERTY_ID, "a.jpg", "image/jpeg").value.photo
+    service.request_upload(PROPERTY_ID, "b.png", "image/png")
+
+    result = service.set_cover(PROPERTY_ID, a.id)
+    assert result.is_ok
+
+    cover = {pw.photo.original_filename for pw in service.list_photos(PROPERTY_ID).value if pw.photo.is_cover}
+    assert cover == {"a.jpg"}
+
+
+def test_set_cover_clears_the_previous_cover(service):
+    a = service.request_upload(PROPERTY_ID, "a.jpg", "image/jpeg").value.photo
+    b = service.request_upload(PROPERTY_ID, "b.png", "image/png").value.photo
+
+    assert service.set_cover(PROPERTY_ID, a.id).is_ok
+    assert service.set_cover(PROPERTY_ID, b.id).is_ok
+
+    covers = {pw.photo.original_filename for pw in service.list_photos(PROPERTY_ID).value if pw.photo.is_cover}
+    # Exactly one cover, and it is the most recently chosen (b), not a.
+    assert covers == {"b.png"}
+
+
+def test_set_cover_is_idempotent(service):
+    a = service.request_upload(PROPERTY_ID, "a.jpg", "image/jpeg").value.photo
+    assert service.set_cover(PROPERTY_ID, a.id).is_ok
+    assert service.set_cover(PROPERTY_ID, a.id).is_ok
+    covers = [pw for pw in service.list_photos(PROPERTY_ID).value if pw.photo.is_cover]
+    assert len(covers) == 1
+    assert covers[0].photo.id == a.id
+
+
+def test_set_cover_unknown_photo_is_not_found(service):
+    service.request_upload(PROPERTY_ID, "a.jpg", "image/jpeg")
+    result = service.set_cover(PROPERTY_ID, "does-not-exist")
+    assert not result.is_ok
+    assert result.error.kind == "not_found"
+    assert result.error.field == "photo_id"
+
+
+def test_set_cover_does_not_cross_properties(service):
+    a = service.request_upload(PROPERTY_ID, "a.jpg", "image/jpeg").value.photo
+    other = service.request_upload("prop-2", "other.jpg", "image/jpeg").value.photo
+
+    # Setting prop-2's photo as cover of PROPERTY_ID must fail (not its photo).
+    assert not service.set_cover(PROPERTY_ID, other.id).is_ok
+    # And prop-1's own cover selection does not flag prop-2's photo.
+    assert service.set_cover(PROPERTY_ID, a.id).is_ok
+    p2 = service.list_photos("prop-2").value
+    assert all(pw.photo.is_cover is False for pw in p2)

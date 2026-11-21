@@ -6,3 +6,4 @@
  * the component file path.
  */
 export { PropertyPhotos, default } from "./PropertyPhotos";
+export { PhotoLightbox } from "./PhotoLightbox";

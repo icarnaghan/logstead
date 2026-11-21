@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App.tsx";
 import AuthCallback from "./auth/AuthCallback.tsx";
 import RequireAuth from "./auth/RequireAuth.tsx";
+import { AppErrorBoundary } from "./components/AppErrorBoundary.tsx";
 import { ThemeProvider } from "./theme/ThemeProvider.tsx";
 import { ToastProvider } from "./components/ui/toast/ToastProvider.tsx";
 import "./index.css";
@@ -16,6 +17,7 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <ThemeProvider>
+      <AppErrorBoundary scope="app">
       <ToastProvider>
       <BrowserRouter>
       <Routes>
@@ -33,6 +35,7 @@ createRoot(rootElement).render(
       </Routes>
       </BrowserRouter>
       </ToastProvider>
+      </AppErrorBoundary>
     </ThemeProvider>
   </StrictMode>,
 );

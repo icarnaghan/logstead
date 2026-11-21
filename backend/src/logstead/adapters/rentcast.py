@@ -21,6 +21,7 @@ stub the HTTP response and never hit the network.
 
 from __future__ import annotations
 
+import logging
 import json
 import os
 import urllib.error
@@ -360,10 +361,14 @@ class RentCastAdapter:
         try:
             response = self._fetch(url, headers, self._timeout)
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
-            # Network error / timeout at the transport layer.
+            # Network error / timeout at the transport layer. The cause (host,
+            # errno) is logged, not returned.
+            logging.getLogger(__name__).warning(
+                "RentCast transport error: %s", type(exc).__name__
+            )
             return Result.failure(
                 "unavailable",
-                f"Property enrichment is temporarily unavailable: {exc}",
+                "Property enrichment is temporarily unavailable.",
             )
 
         status = response.status

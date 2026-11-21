@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "../ui";
+import { SAMPLE_DATA_LINK_LABEL } from "../../lib/emptyCopy";
 
 interface DashboardEmptyStateProps {
   /**
@@ -26,6 +27,11 @@ export function DashboardEmptyState({ prompt }: DashboardEmptyStateProps) {
       <Button asChild variant="primary" className="mt-4">
         <Link to="/properties">Add your first property</Link>
       </Button>
+      <div className="mt-3">
+        <Button asChild variant="secondary" size="sm">
+          <Link to="/profile?focus=backup">{SAMPLE_DATA_LINK_LABEL}</Link>
+        </Button>
+      </div>
     </div>
   );
 }

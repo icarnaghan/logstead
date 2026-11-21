@@ -166,6 +166,7 @@ class PhotoService:
             )
 
         photo_id = str(uuid.uuid4())
+        filename = s3_files.sanitize_filename(filename)
         # Namespace the S3 key by photo id so distinct uploads never collide even
         # when the original filenames match: photos/<propertyId>/<photoId>/<name>.
         s3_key = s3_files.photo_key(property_id, f"{photo_id}/{filename}")
@@ -199,6 +200,14 @@ class PhotoService:
         photos: list[PhotoWithUrl] = []
         for item in items:
             photo = _from_item(item)
+            # PUT URLs cannot cap size: drop any oversized upload on read.
+            if self._files.purge_if_oversized(
+                photo.s3_key, s3_files.MAX_IMAGE_BYTES
+            ):
+                self._repo.delete_item(
+                    keys.property_scoped_pk(property_id), keys.photo_sk(photo.id)
+                )
+                continue
             photos.append(
                 PhotoWithUrl(
                     photo=photo,
@@ -233,6 +242,49 @@ class PhotoService:
         self._repo.delete_item(pk, sk)
         return Result.success(None)
 
+    # --- Cover selection -----------------------------------------------------
+
+    def set_cover(self, property_id: str, photo_id: str) -> Result[None]:
+        """Mark one photo as the property's cover, clearing any previous cover.
+
+        The cover photo is the default image shown on the property card and
+        detail header. At most one photo per property is the cover, so this
+        clears ``isCover`` on every other photo in the property partition and
+        sets it on the chosen one in the same pass. A ``photo_id`` that does not
+        belong to the property yields a ``not_found`` failure. Re-selecting the
+        current cover is idempotent.
+        """
+        pk = keys.property_scoped_pk(property_id)
+        items = self._repo.query(
+            pk, sk_begins_with=keys.photo_list_prefix()
+        )
+        target = next((it for it in items if str(it.get("id")) == photo_id), None)
+        if target is None:
+            return Result.failure(
+                "not_found",
+                "Photo not found.",
+                field="photo_id",
+            )
+
+        for item in items:
+            photo = _from_item(item)
+            should_be_cover = photo.id == photo_id
+            if photo.is_cover != should_be_cover:
+                self._repo.put_item(
+                    _to_item(
+                        PropertyPhoto(
+                            id=photo.id,
+                            property_id=photo.property_id,
+                            s3_key=photo.s3_key,
+                            content_type=photo.content_type,
+                            original_filename=photo.original_filename,
+                            uploaded_at=photo.uploaded_at,
+                            is_cover=should_be_cover,
+                        )
+                    )
+                )
+        return Result.success(None)
+
 
 @dataclass(frozen=True)
 class PhotoWithUrl:
@@ -259,6 +311,7 @@ def _to_item(photo: PropertyPhoto) -> dict[str, Any]:
         "contentType": photo.content_type,
         "originalFilename": photo.original_filename,
         "uploadedAt": photo.uploaded_at,
+        "isCover": photo.is_cover,
     }
 
 
@@ -273,6 +326,7 @@ def _from_item(item: dict[str, Any]) -> PropertyPhoto:
         uploaded_at=(
             str(item["uploadedAt"]) if item.get("uploadedAt") is not None else None
         ),
+        is_cover=bool(item.get("isCover", False)),
     )
 
 

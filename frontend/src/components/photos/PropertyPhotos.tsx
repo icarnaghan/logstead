@@ -2,12 +2,13 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   ALLOWED_IMAGE_TYPES,
   ALLOWED_IMAGE_TYPES_LABEL,
-  isAllowedImageType,
   PhotosApi,
   photosApi as defaultPhotosApi,
   type PhotoWithUrl,
 } from "../../api/photos";
+import { resolveContentType } from "../../lib/contentType";
 import { Button } from "../ui";
+import { PhotoLightbox } from "./PhotoLightbox";
 
 interface PropertyPhotosProps {
   /** The property whose photos are managed. */
@@ -17,7 +18,11 @@ interface PropertyPhotosProps {
    */
   api?: Pick<
     PhotosApi,
-    "listPhotos" | "requestUpload" | "deletePhoto" | "uploadToPresignedUrl"
+    | "listPhotos"
+    | "requestUpload"
+    | "deletePhoto"
+    | "uploadToPresignedUrl"
+    | "setCover"
   >;
   /**
    * Confirmation hook for deletes. Defaults to `window.confirm`; tests can
@@ -55,6 +60,8 @@ export function PropertyPhotos({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [coveringId, setCoveringId] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<PhotoWithUrl | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const fileInputId = useId();
@@ -87,7 +94,8 @@ export function PropertyPhotos({
       setUploadError(null);
 
       // Client-side type validation before any network call (Requirement 4.2).
-      if (!isAllowedImageType(file.type)) {
+      const contentType = resolveContentType(file, ALLOWED_IMAGE_TYPES);
+      if (contentType === null) {
         setUploadError(
           `"${file.name}" is not an accepted image type. Accepted types are ${ALLOWED_IMAGE_TYPES_LABEL}.`,
         );
@@ -99,9 +107,14 @@ export function PropertyPhotos({
         const presigned = await api.requestUpload(
           propertyId,
           file.name,
-          file.type,
+          contentType,
         );
-        await api.uploadToPresignedUrl(presigned.upload_url, file);
+        // The PUT's Content-Type must match the signed type.
+        const body =
+          file.type === contentType
+            ? file
+            : new File([file], file.name, { type: contentType });
+        await api.uploadToPresignedUrl(presigned.upload_url, body);
         await refresh();
       } catch {
         setUploadError(
@@ -135,6 +148,24 @@ export function PropertyPhotos({
       }
     },
     [api, confirmDelete, propertyId, refresh],
+  );
+
+  const handleSetCover = useCallback(
+    async (item: PhotoWithUrl) => {
+      setUploadError(null);
+      setCoveringId(item.photo.id);
+      try {
+        await api.setCover(propertyId, item.photo.id);
+        await refresh();
+      } catch {
+        setUploadError(
+          `We couldn't set "${item.photo.original_filename}" as the cover. Please try again.`,
+        );
+      } finally {
+        setCoveringId(null);
+      }
+    },
+    [api, propertyId, refresh],
   );
 
   return (
@@ -222,30 +253,68 @@ export function PropertyPhotos({
                 key={item.photo.id}
                 className="overflow-hidden rounded-md border border-border"
               >
-                <img
-                  src={item.display_url}
-                  alt={item.photo.original_filename}
-                  className="aspect-square w-full object-cover"
-                />
-                <div className="flex items-center justify-between gap-2 p-2">
-                  <span className="truncate text-xs text-fg-muted">
-                    {item.photo.original_filename}
-                  </span>
+                <div className="relative">
+                  {/* Click the image to open the full-size lightbox view. */}
                   <button
                     type="button"
-                    onClick={() => void handleDelete(item)}
-                    disabled={deletingId === item.photo.id}
-                    className="shrink-0 rounded-md border border-danger px-2 py-1 text-xs font-medium text-danger hover:bg-danger-subtle focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:opacity-60"
+                    onClick={() => setLightbox(item)}
+                    aria-label={`View ${item.photo.original_filename} larger`}
+                    className="block w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
-                    {deletingId === item.photo.id
-                      ? "Deleting…"
-                      : `Delete ${item.photo.original_filename}`}
+                    <img
+                      src={item.display_url}
+                      alt={item.photo.original_filename}
+                      className="aspect-square w-full object-cover"
+                    />
                   </button>
+                  {item.photo.is_cover && (
+                    <span className="absolute left-1 top-1 rounded bg-accent px-1.5 py-0.5 text-xs font-medium text-accent-fg">
+                      Cover
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-2 p-2">
+                  <span className="block truncate text-xs text-fg-muted">
+                    {item.photo.original_filename}
+                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void handleSetCover(item)}
+                      disabled={item.photo.is_cover || coveringId === item.photo.id}
+                      aria-pressed={item.photo.is_cover}
+                      className="relative shrink-0 rounded-md border border-border px-2 py-1 text-xs before:absolute before:-inset-2 before:content-[''] max-md:before:-inset-3 font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                    >
+                      {item.photo.is_cover
+                        ? "Cover photo"
+                        : coveringId === item.photo.id
+                          ? "Setting…"
+                          : "Set as cover"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleDelete(item)}
+                      disabled={deletingId === item.photo.id}
+                      aria-label={`Delete ${item.photo.original_filename}`}
+                      className="relative shrink-0 rounded-md border border-danger px-2 py-1 text-xs before:absolute before:-inset-2 before:content-[''] max-md:before:-inset-3 font-medium text-danger hover:bg-danger-subtle focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:opacity-60"
+                    >
+                      {deletingId === item.photo.id ? "Deleting…" : "Delete"}
+                    </button>
+                  </div>
                 </div>
               </li>
             ))}
           </ul>
         ))}
+
+      <PhotoLightbox
+        open={lightbox !== null}
+        onOpenChange={(next) => {
+          if (!next) setLightbox(null);
+        }}
+        src={lightbox?.display_url ?? ""}
+        alt={lightbox?.photo.original_filename ?? "Property photo"}
+      />
     </section>
   );
 }

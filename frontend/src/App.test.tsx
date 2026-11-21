@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import App from "./App";
 import { ToastProvider } from "./components/ui";
+import { ThemeProvider } from "./theme/ThemeProvider";
 
 /**
  * Smoke test for the app shell and routing.
@@ -13,11 +14,11 @@ import { ToastProvider } from "./components/ui";
  */
 function renderAt(path: string) {
   return render(
-    <ToastProvider>
+    <ThemeProvider><ToastProvider>
       <MemoryRouter initialEntries={[path]}>
         <App />
       </MemoryRouter>
-    </ToastProvider>,
+    </ToastProvider></ThemeProvider>,
   );
 }
 
@@ -27,7 +28,7 @@ describe("App shell", () => {
     expect(
       screen.getByRole("navigation", { name: /primary/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/logstead/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Logstead home" })).toBeInTheDocument();
   });
 
   it("renders the Dashboard stub at the index route", () => {
@@ -51,6 +52,13 @@ describe("App shell", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("navigation", { name: /property sections/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the Loans page at /properties/:propertyId/loans", () => {
+    renderAt("/properties/abc-123/loans");
+    expect(
+      screen.getByRole("heading", { name: /^loans$/i }),
     ).toBeInTheDocument();
   });
 

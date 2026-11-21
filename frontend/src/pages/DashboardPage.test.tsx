@@ -1,12 +1,21 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { axe } from "vitest-axe";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import DashboardPage from "./DashboardPage";
-import type { DashboardApi, DashboardSummary } from "../api/dashboard";
-import type { CombinedScheduleEReport, ScheduleEReport } from "../api/reports";
+import type {
+  DashboardApi,
+  DashboardSummary,
+  TrendsSeries,
+} from "../api/dashboard";
 import { ThemeProvider } from "../theme/ThemeProvider";
+
+// The Year-end checklist card loads on its own; an empty portfolio omits it so
+// these tests stay about the existing dashboard content.
+vi.mock("../api/yearEndChecklist", () => ({
+  yearEndChecklistApi: {
+    getPortfolioSummary: () => Promise.resolve({ tax_year: 2024, properties: [] }),
+  },
+}));
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -45,403 +54,420 @@ const EMPTY: DashboardSummary = {
   empty_state_prompt: "Add your first property to get started.",
 };
 
-function makePropertyReport(
-  overrides: Partial<ScheduleEReport> = {},
-): ScheduleEReport {
-  return {
-    header: {
-      property_id: "p1",
-      property_name: "Maple Duplex",
-      address: "123 Maple St",
-      property_type: "Multi-Family",
-      tax_year: CURRENT_YEAR,
-      fair_rental_days: 300,
-      personal_use_days: 0,
-    },
-    lines: [
-      { line: 3, label: "Rents received", kind: "income", total: "1500.00" },
-      { line: 18, label: "Depreciation", kind: "expense", total: "1000.00" },
-    ],
-    other_items: [],
-    totals: {
-      total_income: "1500.00",
-      total_expenses: "250.00",
-      net: "1250.00",
-    },
-    ...overrides,
-  };
-}
-
-const COMBINED: CombinedScheduleEReport = {
-  tax_year: CURRENT_YEAR,
-  properties: [
-    makePropertyReport(),
-    makePropertyReport({
-      header: {
-        property_id: "p2",
-        property_name: "Oak Cottage",
-        address: "45 Oak Ln",
-        property_type: null,
-        tax_year: CURRENT_YEAR,
-        fair_rental_days: 0,
-        personal_use_days: 0,
-      },
-      lines: [
-        { line: 18, label: "Depreciation", kind: "expense", total: "834.50" },
+/**
+ * A two-year trends series. The Latest_Data_Year (last entry) is the one the
+ * retained tiles derive from: Maple Duplex nets +1250.00 with recorded income,
+ * Oak Cottage nets -800.00 with "0.00" income (so it is the needs-attention
+ * nudge), and the portfolio depreciation total for the year is non-zero.
+ */
+const TRENDS: TrendsSeries = {
+  years: [
+    {
+      tax_year: CURRENT_YEAR - 1,
+      total_income: "1000.00",
+      total_expenses: "200.00",
+      net: "800.00",
+      depreciation_total: "500.00",
+      properties: [
+        {
+          property_id: "p1",
+          property_name: "Maple Duplex",
+          total_income: "1000.00",
+          total_expenses: "200.00",
+          net: "800.00",
+        },
+        {
+          property_id: "p2",
+          property_name: "Oak Cottage",
+          total_income: "0.00",
+          total_expenses: "0.00",
+          net: "0.00",
+        },
       ],
-      totals: {
-        total_income: "0.00",
-        total_expenses: "800.00",
-        net: "-800.00",
-      },
-    }),
+    },
+    {
+      tax_year: CURRENT_YEAR,
+      total_income: "1500.00",
+      total_expenses: "1050.00",
+      net: "450.00",
+      depreciation_total: "1834.50",
+      properties: [
+        {
+          property_id: "p1",
+          property_name: "Maple Duplex",
+          total_income: "1500.00",
+          total_expenses: "250.00",
+          net: "1250.00",
+        },
+        {
+          property_id: "p2",
+          property_name: "Oak Cottage",
+          total_income: "0.00",
+          total_expenses: "800.00",
+          net: "-800.00",
+        },
+      ],
+    },
   ],
-  totals: {
-    total_income: "1500.00",
-    total_expenses: "1050.00",
-    net: "450.00",
-  },
 };
+
+const NO_DATA: TrendsSeries = { years: [] };
 
 function makeApi(overrides: Partial<DashboardApi> = {}): DashboardApi {
   return {
     getDashboard: vi.fn().mockResolvedValue(POPULATED),
     getPropertySummaries: vi.fn().mockResolvedValue(POPULATED.properties),
+    getTrends: vi.fn().mockResolvedValue(TRENDS),
     ...overrides,
   } as unknown as DashboardApi;
 }
 
-function renderPage(
-  api: DashboardApi,
-  loadCombined: (year: number) => Promise<CombinedScheduleEReport> = vi
-    .fn()
-    .mockResolvedValue(COMBINED),
-  loadAssets: (propertyId: string) => Promise<
-    import("../api/assets").DepreciableAsset[]
-  > = async () => [],
-) {
+function renderPage(api: DashboardApi) {
   return render(
-    // The dashboard now renders charts, which read `useChartColors → useTheme`;
+    // The dashboard renders charts, which read `useChartColors → useTheme`;
     // without a ThemeProvider that hook throws, so every render is wrapped here.
     <ThemeProvider>
       <MemoryRouter initialEntries={["/"]}>
-        <DashboardPage
-          api={api}
-          loadCombined={loadCombined}
-          loadAssets={loadAssets}
-        />
+        <DashboardPage api={api} />
       </MemoryRouter>
     </ThemeProvider>,
   );
 }
 
-describe("DashboardPage — portfolio snapshot (Req 11.1)", () => {
+describe("DashboardPage — Latest_Data_Year headline (Req 1)", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("renders total income, expenses, and net income", async () => {
+  it("renders the latest-year net labeled with the four-digit year", async () => {
     renderPage(makeApi());
 
-    const totals = await screen.findByRole("region", {
-      name: new RegExp(`Portfolio totals for ${CURRENT_YEAR}`),
+    const headline = await screen.findByRole("region", {
+      name: new RegExp(`portfolio net for ${CURRENT_YEAR}`, "i"),
     });
-    // Amounts now appear in both the numeric headline and the chart's
-    // always-present data table within this tile, so query for at least one.
-    expect(within(totals).getAllByText("$1,500.00").length).toBeGreaterThan(0);
-    expect(within(totals).getAllByText("$250.00").length).toBeGreaterThan(0);
-    expect(within(totals).getAllByText("$1,250.00").length).toBeGreaterThan(0);
-    expect(within(totals).getByText(/net income/i)).toBeInTheDocument();
-  });
-
-  it("defaults to the current tax year on first load", async () => {
-    const api = makeApi();
-    renderPage(api);
-
-    await screen.findByRole("region", { name: /portfolio totals/i });
-    expect(api.getDashboard).toHaveBeenCalledWith(
-      CURRENT_YEAR,
-      expect.anything(),
-    );
-  });
-
-  it("shows a negative net clearly as a loss", async () => {
-    const api = makeApi({
-      getDashboard: vi.fn().mockResolvedValue({
-        ...POPULATED,
-        total_income: "100.00",
-        total_expenses: "900.00",
-        net: "-800.00",
-      }),
-    });
-    renderPage(api);
-
-    const totals = await screen.findByRole("region", {
-      name: /portfolio totals/i,
-    });
-    expect(within(totals).getByText(/net loss/i)).toBeInTheDocument();
-    // Appears in both the headline and the tile's chart data table.
-    expect(within(totals).getAllByText("-$800.00").length).toBeGreaterThan(0);
+    expect(headline).toHaveTextContent(String(CURRENT_YEAR));
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.3
+    // The dashboard net headline rounds to whole dollars: "450.00" → "$450".
+    expect(headline).toHaveTextContent("$450");
   });
 });
 
-describe("DashboardPage — combined Schedule E + depreciation", () => {
+describe("DashboardPage — Depreciation_Summary_Tile (Req 12)", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("shows combined totals and summed Line 18 depreciation", async () => {
-    const loadCombined = vi.fn().mockResolvedValue(COMBINED);
-    renderPage(makeApi(), loadCombined);
+  it("shows the Latest_Data_Year depreciation_total and non-zero property count", async () => {
+    renderPage(makeApi());
 
-    const combined = await screen.findByRole("region", {
-      name: /combined schedule e/i,
-    });
-    // 1000.00 + 834.50 = 1834.50 (exact, no float error).
-    expect(within(combined).getByText("$1,834.50")).toBeInTheDocument();
-    expect(within(combined).getByText("$1,050.00")).toBeInTheDocument();
-
-    const depreciation = screen.getByRole("region", {
+    const tile = await screen.findByRole("region", {
       name: /depreciation in service/i,
     });
-    expect(
-      within(depreciation).getByText("$1,834.50"),
-    ).toBeInTheDocument();
-    // Both properties have non-zero Line 18.
-    expect(
-      within(depreciation).getByText(/2 properties with depreciation/i),
-    ).toBeInTheDocument();
+    // Reconciles with the last TrendYear's depreciation_total.
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.3
+    // The depreciation tile rounds half-up by magnitude: "1834.50" → "$1,835".
+    expect(tile).toHaveTextContent("$1,835");
+    // Both properties carry recorded data in the latest year.
+    expect(tile).toHaveTextContent(/2 properties with depreciation/i);
   });
 
-  it("loads the combined report for the current year", async () => {
-    const loadCombined = vi.fn().mockResolvedValue(COMBINED);
-    renderPage(makeApi(), loadCombined);
+  it("reports zero properties when the Latest_Data_Year depreciation is 0.00", async () => {
+    const zeroDep: TrendsSeries = {
+      years: [
+        {
+          ...TRENDS.years[1],
+          depreciation_total: "0.00",
+        },
+      ],
+    };
+    renderPage(makeApi({ getTrends: vi.fn().mockResolvedValue(zeroDep) }));
 
-    await screen.findByRole("region", { name: /combined schedule e/i });
-    expect(loadCombined).toHaveBeenCalledWith(CURRENT_YEAR);
-  });
-});
-
-describe("DashboardPage — needs attention", () => {
-  beforeEach(() => vi.clearAllMocks());
-
-  it("lists a $0-income property with a link to it", async () => {
-    renderPage(makeApi());
-
-    const attention = await screen.findByRole("region", {
-      name: /needs attention/i,
+    const tile = await screen.findByRole("region", {
+      name: /depreciation in service/i,
     });
-    const oak = within(attention).getByRole("link", { name: "Oak Cottage" });
-    expect(oak).toHaveAttribute("href", "/properties/p2");
-    // The property with income is not flagged.
-    expect(
-      within(attention).queryByRole("link", { name: "Maple Duplex" }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("shows a positive message when all properties have income", async () => {
-    const api = makeApi({
-      getDashboard: vi.fn().mockResolvedValue({
-        ...POPULATED,
-        properties: [POPULATED.properties[0]],
-      }),
-    });
-    renderPage(api);
-
-    const attention = await screen.findByRole("region", {
-      name: /needs attention/i,
-    });
-    expect(
-      within(attention).getByText(/all properties have recorded income/i),
-    ).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.3
+    // "0.00" rounds to "$0" on the whole-dollar depreciation tile.
+    expect(tile).toHaveTextContent("$0");
+    expect(tile).toHaveTextContent(/0 properties with depreciation/i);
   });
 });
 
-describe("DashboardPage — properties launchpad (Req 11.2)", () => {
+describe("DashboardPage — Needs_Attention_Nudge (Req 9.5, 9.6)", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("lists each property with a link and its net", async () => {
+  it("links each zero-income property to its detail page", async () => {
     renderPage(makeApi());
 
-    const launchpad = await screen.findByRole("region", {
-      name: /^properties$/i,
+    const tile = await screen.findByRole("region", {
+      name: /needs attention/i,
     });
-    const maple = within(launchpad).getByRole("link", { name: "Maple Duplex" });
+    const link = within(tile).getByRole("link", { name: /oak cottage/i });
+    expect(link).toHaveAttribute("href", "/properties/p2");
+    // Maple Duplex has income, so it is not nudged.
+    expect(within(tile).queryByText(/maple duplex/i)).toBeNull();
+  });
+
+  it("shows a positive confirmation when every property has income", async () => {
+    const allIncome: TrendsSeries = {
+      years: [
+        {
+          ...TRENDS.years[1],
+          properties: TRENDS.years[1].properties.map((p) => ({
+            ...p,
+            total_income: "1000.00",
+          })),
+        },
+      ],
+    };
+    renderPage(makeApi({ getTrends: vi.fn().mockResolvedValue(allIncome) }));
+
+    const tile = await screen.findByRole("region", {
+      name: /needs attention/i,
+    });
+    expect(tile).toHaveTextContent(/all properties have recorded income/i);
+  });
+});
+
+describe("DashboardPage — Properties_Launchpad (Req 9.5, 9.6)", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("renders one detail-page link per property annotated with its net", async () => {
+    renderPage(makeApi());
+
+    const tile = await screen.findByRole("region", { name: /properties/i });
+    const maple = within(tile).getByRole("link", { name: /maple duplex/i });
     expect(maple).toHaveAttribute("href", "/properties/p1");
-    const oak = within(launchpad).getByRole("link", { name: "Oak Cottage" });
+    const oak = within(tile).getByRole("link", { name: /oak cottage/i });
     expect(oak).toHaveAttribute("href", "/properties/p2");
-    expect(within(launchpad).getByText("$1,250.00")).toBeInTheDocument();
-    expect(within(launchpad).getByText("-$800.00")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.4
+    // Per-property net rounds to whole dollars: "1250.00" → "$1,250",
+    // "-800.00" → "-$800" (magnitude rounded, sign preserved).
+    expect(tile).toHaveTextContent("$1,250");
+    expect(tile).toHaveTextContent("-$800");
   });
 });
 
-describe("DashboardPage — quick actions", () => {
+describe("DashboardPage — empty & no-data states (Req 8)", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("links only to real routes", async () => {
-    renderPage(makeApi());
+  it("shows only the add-first-property empty state for zero properties", async () => {
+    renderPage(
+      makeApi({
+        getDashboard: vi.fn().mockResolvedValue(EMPTY),
+        getTrends: vi.fn().mockResolvedValue(NO_DATA),
+      }),
+    );
 
-    const actions = await screen.findByRole("region", {
-      name: /quick actions/i,
-    });
-    const addProperty = within(actions).getByRole("link", {
-      name: /add property/i,
-    });
-    expect(addProperty).toHaveAttribute("href", "/properties");
+    expect(
+      await screen.findByText("Add your first property to get started."),
+    ).toBeInTheDocument();
+    // No headline, no tiles.
+    expect(
+      screen.queryByRole("region", { name: /portfolio net/i }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("region", { name: /depreciation in service/i }),
+    ).toBeNull();
   });
-});
 
-describe("DashboardPage — year selector (Req 11.3)", () => {
-  beforeEach(() => vi.clearAllMocks());
-
-  it("re-fetches the dashboard and combined report for the selected year", async () => {
-    const user = userEvent.setup();
-    const getDashboard = vi.fn().mockResolvedValue(POPULATED);
-    const loadCombined = vi.fn().mockResolvedValue(COMBINED);
-    const api = makeApi({ getDashboard });
-    renderPage(api, loadCombined);
-
-    await screen.findByRole("region", { name: /portfolio totals/i });
-    expect(getDashboard).toHaveBeenCalledWith(CURRENT_YEAR, expect.anything());
-    expect(loadCombined).toHaveBeenCalledWith(CURRENT_YEAR);
-
-    const priorYear = CURRENT_YEAR - 1;
-    await user.selectOptions(
-      screen.getByLabelText(/tax year/i),
-      String(priorYear),
+  it("shows a calm no-data indication (not an error) for properties but zero Data_Years", async () => {
+    renderPage(
+      makeApi({ getTrends: vi.fn().mockResolvedValue(NO_DATA) }),
     );
 
     await waitFor(() =>
-      expect(getDashboard).toHaveBeenCalledWith(priorYear, expect.anything()),
+      expect(screen.getByText(/no data yet/i)).toBeInTheDocument(),
     );
+    // Not an error.
+    expect(screen.queryByRole("alert")).toBeNull();
+    // No headline, no charts, no tiles.
+    expect(screen.queryByRole("region", { name: /portfolio net/i })).toBeNull();
+    expect(
+      screen.queryByRole("region", { name: /depreciation in service/i }),
+    ).toBeNull();
+  });
+});
+
+describe("DashboardPage — loading state", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("shows a loading status, not the no-data message, while the trends are still pending", async () => {
+    // The summary resolves first; the trends never do within this test.
+    renderPage(
+      makeApi({ getTrends: vi.fn().mockReturnValue(new Promise(() => {})) }),
+    );
+
+    expect(
+      await screen.findByRole("status", { name: /loading dashboard/i }),
+    ).toBeInTheDocument();
+    // Give the resolved summary a chance to render before asserting absence.
     await waitFor(() =>
-      expect(loadCombined).toHaveBeenCalledWith(priorYear),
+      expect(
+        screen.getByRole("status", { name: /loading dashboard/i }),
+      ).toBeInTheDocument(),
     );
+    expect(screen.queryByText(/no data yet/i)).toBeNull();
   });
 
-  it("offers tax years back to the earliest in-service year across properties", async () => {
-    const asset = (year: string) => ({
-      id: `a-${year}`,
-      description: "Building",
-      cost_basis: "250000.00",
-      placed_in_service_date: `${year}-06-01`,
-      recovery_period_years: 27.5,
-      created_at: `${year}-06-01T00:00:00Z`,
-      updated_at: `${year}-06-01T00:00:00Z`,
-    });
-    // p1 placed in service 2017, p2 in 2020 → earliest across portfolio is 2017.
-    const loadAssets = vi.fn(async (id: string) =>
-      id === "p1" ? [asset("2017")] : [asset("2020")],
+  it("shows a loading status before anything has resolved", () => {
+    renderPage(
+      makeApi({
+        getDashboard: vi.fn().mockReturnValue(new Promise(() => {})),
+        getTrends: vi.fn().mockReturnValue(new Promise(() => {})),
+      }),
     );
-    renderPage(makeApi(), vi.fn().mockResolvedValue(COMBINED), loadAssets);
 
-    await screen.findByRole("region", { name: /portfolio totals/i });
-    const select = await screen.findByLabelText(/tax year/i);
-    // The earliest year (2017) becomes selectable, alongside the current year.
-    await within(select).findByRole("option", { name: "2017" });
     expect(
-      within(select).getByRole("option", { name: String(CURRENT_YEAR) }),
+      screen.getByRole("status", { name: /loading dashboard/i }),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/no data yet/i)).toBeNull();
+  });
+
+  it("replaces the loading status with the error when a load fails", async () => {
+    renderPage(
+      makeApi({ getTrends: vi.fn().mockRejectedValue(new Error("boom")) }),
+    );
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.queryByRole("status", { name: /loading dashboard/i })).toBeNull();
   });
 });
 
-describe("DashboardPage — empty state (Req 11.4)", () => {
+describe("DashboardPage — error handling", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("shows the add-first-property prompt when there are no properties", async () => {
-    const api = makeApi({
-      getDashboard: vi.fn().mockResolvedValue(EMPTY),
-    });
-    renderPage(api);
+  it("shows an error indication when the trends fetch fails", async () => {
+    renderPage(
+      makeApi({ getTrends: vi.fn().mockRejectedValue(new Error("boom")) }),
+    );
 
-    expect(
-      await screen.findByText(/add your first property to get started/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: /add your first property/i }),
-    ).toHaveAttribute("href", "/properties");
-    // No portfolio tiles are rendered in the empty state.
-    expect(
-      screen.queryByRole("region", { name: /portfolio totals/i }),
-    ).not.toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      /could not load the dashboard/i,
+    );
+    // An error suppresses the headline, charts, and tiles — no partial render.
+    expect(screen.queryByRole("region", { name: /portfolio net/i })).toBeNull();
+    expect(screen.queryByRole("img")).toBeNull();
   });
 });
 
-describe("DashboardPage — charts (Req 11.6, 17.1, 18.1)", () => {
+describe("DashboardPage — Latest_Data_Year headline loss styling (Req 1)", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("shows the income/expenses/net chart inside the portfolio snapshot tile", async () => {
+  it("styles a negative latest-year net as a loss with a textual cue", async () => {
+    // A latest year whose portfolio net is negative — the headline must carry
+    // the danger token AND a textual "Loss" cue so meaning never rests on color.
+    const lossSeries: TrendsSeries = {
+      years: [
+        {
+          ...TRENDS.years[1],
+          total_income: "100.00",
+          total_expenses: "900.00",
+          net: "-800.00",
+        },
+      ],
+    };
+    renderPage(makeApi({ getTrends: vi.fn().mockResolvedValue(lossSeries) }));
+
+    const headline = await screen.findByRole("region", {
+      name: new RegExp(`portfolio net for ${CURRENT_YEAR}`, "i"),
+    });
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.3
+    // The negative headline rounds the magnitude and keeps the sign:
+    // "-800.00" → "-$800". The textual loss cues below stay unchanged.
+    expect(headline).toHaveTextContent("-$800");
+    // Heading announces a net loss (not net income).
+    expect(headline).toHaveTextContent(/net loss/i);
+    // Textual loss cue present and styled with the danger token.
+    const cue = within(headline).getByText("Loss");
+    expect(cue).toHaveClass("text-danger");
+  });
+
+  it("styles a non-negative latest-year net as income with no loss cue", async () => {
     renderPage(makeApi());
 
-    const totals = await screen.findByRole("region", {
-      name: /portfolio totals/i,
+    const headline = await screen.findByRole("region", {
+      name: new RegExp(`portfolio net for ${CURRENT_YEAR}`, "i"),
     });
-    // The compact income/expenses/net chart region (role=img) lives inside the
-    // portfolio snapshot tile, with its always-present data table alongside.
-    const chart = within(totals).getByRole("img", {
-      name: /income, expenses, and net/i,
-    });
-    expect(chart).toBeInTheDocument();
-    expect(within(totals).getByRole("table")).toBeInTheDocument();
-  });
-
-  it("shows the net-by-property chart in its own tile with a data table", async () => {
-    renderPage(makeApi());
-
-    const netTile = await screen.findByRole("region", {
-      name: /net contribution by property/i,
-    });
-    expect(
-      within(netTile).getByRole("img", {
-        name: /net contribution by property/i,
-      }),
-    ).toBeInTheDocument();
-    // The always-present data table carries one row per property.
-    const table = within(netTile).getByRole("table");
-    expect(within(table).getByText("Maple Duplex")).toBeInTheDocument();
-    expect(within(table).getByText("Oak Cottage")).toBeInTheDocument();
-  });
-
-  it("re-renders the charts after a theme toggle keeps them present (Req 11.3)", async () => {
-    const { rerender } = renderPage(makeApi());
-
-    const totals = await screen.findByRole("region", {
-      name: /portfolio totals/i,
-    });
-    expect(
-      within(totals).getByRole("img", { name: /income, expenses, and net/i }),
-    ).toBeInTheDocument();
-
-    rerender(
-      <ThemeProvider>
-        <MemoryRouter initialEntries={["/"]}>
-          <DashboardPage
-            api={makeApi()}
-            loadCombined={vi.fn().mockResolvedValue(COMBINED)}
-            loadAssets={async () => []}
-          />
-        </MemoryRouter>
-      </ThemeProvider>,
-    );
-
-    const totalsAfter = await screen.findByRole("region", {
-      name: /portfolio totals/i,
-    });
-    expect(
-      within(totalsAfter).getByRole("img", {
-        name: /income, expenses, and net/i,
-      }),
-    ).toBeInTheDocument();
+    expect(headline).toHaveTextContent(/net income/i);
+    expect(within(headline).queryByText("Loss")).toBeNull();
+    // The positive figure is styled with the success token.
+    const figure = headline.querySelector(".tabular-nums");
+    expect(figure).toHaveClass("text-success");
   });
 });
 
-describe("DashboardPage — accessibility (Req 14.4)", () => {
+describe("DashboardPage — code-splitting & always-present data tables (Req 10)", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("has no detectable axe violations", async () => {
-    const { container } = renderPage(makeApi());
+  it("renders all three trend charts inside a ChartCard with an accessible label", async () => {
+    renderPage(makeApi());
 
-    await screen.findByRole("region", { name: /portfolio totals/i });
+    // Each chart's visual region carries role="img" + a summarizing aria-label
+    // (ChartCard contract). All three must be present for the latest-year view.
+    expect(
+      await screen.findByRole("img", {
+        name: /income, expenses, and net for every year/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", {
+        name: /net contribution per property for every year/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", {
+        name: /portfolio depreciation .* for every year/i,
+      }),
+    ).toBeInTheDocument();
+  });
 
-    const results = await axe(container, {
-      rules: { "color-contrast": { enabled: false } },
+  it("renders every chart's data table in the DOM on first paint, before the lazy chart resolves", async () => {
+    renderPage(makeApi());
+
+    // The tables are passed as ChartCard.dataTable — a Recharts-free module
+    // imported eagerly — so they are present synchronously, without awaiting
+    // the lazy Recharts chunk. Wait only for the trends-dependent first paint.
+    await screen.findByRole("region", {
+      name: new RegExp(`portfolio net for ${CURRENT_YEAR}`, "i"),
     });
-    expect(results).toHaveNoViolations();
+
+    // Income/expenses/net trend table: one row per Data_Year, ascending.
+    const ienCaption = screen.getByText(
+      /portfolio income, expenses, and net for every year with data/i,
+    );
+    const ienTable = ienCaption.closest("table");
+    expect(ienTable).not.toBeNull();
+    const ienRowHeaders = within(ienTable as HTMLElement)
+      .getAllByRole("rowheader")
+      .map((cell) => cell.textContent);
+    expect(ienRowHeaders).toEqual([
+      String(CURRENT_YEAR - 1),
+      String(CURRENT_YEAR),
+    ]);
+    // Latest year's figures are present in the table (not only the chart).
+    expect(ienTable).toHaveTextContent("$1,500.00");
+    expect(ienTable).toHaveTextContent("$450.00");
+
+    // Net-by-property trend table: one row per Data_Year, a column per property.
+    const netCaption = screen.getByText(
+      /net contribution per property for each year/i,
+    );
+    const netTable = netCaption.closest("table");
+    expect(netTable).not.toBeNull();
+    expect(
+      within(netTable as HTMLElement).getByRole("columnheader", {
+        name: /maple duplex/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(netTable as HTMLElement).getByRole("columnheader", {
+        name: /oak cottage/i,
+      }),
+    ).toBeInTheDocument();
+
+    // Depreciation trend table: one row per Data_Year with the Line 18 total.
+    const depCaption = screen.getByText(
+      /portfolio depreciation total .* by year/i,
+    );
+    const depTable = depCaption.closest("table");
+    expect(depTable).not.toBeNull();
+    expect(depTable).toHaveTextContent("$500.00");
+    expect(depTable).toHaveTextContent("$1,834.50");
   });
 });

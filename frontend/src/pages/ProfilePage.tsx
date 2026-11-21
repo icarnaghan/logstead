@@ -1,6 +1,15 @@
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getUserProfile } from "../lib/auth";
-import { Button, Card, ConfirmDialog, useToast } from "../components/ui";
+import {
+  Button,
+  Card,
+  ConfirmDialog,
+  FormField,
+  PageHeader,
+  useToast,
+} from "../components/ui";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
 import {
   ApiError,
   clearData,
@@ -61,10 +70,17 @@ type PendingRestore = { doc: BackupDocument } | null;
  * password are managed in the identity provider, not here.
  */
 export default function ProfilePage() {
+  useDocumentTitle("Profile & settings");
   const profile = getUserProfile();
   const { notify } = useToast();
+  const [searchParams] = useSearchParams();
+  const focusBackup = searchParams.get("focus") === "backup";
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // `?focus=backup` (from the palette) moves focus to the Backup heading once
+  // on arrival. It never starts a download.
+  useEffect(() => {
+    if (focusBackup) document.getElementById("backup-heading")?.focus();
+  }, [focusBackup]);
 
   // Download in-flight flag (disables the button + shows a pending label).
   const [downloading, setDownloading] = useState(false);
@@ -90,10 +106,6 @@ export default function ProfilePage() {
     } finally {
       setDownloading(false);
     }
-  }
-
-  function handleRestoreClick() {
-    fileInputRef.current?.click();
   }
 
   async function handleFileSelected(
@@ -163,12 +175,10 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-semibold text-fg">
-        Profile &amp; settings
-      </h1>
-      <p className="mt-1 text-sm text-fg-muted">
-        Your account details and integration settings.
-      </p>
+      <PageHeader
+        title="Profile & settings"
+        description="Your account details and integration settings."
+      />
 
       <section aria-labelledby="account-heading" className="mt-8">
         <h2 id="account-heading" className="text-lg font-medium text-fg">
@@ -218,7 +228,11 @@ export default function ProfilePage() {
       </section>
 
       <section aria-labelledby="backup-heading" className="mt-8">
-        <h2 id="backup-heading" className="text-lg font-medium text-fg">
+        <h2
+          id="backup-heading"
+          tabIndex={-1}
+          className="text-lg font-medium text-fg"
+        >
           Backup &amp; restore
         </h2>
         <p className="mt-1 text-sm text-fg-muted">
@@ -247,29 +261,22 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-            <div>
-              <p className="text-sm font-medium text-fg">Restore from file</p>
-              <p className="mt-1 text-sm text-fg-muted">
-                Upload a previously downloaded backup. This replaces all of your
-                current data.
-              </p>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="application/json"
-              className="sr-only"
-              aria-hidden="true"
-              tabIndex={-1}
-              onChange={(event) => void handleFileSelected(event)}
-            />
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleRestoreClick}
+            <FormField
+              label="Restore from file"
+              hint="Upload a previously downloaded backup (JSON file, .json). This replaces all of your current data."
+              className="min-w-0 flex-1"
             >
-              Restore from file
-            </Button>
+              {(control) => (
+                <input
+                  id={control.id}
+                  aria-describedby={control["aria-describedby"]}
+                  type="file"
+                  accept="application/json,.json"
+                  className="text-sm text-fg-muted"
+                  onChange={(event) => void handleFileSelected(event)}
+                />
+              )}
+            </FormField>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 p-4">

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { axe } from "vitest-axe";
@@ -83,6 +83,86 @@ describe("StateBlock — empty (Req 9.2)", () => {
     );
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+});
+
+describe("StateBlock — error (Req 7.1-7.6)", () => {
+  it("renders role=alert with title, message and danger tokens", () => {
+    render(<StateBlock kind="error" title="Couldn't load" description="Try again." />);
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("Couldn't load");
+    expect(alert).toHaveTextContent("Try again.");
+    expect(alert).toHaveClass("border-danger", "bg-danger-subtle");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("calls onRetry and shows loading until the promise resolves", async () => {
+    let resolve!: () => void;
+    const onRetry = vi.fn(
+      () => new Promise<void>((r) => { resolve = r; }),
+    );
+    render(<StateBlock kind="error" title="Failed" onRetry={onRetry} />);
+    await userEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button")).toHaveAttribute("aria-busy", "true");
+    resolve();
+    await waitFor(() =>
+      expect(screen.getByRole("button")).not.toHaveAttribute("aria-busy"),
+    );
+  });
+
+  it("clears loading when onRetry rejects", async () => {
+    const onRetry = vi.fn(() => Promise.reject(new Error("x")));
+    render(<StateBlock kind="error" title="Failed" onRetry={onRetry} />);
+    await userEvent.click(screen.getByRole("button", { name: "Retry" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button")).not.toHaveAttribute("aria-busy"),
+    );
+  });
+
+  it("shows loading while `retrying` is true", () => {
+    render(<StateBlock kind="error" title="Failed" onRetry={() => {}} retrying />);
+    expect(screen.getByRole("button")).toHaveAttribute("aria-busy", "true");
+  });
+
+  it("renders a single-row banner when compact", () => {
+    render(<StateBlock kind="error" title="Failed" compact />);
+    expect(screen.getByRole("alert")).toHaveClass(
+      "flex", "items-center", "gap-3", "rounded-md", "border",
+    );
+  });
+
+  it("compact error keeps the Retry button and calls onRetry", async () => {
+    const onRetry = vi.fn();
+    render(<StateBlock kind="error" title="Failed" compact onRetry={onRetry} />);
+    await userEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
+  });
+
+  it("has no axe violations for the compact error", async () => {
+    const { container } = render(
+      <StateBlock kind="error" title="Failed" description="Oops" compact onRetry={() => {}} />,
+    );
+    const results = await axe(container, {
+      rules: { "color-contrast": { enabled: false } },
+    });
+    expect(results).toHaveNoViolations();
+  });
+
+  it("loading shows a spinner alongside the title", () => {
+    const { container } = render(<StateBlock kind="loading" title="Loading…" />);
+    expect(container.querySelector("svg")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Loading…");
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(
+      <StateBlock kind="error" title="Failed" description="Oops" onRetry={() => {}} />,
+    );
+    const results = await axe(container, {
+      rules: { "color-contrast": { enabled: false } },
+    });
+    expect(results).toHaveNoViolations();
   });
 });
 

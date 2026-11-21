@@ -5,6 +5,7 @@ import {
   deleteProperty,
   enrichAddress,
   fetchUnitAddresses,
+  getEarliestDataYear,
   getPropertyNote,
   listProperties,
   resetPropertiesClient,
@@ -145,6 +146,24 @@ describe("properties api module", () => {
 
     const result = await setPropertyNote("p1", "New note");
     expect(result).toBe("New note");
+  });
+
+  it("fetches the earliest data year via GET /properties/{id}/earliest-year", async () => {
+    const fetchImpl = makeFetch((url, init) => {
+      expect(url).toMatch(/\/properties\/p1\/earliest-year$/);
+      expect(init.method ?? "GET").toBe("GET");
+      return jsonResponse(200, { earliest_year: 2010 });
+    });
+    setPropertiesClient(new ApiClient({ baseUrl: "https://api.test", fetchImpl }));
+
+    expect(await getEarliestDataYear("p1")).toBe(2010);
+  });
+
+  it("returns null when the property has no activity", async () => {
+    const fetchImpl = makeFetch(() => jsonResponse(200, { earliest_year: null }));
+    setPropertiesClient(new ApiClient({ baseUrl: "https://api.test", fetchImpl }));
+
+    expect(await getEarliestDataYear("p1")).toBeNull();
   });
 
   it("propagates a 409 conflict from a guarded delete as an ApiError", async () => {

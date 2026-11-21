@@ -1,6 +1,18 @@
 import { useRef, useState } from "react";
 import type { ReceiptDocument, TransactionsApi } from "../../api/transactions";
+import { resolveContentType } from "../../lib/contentType";
 import { ConfirmDialog, useToast } from "../ui";
+
+/** Mirrors the backend `RECEIPT_CONTENT_TYPES` (images and PDF). */
+const RECEIPT_CONTENT_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+] as const;
+const RECEIPT_TYPES_LABEL = "PDF, JPEG, PNG, WebP, HEIC, or HEIF";
 
 interface ReceiptListProps {
   api: TransactionsApi;
@@ -35,16 +47,25 @@ export function ReceiptList({
   const [deleting, setDeleting] = useState(false);
 
   async function handleFile(file: File) {
-    setBusy(true);
     setError(null);
+    const contentType = resolveContentType(file, RECEIPT_CONTENT_TYPES);
+    if (contentType === null) {
+      setError(
+        `"${file.name}" is not an accepted document type. Accepted types are ${RECEIPT_TYPES_LABEL}.`,
+      );
+      notify({ variant: "error", title: "Unsupported document type" });
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
+    setBusy(true);
     try {
       const { upload_url } = await api.attachReceipt(
         propertyId,
         transactionId,
         file.name,
-        file.type || "application/octet-stream",
+        contentType,
       );
-      await api.uploadToPresignedUrl(upload_url, file, file.type || undefined);
+      await api.uploadToPresignedUrl(upload_url, file, contentType);
       onChanged();
       notify({ variant: "success", title: "Document attached" });
     } catch {
@@ -120,6 +141,7 @@ export function ReceiptList({
         id={`receipt-input-${transactionId}`}
         ref={inputRef}
         type="file"
+        accept="image/*,application/pdf"
         disabled={busy}
         onChange={(event) => {
           const file = event.target.files?.[0];

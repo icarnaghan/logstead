@@ -157,6 +157,24 @@
           "placed_in_service_date": "2021-07-15",
           "recovery_period_years": "27.5"
         }
+      ],
+      "loans": [
+        {
+          "id": "9b1f0c52-3a7e-4d1c-8e26-5c4a7d2f6b10",
+          "property_id": "50417a5e-779c-42b8-a84a-9f3a8ef25021",
+          "description": "Maple Street mortgage",
+          "annual_interest_rate": "6.875",
+          "monthly_payment": "1182.47",
+          "anchor_balance": "165000.00",
+          "anchor_date": "2025-06-01",
+          "original_principal": "180000.00",
+          "closing_date": "2022-01-15",
+          "extra_principal": "0.00",
+          "include_in_report": true,
+          "interest_overrides": {
+            "2024": "11850.00"
+          }
+        }
       ]
     },
     {

@@ -1,0 +1,768 @@
+{
+  "pbtResults": {
+    "1.3 Write property tests for the resolver": {
+      "status": "passed",
+      "lastRunTimestamp": 1794709857100
+    },
+    "1.4 Write the storage round-trip property test": {
+      "status": "passed",
+      "lastRunTimestamp": 1794709873717
+    },
+    "8.3 Write the classification property test": {
+      "status": "passed",
+      "lastRunTimestamp": 1794710033799
+    },
+    "3.2 Write the unchanged-sum property test": {
+      "status": "passed",
+      "lastRunTimestamp": 1794710747966
+    },
+    "6.5 Write backup tests for the imported marker": {
+      "status": "passed",
+      "lastRunTimestamp": 1794710749753
+    },
+    "10.4 Write the frontend oracle property test": {
+      "status": "passed",
+      "lastRunTimestamp": 1794710820407
+    },
+    "2.2 Write property tests for validation": {
+      "status": "passed",
+      "lastRunTimestamp": 1794711050006
+    },
+    "6.3 Write the re-import property test": {
+      "status": "passed",
+      "lastRunTimestamp": 1794712284430
+    }
+  },
+  "executionHistory": {
+    "1.1 Add the itemized marker and notes to the transaction model and storage mapping": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516135
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709522339
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709568080
+      }
+    ],
+    "1.2 Create `backend/src/logstead/services/itemized.py` with the configuration and the pure resolver": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516200
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709522386
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709568189
+      }
+    ],
+    "1.3 Write property tests for the resolver": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516272
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709573435
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709882272
+      }
+    ],
+    "1.4 Write the storage round-trip property test": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516305
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709573488
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709882383
+      }
+    ],
+    "2.1 Validate itemized entries and protect the marker in `TransactionService`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516340
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709999543
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710676870
+      }
+    ],
+    "2.2 Write property tests for validation": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516388
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710997954
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712294962
+      }
+    ],
+    "2.3 Preserve the `imported` and `itemized` markers on generic updates": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516485
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709573751
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709882890
+      }
+    ],
+    "2.4 Write tests for marker preservation and the re-import-after-edit regression": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516551
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710680230
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710759004
+      }
+    ],
+    "3.1 Resolve line totals through `LineAccumulator` in `ReportingService._build_report`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516607
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709574578
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709883718
+      }
+    ],
+    "3.2 Write the unchanged-sum property test": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516654
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710680401
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710757103
+      }
+    ],
+    "4.1 Add `ItemizedExpenseService` to `backend/src/logstead/services/itemized.py`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516690
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710762268
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710995057
+      }
+    ],
+    "4.2 Write property tests for service operations": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516772
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712299029
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713065756
+      }
+    ],
+    "4.3 Write the agreement property test and the source-scan test": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516806
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712299869
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713066676
+      }
+    ],
+    "5.1 Add the itemized handlers and routes in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516838
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712300879
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713067737
+      }
+    ],
+    "5.2 Write router and cross-user tests": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516874
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713104777
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794715140737
+      }
+    ],
+    "6.1 Carry `itemized` and `notes` through backup export, validation and restore": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516907
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709999618
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710674789
+      }
+    ],
+    "6.2 Write backup property tests and examples": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516939
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710762713
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710994338
+      }
+    ],
+    "6.3 Write the re-import property test": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709516973
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710998351
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712296485
+      }
+    ],
+    "6.4 Carry `imported` through backup export, validation and restore": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517005
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709575026
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709884089
+      }
+    ],
+    "6.5 Write backup tests for the imported marker": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517049
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710680734
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710758163
+      }
+    ],
+    "7. Checkpoint - backend": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517085
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794715142750
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794719510572
+      }
+    ],
+    "8.1 Add `frontend/src/api/itemized.ts` and extend the transaction type": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517121
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709522906
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709568840
+      }
+    ],
+    "8.2 Extend `frontend/src/lib/undoMappers.ts`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517156
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709888702
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709995675
+      }
+    ],
+    "8.3 Write the classification property test": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517189
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710000702
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710675513
+      }
+    ],
+    "9.1 Create `frontend/src/lib/itemizedMath.ts` and `frontend/src/lib/itemizedPages.ts`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517224
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709523721
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709569639
+      }
+    ],
+    "10.1 Build the presentational components in `frontend/src/components/itemized/`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517269
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709889435
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709994286
+      }
+    ],
+    "10.2 Build `SyncTotalDialog` in `frontend/src/components/itemized/SyncTotalDialog.tsx`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517306
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709890072
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709995072
+      }
+    ],
+    "10.3 Assemble `ItemizedExpensesPage` and `RepairsPage`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517339
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709999667
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710676066
+      }
+    ],
+    "10.4 Write the frontend oracle property test": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517372
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710763534
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710991754
+      }
+    ],
+    "10.5 Write page and component tests": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517405
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710999235
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712295680
+      }
+    ],
+    "11.1 Add the Repairs tab and route": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517453
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710764580
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710992466
+      }
+    ],
+    "11.2 Add accessibility and browser coverage": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517488
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712301937
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713068521
+      }
+    ],
+    "12.1 Mark itemized rows in `TransactionList`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517571
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710000354
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710677270
+      }
+    ],
+    "12.2 Add the note and the form hint": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517604
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710765285
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710993251
+      }
+    ],
+    "12.3 Write Transactions page tests": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517638
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712302736
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713069578
+      }
+    ],
+    "13.1 Add the mobile property tabs and itemized conversion items to `docs/future-improvements.md`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517672
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709524379
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709570153
+      }
+    ],
+    "13.2 Update `docs/developer-guide.md`": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517705
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713070325
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713101567
+      }
+    ],
+    "14. Final checkpoint - full verification": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709517738
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794719512349
+      },
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794719603715
+      }
+    ],
+    "9. Frontend: pure helpers and page definition": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709569685
+      }
+    ],
+    "1. Backend: data model and precedence core": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794709882425
+      }
+    ],
+    "8. Frontend: API module, types and undo helpers": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710675551
+      }
+    ],
+    "3. Backend: report integration": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794710757158
+      }
+    ],
+    "2. Backend: transaction validation and marker preservation": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712295012
+      }
+    ],
+    "10. Frontend: Repairs page": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712295724
+      }
+    ],
+    "6. Backend: backup and import": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794712296555
+      }
+    ],
+    "4. Backend: itemized expense service": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713066723
+      }
+    ],
+    "11. Frontend: navigation, routing and accessibility coverage": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713068570
+      }
+    ],
+    "12. Frontend: Transactions page changes": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713069673
+      }
+    ],
+    "13. Documentation": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794713101636
+      }
+    ],
+    "5. Backend: routes and authorization": [
+      {
+        "executionId": "4d9fcbb2-ec78-4483-b3c2-f2a0bb227ff0",
+        "chatSessionId": "sess_95cfdb34-f5d5-4e4d-8722-e1e0acafecb0",
+        "timestamp": 1794715140838
+      }
+    ]
+  }
+}

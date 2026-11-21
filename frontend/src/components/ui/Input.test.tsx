@@ -13,7 +13,7 @@ describe("Input — base styling (Req 1.3, 8.1)", () => {
     render(<Input aria-label="Amount" />);
     const input = screen.getByLabelText("Amount");
     expect(input).toHaveClass("rounded-md");
-    expect(input).toHaveClass("border-border");
+    expect(input).toHaveClass("border-border-strong");
     expect(input).toHaveClass("bg-surface");
     expect(input).toHaveClass("text-fg");
     expect(input).toHaveClass("focus-visible:outline-accent");

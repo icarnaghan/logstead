@@ -132,6 +132,30 @@ class TestUsageAndPhotoKeys:
         assert keys.photo_sk("ph1").startswith(keys.photo_list_prefix())
 
 
+# --- Passive loss carryforward keys ------------------------------------------
+
+class TestPassiveLossCarryforwardKeys:
+    def test_plcf_prefix_value(self) -> None:
+        assert keys.PLCF_PREFIX == "PLCF#"
+
+    def test_plcf_opening_sk_value(self) -> None:
+        assert keys.PLCF_OPENING_SK == "PLCF_OPENING"
+
+    def test_plcf_year_sk(self) -> None:
+        assert keys.plcf_year_sk(2023) == "PLCF#2023"
+
+    def test_plcf_list_prefix(self) -> None:
+        assert keys.plcf_list_prefix() == "PLCF#"
+        assert keys.plcf_year_sk(2023).startswith(keys.plcf_list_prefix())
+
+    def test_plcf_opening_sk(self) -> None:
+        assert keys.plcf_opening_sk() == "PLCF_OPENING"
+
+    def test_plcf_opening_not_matched_by_year_prefix(self) -> None:
+        # The opening-balance item must not be picked up by a PLCF# year query.
+        assert not keys.plcf_opening_sk().startswith(keys.plcf_list_prefix())
+
+
 # --- Category keys -----------------------------------------------------------
 
 class TestCategoryKeys:
@@ -228,6 +252,33 @@ class TestImportAndDraftKeys:
         assert keys.draft_sk("d1").startswith(keys.draft_list_prefix())
 
 
+# --- Schedule E extraction job keys ------------------------------------------
+
+class TestExtractionJobKeys:
+    def test_seextract_prefix_value(self) -> None:
+        assert keys.SEEXTRACT_PREFIX == "SEEXTRACT#"
+
+    def test_extraction_job_sk(self) -> None:
+        assert keys.extraction_job_sk("j1") == "SEEXTRACT#j1"
+
+    def test_extraction_job_list_prefix(self) -> None:
+        assert keys.extraction_job_list_prefix() == "SEEXTRACT#"
+        assert keys.extraction_job_sk("j1").startswith(
+            keys.extraction_job_list_prefix()
+        )
+
+    def test_seextract_prefix_is_distinct_from_import_and_draft(self) -> None:
+        # Req 13.2: the extraction feature shares zero storage keys with the
+        # expense import feature's IMPORT# / DRAFT# prefixes.
+        assert keys.SEEXTRACT_PREFIX != keys.IMPORT_PREFIX
+        assert keys.SEEXTRACT_PREFIX != keys.DRAFT_PREFIX
+
+    def test_extraction_sk_does_not_collide_with_import_or_draft_keys(self) -> None:
+        sk = keys.extraction_job_sk("x")
+        assert not sk.startswith(keys.IMPORT_PREFIX)
+        assert not sk.startswith(keys.DRAFT_PREFIX)
+
+
 # --- GSI1 keys ---------------------------------------------------------------
 
 class TestGsi1Keys:
@@ -270,3 +321,63 @@ class TestGsi2Keys:
     def test_gsi2_schedule_prefix(self) -> None:
         assert keys.gsi2_schedule_prefix() == "SCHED#"
         assert keys.gsi2_schedule_sk("a1").startswith(keys.gsi2_schedule_prefix())
+
+
+# --- Loan keys ---------------------------------------------------------------
+
+class TestLoanKeys:
+    def test_prefix_constants(self) -> None:
+        assert keys.LOAN_PREFIX == "LOAN#"
+        assert keys.LOAN_YEAR_MARKER == "#YEAR#"
+        assert keys.GSI2_LOAN_YEAR_PREFIX == "LOANYR#"
+
+    def test_loan_sk(self) -> None:
+        assert keys.loan_sk("l1") == "LOAN#l1"
+
+    def test_loan_list_prefix(self) -> None:
+        assert keys.loan_list_prefix() == "LOAN#"
+        assert keys.loan_sk("l1").startswith(keys.loan_list_prefix())
+
+    def test_loan_year_sk(self) -> None:
+        assert keys.loan_year_sk("l1", 2024) == "LOAN#l1#YEAR#2024"
+
+    def test_loan_year_list_prefix(self) -> None:
+        prefix = keys.loan_year_list_prefix("l1")
+        assert prefix == "LOAN#l1#YEAR#"
+        assert keys.loan_year_sk("l1", 2024).startswith(prefix)
+        assert not keys.loan_sk("l1").startswith(prefix)
+
+    def test_is_loan_year_sk(self) -> None:
+        assert keys.is_loan_year_sk(keys.loan_year_sk("l1", 2024))
+        assert not keys.is_loan_year_sk(keys.loan_sk("l1"))
+        assert not keys.is_loan_year_sk(keys.asset_sk("a1"))
+        assert not keys.is_loan_year_sk(keys.schedule_row_sk("a1", 2024))
+
+    def test_loan_keys_do_not_collide_with_other_prefixes(self) -> None:
+        loan_keys = [keys.loan_sk("l1"), keys.loan_year_sk("l1", 2024)]
+        for sk in loan_keys:
+            assert not sk.startswith(keys.asset_list_prefix())
+            assert not sk.startswith(keys.transaction_list_prefix())
+            assert keys.SCHED_PREFIX not in sk
+        # And loan prefix never matches asset/schedule/transaction keys.
+        others = [
+            keys.asset_sk("a1"),
+            keys.schedule_row_sk("a1", 2024),
+            keys.transaction_sk(date(2024, 3, 7), "t1"),
+        ]
+        for sk in others:
+            assert not sk.startswith(keys.loan_list_prefix())
+
+    def test_gsi2_loan_year_sk_and_prefix(self) -> None:
+        assert keys.gsi2_loan_year_sk("l1") == "LOANYR#l1"
+        assert keys.gsi2_loan_year_prefix() == "LOANYR#"
+        assert keys.gsi2_loan_year_sk("l1").startswith(keys.gsi2_loan_year_prefix())
+
+    def test_gsi2_loan_prefix_distinct_from_txn_and_sched(self) -> None:
+        sk = keys.gsi2_loan_year_sk("l1")
+        assert not sk.startswith(keys.gsi2_transaction_prefix())
+        assert not sk.startswith(keys.gsi2_schedule_prefix())
+        assert not keys.gsi2_transaction_sk(date(2024, 3, 7), "t").startswith(
+            keys.gsi2_loan_year_prefix()
+        )
+        assert not keys.gsi2_schedule_sk("a1").startswith(keys.gsi2_loan_year_prefix())

@@ -11,18 +11,38 @@
 export { FOCUS_RING } from "./focusRing";
 
 // Form + action primitives.
+export * from "./Badge";
 export * from "./Button";
+export * from "./Spinner";
 export * from "./Input";
+export * from "./MoneyInput";
+export * from "./DateInput";
+export * from "./FormField";
 export * from "./Card";
 export * from "./Select";
+export * from "./Textarea";
 export * from "./ConfirmDialog";
+export * from "./RecordModal";
+export * from "./ModalFormActions";
+export * from "./useRecordModal";
+export * from "./useOpenerFocusReturn";
+export * from "./useDiscardGuard";
+export * from "./ErrorSummary";
 
 // Layout + state primitives.
 export * from "./ResponsiveTable";
 export * from "./StateBlock";
+export * from "./EmptyGuide";
+export * from "./Skeleton";
+export * from "./RefreshingIndicator";
+export * from "./useFirstLoad";
+
+// Decorative inline SVG icons.
+export * from "./icons";
 
 // Wayfinding primitives.
 export * from "./Breadcrumb";
+export * from "./PageHeader";
 
 // Toast APIs (provider, hook, and public types).
 export {
@@ -33,3 +53,7 @@ export {
   type ToastContextValue,
 } from "./toast/ToastProvider";
 export { useToast } from "./toast/useToast";
+export {
+  useUndoableDelete,
+  type UndoableDeleteOptions,
+} from "./toast/useUndoableDelete";

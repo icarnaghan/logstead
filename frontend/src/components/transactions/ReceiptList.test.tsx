@@ -137,6 +137,70 @@ describe("ReceiptList", () => {
     expect(attachOrder).toBeLessThan(putOrder);
   });
 
+  it("infers the content type from the extension when the browser gives none", async () => {
+    const api = makeApi();
+    const onChanged = vi.fn();
+    const user = userEvent.setup({ applyAccept: false });
+    renderList(
+      <ReceiptList
+        api={api}
+        propertyId={PROPERTY_ID}
+        transactionId={TRANSACTION_ID}
+        receipts={[]}
+        onChanged={onChanged}
+      />,
+    );
+    const file = new File(["x"], "scan.HEIC", { type: "" });
+    await user.upload(screen.getByLabelText(/attach a document/i), file);
+    await waitFor(() => expect(onChanged).toHaveBeenCalledTimes(1));
+    expect(api.attachReceipt).toHaveBeenCalledWith(
+      PROPERTY_ID,
+      TRANSACTION_ID,
+      "scan.HEIC",
+      "image/heic",
+    );
+    expect(api.uploadToPresignedUrl).toHaveBeenCalledWith(
+      "https://s3.example/upload?sig=put",
+      file,
+      "image/heic",
+    );
+  });
+  it("rejects an unknown type without calling the API", async () => {
+    const api = makeApi();
+    const user = userEvent.setup({ applyAccept: false });
+    renderList(
+      <ReceiptList
+        api={api}
+        propertyId={PROPERTY_ID}
+        transactionId={TRANSACTION_ID}
+        receipts={[]}
+        onChanged={vi.fn()}
+      />,
+    );
+    await user.upload(
+      screen.getByLabelText(/attach a document/i),
+      new File(["x"], "notes.txt", { type: "" }),
+    );
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      /not an accepted document type/i,
+    );
+    expect(api.attachReceipt).not.toHaveBeenCalled();
+  });
+  it("restricts the file picker to images and PDF", () => {
+    renderList(
+      <ReceiptList
+        api={makeApi()}
+        propertyId={PROPERTY_ID}
+        transactionId={TRANSACTION_ID}
+        receipts={[]}
+        onChanged={vi.fn()}
+      />,
+    );
+    expect(screen.getByLabelText(/attach a document/i)).toHaveAttribute(
+      "accept",
+      "image/*,application/pdf",
+    );
+  });
   it("confirms before deleting a receipt, then refreshes the list", async () => {
     const api = makeApi();
     const onChanged = vi.fn();

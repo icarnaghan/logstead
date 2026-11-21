@@ -4,7 +4,7 @@ A small, representative smoke test that the router wires requests to services
 and shapes responses correctly. It is intentionally **not** the full router
 dispatch / error-mapping integration suite (that is task 16.2). It exercises:
 
-  * ``GET /categories`` (public route) returns the seeded catalog as JSON;
+  * ``GET /categories`` (signed-in) returns the seeded catalog as JSON;
   * ``POST /properties`` with a JWT-claims event creates a property (201) and the
     money-free dataclass is serialized to JSON;
   * a protected route with **no** verified claims is rejected with ``401`` and no
@@ -128,13 +128,13 @@ def _auth_claims() -> dict:
     return {"sub": USER_SUB, "cognito:username": "smoke@example.com"}
 
 
-# --- GET /categories (public) ------------------------------------------------
+# --- GET /categories (signed-in) ------------------------------------------------
 
 
 def test_get_categories_returns_seeded_catalog(repo):
     seed_categories(repo)
 
-    resp = handler(_event("GET", "/categories"))
+    resp = handler(_event("GET", "/categories", claims=_auth_claims()))
 
     assert resp["statusCode"] == 200
     assert resp["headers"]["Content-Type"] == "application/json"
@@ -217,7 +217,7 @@ def test_stage_prefixed_path_matches_route(repo):
     """A non-$default stage (e.g. "prod") prefixes the path with /prod. The
     router strips it so /prod/categories resolves the same as /categories."""
     seed_categories(repo)
-    resp = handler(_event("GET", "/categories", stage="prod"))
+    resp = handler(_event("GET", "/categories", claims=_auth_claims(), stage="prod"))
     assert resp["statusCode"] == 200
     catalog = json.loads(resp["body"])
     assert isinstance(catalog, list) and catalog

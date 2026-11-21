@@ -1,0 +1,87 @@
+{
+  "_comment": "HAND-BUILT APPROXIMATION of an Amazon Textract GetDocumentAnalysis response for a Schedule E Part I page with two property columns (A, B). Real Textract output has far more blocks, WORD children, and geometry; this is the minimal structure needed to exercise the parser's TABLES + FORMS paths, the Line-18 exclusion, the address box, and tax-year detection. The user confirms everything downstream, so an approximate pre-fill is acceptable.",
+  "blocks": [
+    { "Id": "page-1", "BlockType": "PAGE", "Page": 1, "Relationships": [ { "Type": "CHILD", "Ids": ["ttl", "cal", "rents-lbl", "roy-lbl", "adv-lbl", "clean-lbl", "ins-lbl", "repairs-lbl", "util-lbl", "dep-lbl", "other-lbl", "addr-lbl", "addr-a", "addr-b"] } ] },
+
+    { "Id": "ttl", "BlockType": "LINE", "Page": 1, "Text": "SCHEDULE E (Form 1040) Supplemental Income and Loss", "Confidence": 99.1, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.02, "Width": 0.5, "Height": 0.02 } } },
+    { "Id": "cal", "BlockType": "LINE", "Page": 1, "Text": "For calendar year 2023", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.70, "Top": 0.02, "Width": 0.2, "Height": 0.02 } } },
+    { "Id": "parti", "BlockType": "LINE", "Page": 1, "Text": "Part I Income or Loss From Rental Real Estate and Royalties", "Confidence": 98.5, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.08, "Width": 0.6, "Height": 0.02 } } },
+
+    { "Id": "addr-lbl", "BlockType": "LINE", "Page": 1, "Text": "1a Physical address of each property", "Confidence": 97.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.14, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "addr-a", "BlockType": "LINE", "Page": 1, "Text": "12 Maple Street", "Confidence": 96.4, "Geometry": { "BoundingBox": { "Left": 0.45, "Top": 0.14, "Width": 0.2, "Height": 0.02 } } },
+    { "Id": "addr-b", "BlockType": "LINE", "Page": 1, "Text": "90 Oak Avenue", "Confidence": 95.9, "Geometry": { "BoundingBox": { "Left": 0.70, "Top": 0.14, "Width": 0.2, "Height": 0.02 } } },
+
+    { "Id": "rents-lbl", "BlockType": "LINE", "Page": 1, "Text": "3 Rents received", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.30, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "roy-lbl", "BlockType": "LINE", "Page": 1, "Text": "4 Royalties received", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.33, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "adv-lbl", "BlockType": "LINE", "Page": 1, "Text": "5 Advertising", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.36, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "clean-lbl", "BlockType": "LINE", "Page": 1, "Text": "7 Cleaning and maintenance", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.39, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "ins-lbl", "BlockType": "LINE", "Page": 1, "Text": "9 Insurance", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.42, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "repairs-lbl", "BlockType": "LINE", "Page": 1, "Text": "14 Repairs", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.45, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "util-lbl", "BlockType": "LINE", "Page": 1, "Text": "17 Utilities", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.48, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "dep-lbl", "BlockType": "LINE", "Page": 1, "Text": "18 Depreciation expense or depletion", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.51, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "other-lbl", "BlockType": "LINE", "Page": 1, "Text": "19 Other (list)", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.54, "Width": 0.3, "Height": 0.02 } } },
+
+    { "Id": "addr-key", "BlockType": "KEY_VALUE_SET", "EntityTypes": ["KEY"], "Page": 1, "Confidence": 97.0, "Relationships": [ { "Type": "CHILD", "Ids": ["addr-key-w1", "addr-key-w2"] }, { "Type": "VALUE", "Ids": ["addr-val-a", "addr-val-b"] } ] },
+    { "Id": "addr-key-w1", "BlockType": "WORD", "Text": "Physical", "Confidence": 97.0 },
+    { "Id": "addr-key-w2", "BlockType": "WORD", "Text": "address", "Confidence": 97.0 },
+    { "Id": "addr-val-a", "BlockType": "KEY_VALUE_SET", "EntityTypes": ["VALUE"], "Page": 1, "Confidence": 96.4, "Geometry": { "BoundingBox": { "Left": 0.45, "Top": 0.14, "Width": 0.2, "Height": 0.02 } }, "Relationships": [ { "Type": "CHILD", "Ids": ["addr-val-a-w1", "addr-val-a-w2", "addr-val-a-w3"] } ] },
+    { "Id": "addr-val-a-w1", "BlockType": "WORD", "Text": "12", "Confidence": 96.4 },
+    { "Id": "addr-val-a-w2", "BlockType": "WORD", "Text": "Maple", "Confidence": 96.4 },
+    { "Id": "addr-val-a-w3", "BlockType": "WORD", "Text": "Street", "Confidence": 96.4 },
+    { "Id": "addr-val-b", "BlockType": "KEY_VALUE_SET", "EntityTypes": ["VALUE"], "Page": 1, "Confidence": 95.9, "Geometry": { "BoundingBox": { "Left": 0.70, "Top": 0.14, "Width": 0.2, "Height": 0.02 } }, "Relationships": [ { "Type": "CHILD", "Ids": ["addr-val-b-w1", "addr-val-b-w2", "addr-val-b-w3"] } ] },
+    { "Id": "addr-val-b-w1", "BlockType": "WORD", "Text": "90", "Confidence": 95.9 },
+    { "Id": "addr-val-b-w2", "BlockType": "WORD", "Text": "Oak", "Confidence": 95.9 },
+    { "Id": "addr-val-b-w3", "BlockType": "WORD", "Text": "Avenue", "Confidence": 95.9 },
+
+    { "Id": "table-1", "BlockType": "TABLE", "Page": 1, "Confidence": 97.5, "Relationships": [ { "Type": "CHILD", "Ids": [
+      "c-r3-l", "c-r3-a", "c-r3-b",
+      "c-r4-l", "c-r4-a", "c-r4-b",
+      "c-r5-l", "c-r5-a", "c-r5-b",
+      "c-r14-l", "c-r14-a", "c-r14-b",
+      "c-r18-l", "c-r18-a", "c-r18-b",
+      "c-r19-l", "c-r19-a", "c-r19-b"
+    ] } ] },
+
+    { "Id": "c-r3-l", "BlockType": "CELL", "RowIndex": 1, "ColumnIndex": 1, "Confidence": 98.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r3-l"] } ] },
+    { "Id": "w-r3-l", "BlockType": "WORD", "Text": "Rents received", "Confidence": 98.0 },
+    { "Id": "c-r3-a", "BlockType": "CELL", "RowIndex": 1, "ColumnIndex": 2, "Confidence": 98.3, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r3-a"] } ] },
+    { "Id": "w-r3-a", "BlockType": "WORD", "Text": "24000", "Confidence": 98.3 },
+    { "Id": "c-r3-b", "BlockType": "CELL", "RowIndex": 1, "ColumnIndex": 3, "Confidence": 97.6, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r3-b"] } ] },
+    { "Id": "w-r3-b", "BlockType": "WORD", "Text": "18500", "Confidence": 97.6 },
+
+    { "Id": "c-r4-l", "BlockType": "CELL", "RowIndex": 2, "ColumnIndex": 1, "Confidence": 98.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r4-l"] } ] },
+    { "Id": "w-r4-l", "BlockType": "WORD", "Text": "Royalties received", "Confidence": 98.0 },
+    { "Id": "c-r4-a", "BlockType": "CELL", "RowIndex": 2, "ColumnIndex": 2, "Confidence": 97.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r4-a"] } ] },
+    { "Id": "w-r4-a", "BlockType": "WORD", "Text": "0", "Confidence": 97.0 },
+    { "Id": "c-r4-b", "BlockType": "CELL", "RowIndex": 2, "ColumnIndex": 3, "Confidence": 97.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r4-b"] } ] },
+    { "Id": "w-r4-b", "BlockType": "WORD", "Text": "0", "Confidence": 97.0 },
+
+    { "Id": "c-r5-l", "BlockType": "CELL", "RowIndex": 3, "ColumnIndex": 1, "Confidence": 98.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r5-l"] } ] },
+    { "Id": "w-r5-l", "BlockType": "WORD", "Text": "Advertising", "Confidence": 98.0 },
+    { "Id": "c-r5-a", "BlockType": "CELL", "RowIndex": 3, "ColumnIndex": 2, "Confidence": 96.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r5-a"] } ] },
+    { "Id": "w-r5-a", "BlockType": "WORD", "Text": "350.00", "Confidence": 96.0 },
+    { "Id": "c-r5-b", "BlockType": "CELL", "RowIndex": 3, "ColumnIndex": 3, "Confidence": 96.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r5-b"] } ] },
+    { "Id": "w-r5-b", "BlockType": "WORD", "Text": "275.00", "Confidence": 96.0 },
+
+    { "Id": "c-r14-l", "BlockType": "CELL", "RowIndex": 4, "ColumnIndex": 1, "Confidence": 98.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r14-l"] } ] },
+    { "Id": "w-r14-l", "BlockType": "WORD", "Text": "Repairs", "Confidence": 98.0 },
+    { "Id": "c-r14-a", "BlockType": "CELL", "RowIndex": 4, "ColumnIndex": 2, "Confidence": 95.2, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r14-a"] } ] },
+    { "Id": "w-r14-a", "BlockType": "WORD", "Text": "1875.50", "Confidence": 95.2 },
+    { "Id": "c-r14-b", "BlockType": "CELL", "RowIndex": 4, "ColumnIndex": 3, "Confidence": 95.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r14-b"] } ] },
+    { "Id": "w-r14-b", "BlockType": "WORD", "Text": "640.00", "Confidence": 95.0 },
+
+    { "Id": "c-r18-l", "BlockType": "CELL", "RowIndex": 5, "ColumnIndex": 1, "Confidence": 98.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r18-l"] } ] },
+    { "Id": "w-r18-l", "BlockType": "WORD", "Text": "Depreciation expense or depletion", "Confidence": 98.0 },
+    { "Id": "c-r18-a", "BlockType": "CELL", "RowIndex": 5, "ColumnIndex": 2, "Confidence": 97.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r18-a"] } ] },
+    { "Id": "w-r18-a", "BlockType": "WORD", "Text": "9999.99", "Confidence": 97.0 },
+    { "Id": "c-r18-b", "BlockType": "CELL", "RowIndex": 5, "ColumnIndex": 3, "Confidence": 97.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r18-b"] } ] },
+    { "Id": "w-r18-b", "BlockType": "WORD", "Text": "8888.88", "Confidence": 97.0 },
+
+    { "Id": "c-r19-l", "BlockType": "CELL", "RowIndex": 6, "ColumnIndex": 1, "Confidence": 98.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r19-l"] } ] },
+    { "Id": "w-r19-l", "BlockType": "WORD", "Text": "Other", "Confidence": 98.0 },
+    { "Id": "c-r19-a", "BlockType": "CELL", "RowIndex": 6, "ColumnIndex": 2, "Confidence": 94.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r19-a"] } ] },
+    { "Id": "w-r19-a", "BlockType": "WORD", "Text": "120.00", "Confidence": 94.0 },
+    { "Id": "c-r19-b", "BlockType": "CELL", "RowIndex": 6, "ColumnIndex": 3, "Confidence": 94.0, "Relationships": [ { "Type": "CHILD", "Ids": ["w-r19-b"] } ] },
+    { "Id": "w-r19-b", "BlockType": "WORD", "Text": "60.00", "Confidence": 94.0 }
+  ]
+}

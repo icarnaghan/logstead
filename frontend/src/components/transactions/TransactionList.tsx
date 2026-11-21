@@ -1,6 +1,9 @@
+import { Link } from "react-router-dom";
+
 import type { Category, Transaction } from "../../api/transactions";
+import { propertyPath } from "../navConfig";
 import { formatMoney } from "../../lib/money";
-import { ResponsiveTable, type ResponsiveTableColumn } from "../ui";
+import { Badge, ResponsiveTable, type ResponsiveTableColumn } from "../ui";
 
 interface TransactionListProps {
   transactions: readonly Transaction[];
@@ -60,7 +63,21 @@ export function TransactionList({
     return {
       id: transaction.id,
       cells: {
-        date: transaction.date,
+        date: (
+          <span className="flex flex-wrap items-center gap-2">
+            {transaction.date}
+            {transaction.imported ? (
+              <Badge label="Imported from a Schedule E import">
+                Imported
+              </Badge>
+            ) : null}
+            {transaction.itemized ? (
+              <Badge label="Itemized entry, managed on the Repairs page">
+                Itemized
+              </Badge>
+            ) : null}
+          </span>
+        ),
         type: <span className="capitalize">{transaction.type}</span>,
         category: category
           ? `${category.label} (Line ${category.schedule_e_line})`
@@ -85,22 +102,34 @@ export function TransactionList({
             >
               Documents
             </button>
-            <button
-              type="button"
-              onClick={() => onEdit(transaction)}
-              className="rounded px-2 py-1 text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              Edit
-              <span className="sr-only"> transaction from {transaction.date}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onDelete(transaction)}
-              className="rounded px-2 py-1 text-danger hover:bg-danger-subtle focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              Delete
-              <span className="sr-only"> transaction from {transaction.date}</span>
-            </button>
+            {transaction.itemized ? (
+              <Link
+                to={`${propertyPath(transaction.property_id, "repairs")}?year=${transaction.date.slice(0, 4)}`}
+                className="rounded px-2 py-1 text-accent underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                Manage on Repairs page
+                <span className="sr-only"> for entry from {transaction.date}</span>
+              </Link>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onEdit(transaction)}
+                  className="rounded px-2 py-1 text-fg-muted hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  Edit
+                  <span className="sr-only"> transaction from {transaction.date}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDelete(transaction)}
+                  className="rounded px-2 py-1 text-danger hover:bg-danger-subtle focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  Delete
+                  <span className="sr-only"> transaction from {transaction.date}</span>
+                </button>
+              </>
+            )}
           </div>
         ),
       },
@@ -118,6 +147,7 @@ export function TransactionList({
         caption="Transactions ordered by date, newest first"
         columns={COLUMNS}
         rows={rows}
+        focusableRows
       />
       {expandedTransaction ? (
         <div className="mt-2 rounded border border-border bg-surface-muted px-2 py-2">

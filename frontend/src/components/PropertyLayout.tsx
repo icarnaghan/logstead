@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Outlet, useOutletContext, useParams } from "react-router-dom";
 import { getProperty, type Property } from "../api/properties";
+import { useFirstLoad } from "./ui";
 
 /**
  * Load state for the shared property context (Requirement 2.1, 3.1).
@@ -26,6 +27,12 @@ export interface PropertyContext {
   status: PropertyLoadStatus;
   /** The loaded property; present only when `status === "loaded"`. */
   property?: Property;
+  /** Latest load error message, if any. May be set while `property` is stale-but-shown. */
+  error?: string | null;
+  /** True while a refresh is in flight and the property is already shown. */
+  refreshing?: boolean;
+  /** Re-fetch the property without clearing what is currently shown. */
+  retry?: () => void | Promise<unknown>;
 }
 
 interface PropertyLayoutProps {
@@ -53,20 +60,36 @@ export default function PropertyLayout({
   load = getProperty,
 }: PropertyLayoutProps) {
   const { propertyId } = useParams<{ propertyId: string }>();
-  const [state, setState] = useState<{
-    status: PropertyLoadStatus;
-    property?: Property;
-  }>({ status: "loading" });
+  const [property, setProperty] = useState<Property | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const view = useFirstLoad({ loading, error, resetKey: propertyId });
 
+  // A different property id must never show the previous property's data.
+  const [prevId, setPrevId] = useState(propertyId);
+  if (prevId !== propertyId) {
+    setPrevId(propertyId);
+    setProperty(undefined);
+    setError(null);
+    setLoading(true);
+  }
+
+  // Refreshes keep the loaded property mounted (Requirements 14.2, 14.3).
   const refresh = useCallback(
-    (signal?: AbortSignal) => {
-      if (!propertyId) return;
-      setState({ status: "loading" });
-      load(propertyId, signal)
-        .then((property) => setState({ status: "loaded", property }))
+    (signal?: AbortSignal): Promise<void> => {
+      if (!propertyId) return Promise.resolve();
+      setLoading(true);
+      setError(null);
+      return load(propertyId, signal)
+        .then((result) => {
+          if (signal?.aborted) return;
+          setProperty(result);
+          setLoading(false);
+        })
         .catch(() => {
           if (signal?.aborted) return;
-          setState({ status: "error" });
+          setError("Could not load this property.");
+          setLoading(false);
         });
     },
     [propertyId, load],
@@ -74,14 +97,24 @@ export default function PropertyLayout({
 
   useEffect(() => {
     const controller = new AbortController();
-    refresh(controller.signal);
+    void refresh(controller.signal);
     return () => controller.abort();
   }, [refresh]);
 
+  const hasProperty = view.showContent && property !== undefined;
+  const status: PropertyLoadStatus = hasProperty
+    ? "loaded"
+    : error !== null
+      ? "error"
+      : "loading";
+
   const context: PropertyContext = {
     propertyId: propertyId ?? "",
-    status: state.status,
-    property: state.property,
+    status,
+    property: hasProperty ? property : undefined,
+    error,
+    refreshing: view.refreshing,
+    retry: () => refresh(),
   };
 
   return <Outlet context={context} />;

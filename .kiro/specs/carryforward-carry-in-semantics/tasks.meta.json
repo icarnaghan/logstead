@@ -1,0 +1,454 @@
+{
+  "pbtResults": {
+    "5.4 Update `frontend/src/pages/CarryforwardPage.driftCue.property.test.tsx`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794080626269
+    },
+    "1.3 Property tests: carry-in relation, faithful entry, next-year summary": {
+      "status": "passed",
+      "lastRunTimestamp": 1794080946380
+    }
+  },
+  "executionHistory": {
+    "1.1 Extend `ReconciledYear` and `ReconciliationSummary` in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079310915
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079314207
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079354766
+      }
+    ],
+    "1.2 Re-point `reconcile()` in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079310959
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079355144
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080120150
+      }
+    ],
+    "2.1 Update the status oracle in `backend/tests/services/test_carryforward_status_property.py`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311054
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080122617
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080284939
+      }
+    ],
+    "2.2 Update Properties 1, 4, 5 in `backend/tests/services/test_carryforward_chain_status_property.py`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311087
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080123435
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080285509
+      }
+    ],
+    "2.3 Update `backend/tests/services/test_carryforward_chain_status_compat_property.py`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311125
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080124469
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080286315
+      }
+    ],
+    "2.4 Update `backend/tests/services/test_carryforward_chain_status_injection_property.py`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311171
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080125279
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080287370
+      }
+    ],
+    "2.5 Update `backend/tests/services/test_carryforward_chain_status_drift_property.py`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311216
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080291118
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080582732
+      }
+    ],
+    "2.6 Update `backend/tests/services/test_carryforward_chain_status_examples.py`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311258
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080291913
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080583844
+      }
+    ],
+    "2.7 Update status expectations in `test_carryforward_allowed_balance_property.py` and `test_carryforward_fully_allowed_property.py` (under `backend/tests/services/`)": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311296
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080293057
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080584941
+      }
+    ],
+    "2.8 Update `test_carryforward_allowed_examples.py` and audit `test_carryforward_persistence_property.py` and `test_carryforward_running_balance_property.py` (under `backend/tests/services/`)": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311375
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080294072
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080586216
+      }
+    ],
+    "2.9 Update the router tests under `backend/tests/router/`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311408
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080590898
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080835069
+      }
+    ],
+    "3. Checkpoint - backend carry-in semantics": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311451
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080959402
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794081218058
+      }
+    ],
+    "4.1 Extend the types in `frontend/src/api/carryforward.ts`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311487
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080125959
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080288119
+      }
+    ],
+    "4.2 Update fixtures in `frontend/src/api/carryforward.test.ts`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311520
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080591436
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080835090
+      }
+    ],
+    "5.1 Rework `frontend/src/pages/CarryforwardPage.tsx`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311549
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080295053
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080587126
+      }
+    ],
+    "5.2 Update `frontend/src/pages/CarryforwardPage.test.tsx`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311583
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080592252
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080835847
+      }
+    ],
+    "5.3 Update `frontend/src/pages/CarryforwardPage.chainStatus.test.tsx`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311617
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080593337
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080836870
+      }
+    ],
+    "5.4 Update `frontend/src/pages/CarryforwardPage.driftCue.property.test.tsx`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311701
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080594364
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080837900
+      }
+    ],
+    "5.5 Update `frontend/src/pages/CarryforwardPage.labelHighlight.property.test.tsx`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311732
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080597032
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080956453
+      }
+    ],
+    "6.1 Add a CHANGELOG entry in `CHANGELOG.md`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311762
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080960226
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794081218819
+      }
+    ],
+    "7. Final verification - suites green, no float, no deploy": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794079311790
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794081219626
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794082134362
+      }
+    ],
+    "1. Backend: carry-in semantics in `CarryforwardService`": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080120195
+      }
+    ],
+    "2. Backend: update existing tests that encode the out-of-year comparison": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080835132
+      }
+    ],
+    "4. Frontend: API types": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080835197
+      }
+    ],
+    "1.3 Property tests: carry-in relation, faithful entry, next-year summary": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080839003
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080954313
+      }
+    ],
+    "1.4 Example test: the user's real 2014 to 2020 shape": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080839806
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080955342
+      }
+    ],
+    "5.6 RTL examples for the new columns, hints and next-year line": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080840858
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080957604
+      }
+    ],
+    "5.7 Property test: carry-in and carry-out cells and constant cell count": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080841708
+      },
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080958579
+      }
+    ],
+    "5. Frontend: page columns, hints and copy": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794080956490
+      }
+    ],
+    "6. Docs": [
+      {
+        "executionId": "eecc8a93-0a07-464e-8657-a6bec985a332",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1794081218894
+      }
+    ]
+  }
+}

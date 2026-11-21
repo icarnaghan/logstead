@@ -176,3 +176,109 @@ def test_empty_document_restore_clears_and_returns_empty_summary(
     assert _user_partition_rows(repo, property_id) == []
     # The property no longer appears in the owned-property list.
     assert PropertyService(repo, user).list() == []
+
+
+def test_restore_with_loan_writes_loan_and_recomputed_rollups(
+    repo, files, user
+):
+    """Req 11.3-11.5: a restored loan keeps id/timestamps; rollups recomputed."""
+    document = {
+        "schema_version": "1",
+        "exported_at": "2025-02-14T10:30:00+00:00",
+        "properties": [
+            {
+                "id": "prop-1",
+                "name": "Maple",
+                "address_text": "123 Maple St",
+                "loans": [
+                    {
+                        "id": "loan-1",
+                        "property_id": "prop-1",
+                        "description": "Mortgage",
+                        "annual_interest_rate": "6.5",
+                        "monthly_payment": "1500.00",
+                        "anchor_balance": "120000.00",
+                        "anchor_date": "2023-02-01",
+                        "interest_overrides": {"2021": "4321.00"},
+                        "created_at": "2023-01-15T00:00:00+00:00",
+                        "updated_at": "2023-01-16T00:00:00+00:00",
+                    }
+                ],
+            }
+        ],
+    }
+
+    result = _service(repo, files, user).restore(document)
+
+    assert result.is_ok, result.error
+    assert result.value.loans == 1
+
+    rows = repo.query(
+        keys.property_scoped_pk("prop-1"),
+        sk_begins_with=keys.loan_list_prefix(),
+        money_attrs=set(),
+    )
+    loan_rows = [r for r in rows if not keys.is_loan_year_sk(r["SK"])]
+    rollup_rows = [r for r in rows if keys.is_loan_year_sk(r["SK"])]
+    assert [r["SK"] for r in loan_rows] == [keys.loan_sk("loan-1")]
+    assert loan_rows[0]["createdAt"] == "2023-01-15T00:00:00+00:00"
+    assert loan_rows[0]["updatedAt"] == "2023-01-16T00:00:00+00:00"
+    assert len(rollup_rows) >= 2  # many payments from 2023 span several years
+    sks = {r["SK"] for r in rollup_rows}
+    assert keys.loan_year_sk("loan-1", 2023) in sks
+    # The pre-anchor override year gets an override-only rollup row.
+    assert keys.loan_year_sk("loan-1", 2021) in sks
+
+
+def _loan_document(loan: dict) -> dict:
+    return {
+        "schema_version": "1",
+        "exported_at": "2025-02-14T10:30:00+00:00",
+        "properties": [
+            {
+                "id": "prop-1",
+                "name": "Maple",
+                "address_text": "123 Maple St",
+                "loans": [loan],
+            }
+        ],
+    }
+
+
+def test_restore_rejects_loan_lacking_anchor_fields_and_persists_nothing(
+    repo, files, user
+):
+    """Req 9.4: an origination-shape loan rejects the whole restore."""
+    legacy_loan = {
+        "id": "loan-1",
+        "property_id": "prop-1",
+        "description": "Mortgage",
+        "original_principal": "120000.00",
+        "annual_interest_rate": "6.5",
+        "term_months": 360,
+        "first_payment_date": "2023-02-01",
+    }
+
+    result = _service(repo, files, user).restore(_loan_document(legacy_loan))
+
+    assert not result.is_ok
+    assert repo.query(keys.property_scoped_pk("prop-1")) == []
+    assert repo.query(keys.user_pk(USER_ID)) == []
+
+
+def test_restore_document_without_loans_creates_zero_loans(repo, files, user):
+    """Req 9.7: a loan-free document restores with a loan count of 0."""
+    document = _loan_document({})
+    del document["properties"][0]["loans"]
+
+    result = _service(repo, files, user).restore(document)
+
+    assert result.is_ok, result.error
+    assert result.value.properties == 1
+    assert result.value.loans == 0
+    rows = repo.query(
+        keys.property_scoped_pk("prop-1"),
+        sk_begins_with=keys.loan_list_prefix(),
+        money_attrs=set(),
+    )
+    assert rows == []

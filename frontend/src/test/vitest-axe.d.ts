@@ -15,6 +15,8 @@ import type { AxeResults } from "axe-core";
  * runtime behavior. It does not weaken any strictness settings.
  */
 declare module "vitest" {
+  // Must match vitest's own `Assertion<T = any>` default for declaration merging.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   interface Assertion<T = any> {
     toHaveNoViolations(): T;
   }

@@ -34,27 +34,7 @@ function Probe() {
   );
 }
 
-function installMemoryLocalStorage() {
-  const data = new Map<string, string>();
-  const mock = {
-    getItem: (k: string) => (data.has(k) ? data.get(k)! : null),
-    setItem: (k: string, v: string) => void data.set(k, String(v)),
-    removeItem: (k: string) => void data.delete(k),
-    clear: () => data.clear(),
-    key: (i: number) => Array.from(data.keys())[i] ?? null,
-    get length() {
-      return data.size;
-    },
-  };
-  Object.defineProperty(window, "localStorage", {
-    value: mock,
-    configurable: true,
-    writable: true,
-  });
-}
-
 beforeEach(() => {
-  installMemoryLocalStorage();
   document.documentElement.classList.remove("dark");
 });
 

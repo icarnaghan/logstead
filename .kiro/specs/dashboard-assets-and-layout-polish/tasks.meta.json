@@ -1,0 +1,232 @@
+{
+  "pbtResults": {
+    "1.4 Write Hypothesis property-based reconciliation tests": {
+      "status": "passed",
+      "lastRunTimestamp": 1791760139820
+    }
+  },
+  "executionHistory": {
+    "1.1 Add DTOs and the `asset_summary(tax_year)` method": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757240687
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757248862
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757426502
+      }
+    ],
+    "1.2 Wire the read-only route and handler in the router": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757240728
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757432306
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757613115
+      }
+    ],
+    "2. Backend checkpoint": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757240802
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757620668
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791758787588
+      }
+    ],
+    "3.1 Add `getAssetSummary` and its types": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757240832
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757621432
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791758788956
+      }
+    ],
+    "4.1 Implement the tile and wire it into `DashboardPage.tsx`": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757240867
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791758804020
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791758943688
+      }
+    ],
+    "5.1 Create `PageContainer` and relax `AppLayout`": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757240897
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757249797
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757427959
+      }
+    ],
+    "5.2 Apply `PageContainer` (wide) to the four Panel_Pages": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757240929
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757433121
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757614450
+      }
+    ],
+    "6. Full-suite checkpoint": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757240956
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791758944282
+      },
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791758983905
+      }
+    ],
+    "1. Add the backend `asset_summary` aggregation on `DashboardService`": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757613146
+      }
+    ],
+    "5. Introduce the `PageContainer` width convention and relax the shell cap": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791757614482
+      }
+    ],
+    "3. Add the frontend injectable api function": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791758788995
+      }
+    ],
+    "4. Add the `DepreciableAssetsTile` to the dashboard": [
+      {
+        "executionId": "4b001dd4-30d1-408d-a0ef-bedb14deb29e",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791758943751
+      }
+    ],
+    "1.3 Write endpoint/handler tests (moto)": [
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791759889102
+      },
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791760158812
+      }
+    ],
+    "1.4 Write Hypothesis property-based reconciliation tests": [
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791759890197
+      },
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791760159653
+      }
+    ],
+    "4.2 Write RTL + vitest-axe tests for the tile": [
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791759891614
+      },
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791760160970
+      }
+    ],
+    "5.3 Write structural + boundary + axe tests for the layout change": [
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791759892872
+      },
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791760162416
+      },
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791760331469
+      },
+      {
+        "executionId": "83056996-2332-4e4d-b67e-5398e12d003f",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791760523590
+      }
+    ]
+  }
+}

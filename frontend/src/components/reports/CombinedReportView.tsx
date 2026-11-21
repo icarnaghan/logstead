@@ -71,6 +71,14 @@ export function CombinedReportView({ report }: CombinedReportViewProps) {
               {formatMoney(totals.total_expenses)}
             </dd>
           </div>
+          {report.line12 ? (
+            <div className="flex items-center justify-between">
+              <dt className="font-medium text-fg-muted">Line 12 total</dt>
+              <dd className="font-medium tabular-nums text-fg">
+                {formatMoney(report.line12.total)}
+              </dd>
+            </div>
+          ) : null}
           <div className="flex items-baseline justify-between border-t-2 border-border pt-3">
             <dt className="text-lg font-bold text-fg">
               {netLoss ? "Net loss" : "Net income"}

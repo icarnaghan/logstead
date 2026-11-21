@@ -42,6 +42,10 @@ function makeReport(overrides: Partial<ScheduleEReport> = {}): ScheduleEReport {
       total_expenses: "7175.33",
       net: "16824.67",
     },
+    line12: {
+      source: "transaction-entered",
+      superseded_manual_interest: { amount: "0.00", count: 0 },
+    },
     ...overrides,
   };
 }
@@ -100,7 +104,9 @@ describe("ReportView — income and expense lines (Req 10.1)", () => {
 
     const income = sectionByHeading(/^income$/i);
     expect(within(income).getByText("Rents received")).toBeInTheDocument();
-    expect(within(income).getByText("$24,000.00")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // Tax-oriented line figures round to whole dollars: "24000.00" → "$24,000".
+    expect(within(income).getByText("$24,000")).toBeInTheDocument();
     // An expense line must NOT appear in the income section.
     expect(within(income).queryByText("Repairs")).not.toBeInTheDocument();
   });
@@ -110,7 +116,9 @@ describe("ReportView — income and expense lines (Req 10.1)", () => {
 
     const expenses = sectionByHeading(/^expenses$/i);
     expect(within(expenses).getByText("Repairs")).toBeInTheDocument();
-    expect(within(expenses).getByText("$1,200.00")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // "1200.00" → "$1,200" on the whole-dollar expense line.
+    expect(within(expenses).getByText("$1,200")).toBeInTheDocument();
     expect(within(expenses).queryByText("Rents received")).not.toBeInTheDocument();
   });
 });
@@ -120,7 +128,9 @@ describe("ReportView — Line 18 depreciation (Req 10.3)", () => {
     render(<ReportView report={makeReport()} />);
 
     const dep = sectionByHeading(/depreciation \(line 18\)/i);
-    expect(within(dep).getByText("$5,833.33")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // Line 18 rounds to whole dollars: "5833.33" → "$5,833".
+    expect(within(dep).getByText("$5,833")).toBeInTheDocument();
   });
 
   it("shows a zero depreciation total when no Line 18 line exists", () => {
@@ -135,7 +145,9 @@ describe("ReportView — Line 18 depreciation (Req 10.3)", () => {
     );
 
     const dep = sectionByHeading(/depreciation \(line 18\)/i);
-    expect(within(dep).getByText("$0.00")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // The zero fallback "0.00" rounds to "$0".
+    expect(within(dep).getByText("$0")).toBeInTheDocument();
   });
 });
 
@@ -145,9 +157,12 @@ describe("ReportView — Line 19 itemization (Req 10.5)", () => {
 
     const other = sectionByHeading(/other expenses \(line 19\)/i);
     expect(within(other).getByText("HOA dues")).toBeInTheDocument();
-    expect(within(other).getByText("$100.00")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // Line 19 item amounts round to whole dollars: "100.00" → "$100",
+    // "42.00" → "$42".
+    expect(within(other).getByText("$100")).toBeInTheDocument();
     expect(within(other).getByText("Bank fees")).toBeInTheDocument();
-    expect(within(other).getByText("$42.00")).toBeInTheDocument();
+    expect(within(other).getByText("$42")).toBeInTheDocument();
   });
 
   it("shows the empty-itemization note when there are no Other items", () => {
@@ -165,14 +180,19 @@ describe("ReportView — totals and net label (Req 10.4)", () => {
     render(<ReportView report={makeReport()} />);
 
     const totals = sectionByHeading(/^totals$/i);
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // Totals round half-up by magnitude: "24000.00" → "$24,000",
+    // "7175.33" → "$7,175", "16824.67" → "$16,825".
     const incomeDt = within(totals).getByText("Total income");
-    expect(incomeDt.nextElementSibling).toHaveTextContent("$24,000.00");
+    expect(incomeDt.nextElementSibling).toHaveTextContent("$24,000");
+    // Alignment is preserved: the money cell keeps its tabular-nums class.
+    expect(incomeDt.nextElementSibling).toHaveClass("tabular-nums");
     const expensesDt = within(totals).getByText("Total expenses");
-    expect(expensesDt.nextElementSibling).toHaveTextContent("$7,175.33");
+    expect(expensesDt.nextElementSibling).toHaveTextContent("$7,175");
 
     expect(within(totals).getByText("Net income")).toBeInTheDocument();
     expect(within(totals).queryByText("Net loss")).not.toBeInTheDocument();
-    expect(within(totals).getByText("$16,824.67")).toBeInTheDocument();
+    expect(within(totals).getByText("$16,825")).toBeInTheDocument();
   });
 
   it("labels a negative net 'Net loss' and formats it with a leading minus", () => {
@@ -191,7 +211,12 @@ describe("ReportView — totals and net label (Req 10.4)", () => {
     const totals = sectionByHeading(/^totals$/i);
     expect(within(totals).getByText("Net loss")).toBeInTheDocument();
     expect(within(totals).queryByText("Net income")).not.toBeInTheDocument();
-    expect(within(totals).getByText("-$500.00")).toBeInTheDocument();
+    // Feature: depreciation-override-and-whole-dollar-display, Req 11.1
+    // A negative net rounds the magnitude and keeps the leading minus:
+    // "-500.00" → "-$500". The "Net loss" cue above still carries the loss.
+    const netLoss = within(totals).getByText("-$500");
+    expect(netLoss).toBeInTheDocument();
+    expect(netLoss).toHaveClass("tabular-nums");
   });
 });
 
@@ -234,6 +259,78 @@ describe("ReportView — expense-by-category chart (Req 16.1, 16.3)", () => {
       screen.queryByRole("heading", { name: /expenses by category/i }),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+});
+
+describe("ReportView — Line 12 source (mortgage-amortization Req 10.1-10.5)", () => {
+  function line12Report(
+    line12: ScheduleEReport["line12"] | undefined,
+    total = "6000.00",
+  ): ScheduleEReport {
+    const base = makeReport();
+    const report = {
+      ...base,
+      lines: [
+        ...base.lines,
+        { line: 12, label: "Mortgage interest", kind: "expense", total },
+      ],
+    } as ScheduleEReport;
+    if (line12 === undefined) {
+      delete (report as Partial<ScheduleEReport>).line12;
+    } else {
+      report.line12 = line12;
+    }
+    return report;
+  }
+
+  function line12Row(): HTMLElement {
+    const expenses = sectionByHeading(/^expenses$/i);
+    return within(expenses).getByRole("row", { name: /mortgage interest/i });
+  }
+
+  it("shows the loan-generated label and superseded amount to two decimals on the Line 12 row", () => {
+    render(
+      <ReportView
+        report={line12Report({
+          source: "loan-generated",
+          superseded_manual_interest: { amount: "1234.50", count: 3 },
+        })}
+      />,
+    );
+
+    const row = line12Row();
+    expect(within(row).getByText("Loan-generated")).toBeInTheDocument();
+    expect(
+      within(row).getByText(/superseded manual interest: \$1,234\.50 \(3 transactions\)/i),
+    ).toBeInTheDocument();
+    expect(within(row).getByText("$6,000")).toBeInTheDocument();
+  });
+
+  it("shows no source label for transaction-entered Line 12", () => {
+    render(<ReportView report={line12Report(makeReport().line12)} />);
+
+    const row = line12Row();
+    expect(within(row).queryByText("Loan-generated")).not.toBeInTheDocument();
+    expect(within(row).queryByText(/superseded/i)).not.toBeInTheDocument();
+    expect(within(row).queryByText(/source unavailable/i)).not.toBeInTheDocument();
+    expect(within(row).getByText("$6,000")).toBeInTheDocument();
+  });
+
+  it("shows no label for a zero transaction-entered Line 12", () => {
+    render(<ReportView report={line12Report(makeReport().line12, "0.00")} />);
+
+    const row = line12Row();
+    expect(within(row).getByText("$0")).toBeInTheDocument();
+    expect(within(row).queryByText("Loan-generated")).not.toBeInTheDocument();
+    expect(within(row).queryByText(/source unavailable/i)).not.toBeInTheDocument();
+  });
+
+  it("shows 'Line 12 source unavailable' on the Line 12 row when line12 is missing", () => {
+    render(<ReportView report={line12Report(undefined)} />);
+
+    expect(
+      within(line12Row()).getByText("Line 12 source unavailable"),
+    ).toBeInTheDocument();
   });
 });
 

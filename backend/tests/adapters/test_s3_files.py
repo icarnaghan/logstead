@@ -117,3 +117,108 @@ def test_delete_missing_object_is_idempotent(adapter):
 def test_constructor_rejects_empty_bucket(s3_client):
     with pytest.raises(ValueError):
         S3FileAdapter(s3_client, "")
+
+
+# --- Presigned upload audit (S8) ---------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "../../etc/passwd",
+        "..\\..\\windows\\system32\\cmd.exe",
+        "a/b/c.jpg",
+        "bad\x00name\n.jpg",
+        "  ..hidden  ",
+        "",
+        None,
+        "x" * 500 + ".jpg",
+        "na<me>|:*?\".pdf",
+    ],
+)
+def test_sanitize_filename_is_safe(raw):
+    from logstead.adapters.s3_files import sanitize_filename
+
+    name = sanitize_filename(raw)
+    assert name
+    assert len(name) <= 100
+    assert "/" not in name and "\\" not in name
+    assert all(ch.isprintable() for ch in name)
+    assert not name.startswith(".")
+
+
+def test_sanitize_filename_keeps_extension_when_truncating():
+    from logstead.adapters.s3_files import sanitize_filename
+
+    assert sanitize_filename("x" * 500 + ".jpg").endswith(".jpg")
+    assert sanitize_filename("receipt (1).pdf") == "receipt (1).pdf"
+    assert sanitize_filename("../../etc/passwd") == "passwd"
+
+
+def test_presigned_put_url_has_short_expiry_and_binds_content_type(adapter):
+    url = adapter.presigned_put_url(photo_key("p", "a.jpg"), "image/jpeg")
+
+    assert "X-Amz-Expires=600" in url or "Expires=" in url
+    assert "content-type" in url.lower()
+
+
+def test_purge_if_oversized_deletes_only_large_objects(adapter, s3_client):
+    s3_client.put_object(Bucket=BUCKET, Key="photos/p/big", Body=b"x" * 20)
+    s3_client.put_object(Bucket=BUCKET, Key="photos/p/small", Body=b"x" * 5)
+
+    assert adapter.purge_if_oversized("photos/p/big", 10) is True
+    assert adapter.purge_if_oversized("photos/p/small", 10) is False
+    assert adapter.purge_if_oversized("photos/p/missing", 10) is False
+    assert adapter.object_size("photos/p/big") is None
+    assert adapter.object_size("photos/p/small") == 5
+
+
+# --- Accountant package additions (Requirements 1.1, 10.5, 14.1) -------------
+
+
+def test_presigned_get_url_without_download_filename_has_no_disposition(adapter):
+    url = adapter.presigned_get_url("exports/a.csv")
+    assert "response-content-disposition" not in url.lower()
+
+
+def test_presigned_get_url_with_download_filename_sets_quoted_attachment(adapter):
+    from urllib.parse import parse_qs, urlparse
+
+    url = adapter.presigned_get_url(
+        "exports/a.csv", download_filename="../my report.csv"
+    )
+    query = parse_qs(urlparse(url).query)
+    disposition = query["response-content-disposition"][0]
+    assert disposition == 'attachment; filename="my report.csv"'
+
+
+def test_open_stream_present_returns_body_and_length(adapter, s3_client):
+    s3_client.put_object(Bucket=BUCKET, Key="receipts/t/r.pdf", Body=b"hello")
+    result = adapter.open_stream("receipts/t/r.pdf")
+    assert result is not None
+    stream, length = result
+    assert length == 5
+    assert stream.read() == b"hello"
+
+
+def test_open_stream_absent_returns_none(adapter):
+    assert adapter.open_stream("receipts/missing") is None
+
+
+def test_upload_file_stores_bytes_and_content_type(adapter, s3_client, tmp_path):
+    path = tmp_path / "pkg.zip"
+    path.write_bytes(b"zipbytes")
+    adapter.upload_file(str(path), "exports/packages/u/j/pkg.zip", "application/zip")
+    obj = s3_client.get_object(Bucket=BUCKET, Key="exports/packages/u/j/pkg.zip")
+    assert obj["Body"].read() == b"zipbytes"
+    assert obj["ContentType"] == "application/zip"
+
+
+def test_package_key_and_pdf_key_shapes():
+    from logstead.adapters.s3_files import package_key, pdf_key
+
+    assert (
+        package_key("user-1", "job-9", 2024)
+        == "exports/packages/user-1/job-9/logstead-accountant-package-2024.zip"
+    )
+    assert pdf_key("user-1", "rand", "r.pdf") == "exports/pdf/user-1/rand/r.pdf"

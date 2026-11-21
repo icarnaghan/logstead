@@ -4,3 +4,4 @@ pytest
 hypothesis
 moto
 pytest-xdist
+PyYAML

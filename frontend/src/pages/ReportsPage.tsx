@@ -1,13 +1,34 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import { listAssets, type DepreciableAsset } from "../api/assets";
+import { useMarkReportVisited } from "../lib/checklistStorage";
+import { latestCompletedTaxYear, parseYearParam } from "../lib/taxYears";
+import { usePropertyYearRange } from "../lib/usePropertyYearRange";
+import { isAsyncLoading, useAsyncResource } from "../lib/useAsyncResource";
+import { propertyPath } from "../components/navConfig";
+import { EMPTY_COPY, IMPORT_LINK_LABEL } from "../lib/emptyCopy";
+import { PageContainer } from "../components/PageContainer";
 import { PropertySection } from "../components/PropertySection";
 import { ReportView } from "../components/reports/ReportView";
-import { Button, Select, StateBlock } from "../components/ui";
+import {
+  Button,
+  EmptyGuide,
+  LoadingRegion,
+  RefreshingIndicator,
+  Select,
+  StateBlock,
+  TableSkeleton,
+  TileSkeleton,
+  useFirstLoad,
+  useToast,
+} from "../components/ui";
+import { startDownload } from "../lib/packageJob";
 import * as reportsApiDefault from "../api/reports";
 import {
   reportToCsv,
   reportToJson,
   reportFilename,
+  type PdfDownload,
   type ScheduleEReport,
 } from "../api/reports";
 
@@ -17,6 +38,8 @@ import {
  */
 export interface ReportsApi {
   getReport: (propertyId: string, taxYear: number) => Promise<ScheduleEReport>;
+  /** Builds the Schedule E PDF; defaults to the real module function. */
+  createReportPdf?: (propertyId: string, taxYear: number) => Promise<PdfDownload>;
 }
 
 interface ReportsPageProps {
@@ -24,16 +47,6 @@ interface ReportsPageProps {
   api?: ReportsApi;
   /** Candidate tax years to offer in the selector. */
   years?: readonly number[];
-}
-
-/** Recent tax years, newest first, offered by default in the year selector. */
-function defaultYears(): number[] {
-  const current = new Date().getFullYear();
-  const years: number[] = [];
-  for (let year = current; year >= current - 6; year -= 1) {
-    years.push(year);
-  }
-  return years;
 }
 
 /**
@@ -64,37 +77,75 @@ function downloadFile(content: string, filename: string, mimeType: string) {
  * browser download (Requirement 10.7).
  */
 export default function ReportsPage({ api, years }: ReportsPageProps = {}) {
+  useMarkReportVisited();
   const { propertyId = "" } = useParams();
+  const [searchParams] = useSearchParams();
   const reportsApiImpl: ReportsApi = api ?? reportsApiDefault;
-  const yearOptions = years ?? defaultYears();
+  const { notify } = useToast();
+  const [pdfBusy, setPdfBusy] = useState(false);
 
-  const [taxYear, setTaxYear] = useState<number | null>(null);
-  const [report, setReport] = useState<ScheduleEReport | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // The property's depreciable assets size the selectable-year range: from the
+  // earliest in-service year through the latest completed tax year (the current
+  // year cannot be filed yet). An injected `years` prop overrides this for
+  // tests.
+  const [assets, setAssets] = useState<DepreciableAsset[]>([]);
+  const derivedYears = usePropertyYearRange(propertyId, assets);
+  const yearOptions = years ?? derivedYears;
 
-  async function handleYearChange(value: string) {
+  // Default the selected year to the latest completed tax year and auto-load
+  // its report on mount, so the page lands on the latest filable year rather
+  // than an empty prompt.
+  const [taxYear, setTaxYear] = useState<number | null>(
+    () => parseYearParam(searchParams.get("year")) ?? latestCompletedTaxYear(),
+  );
+  // A property switch clears the report; a tax-year change keeps the previous
+  // report mounted while the new one loads (14.1-14.3). Clearing the year
+  // disables loading.
+  const {
+    data: report,
+    error,
+    status,
+    reload,
+    setData: setReport,
+  } = useAsyncResource(
+    () => reportsApiImpl.getReport(propertyId, taxYear as number),
+    {
+      resetKeys: [propertyId],
+      deps: [taxYear],
+      enabled: propertyId !== "" && taxYear !== null,
+      describeError: () => "Unable to load the Schedule E report for this year.",
+    },
+  );
+  // Skeleton only before the first success for a property.
+  const view = useFirstLoad({
+    loading: isAsyncLoading(status),
+    error,
+    resetKey: propertyId,
+  });
+  // Load the property's assets to size the year range (active-flag guarded).
+  useEffect(() => {
+    if (!propertyId) return;
+    let active = true;
+    listAssets(propertyId)
+      .then((loaded) => {
+        if (active) setAssets(loaded);
+      })
+      .catch(() => {
+        if (active) setAssets([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [propertyId]);
+
+  function handleYearChange(value: string) {
     if (value === "") {
       setTaxYear(null);
       setReport(null);
-      setError(null);
       return;
     }
-    const year = Number(value);
-    setTaxYear(year);
-    setLoading(true);
-    setError(null);
-    setReport(null);
-    try {
-      const result = await reportsApiImpl.getReport(propertyId, year);
-      setReport(result);
-    } catch {
-      setError("Unable to load the Schedule E report for this year.");
-    } finally {
-      setLoading(false);
-    }
+    setTaxYear(Number(value));
   }
-
   function handleDownloadCsv() {
     if (!report) return;
     downloadFile(
@@ -113,8 +164,27 @@ export default function ReportsPage({ api, years }: ReportsPageProps = {}) {
     );
   }
 
+  async function handleDownloadPdf() {
+    if (!report || pdfBusy) return;
+    setPdfBusy(true);
+    try {
+      const createPdf =
+        reportsApiImpl.createReportPdf ?? reportsApiDefault.createReportPdf;
+      const pdf = await createPdf(propertyId, report.header.tax_year);
+      startDownload(pdf.download_url);
+    } catch (err) {
+      notify({
+        variant: "error",
+        title: "Could not create the PDF",
+        description: err instanceof Error ? err.message : undefined,
+      });
+    } finally {
+      setPdfBusy(false);
+    }
+  }
+
   return (
-    <>
+    <PageContainer>
       <PropertySection
         propertyId={propertyId}
         title="Schedule E Report"
@@ -151,8 +221,8 @@ export default function ReportsPage({ api, years }: ReportsPageProps = {}) {
               </Select>
             </div>
 
-            {report && (
-              <div className="flex items-center gap-2 print:hidden">
+            {view.showContent && report && (
+              <div className="flex flex-wrap items-center gap-2 print:hidden">
                 <Button
                   type="button"
                   variant="secondary"
@@ -169,27 +239,64 @@ export default function ReportsPage({ api, years }: ReportsPageProps = {}) {
                 >
                   Download JSON
                 </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  loading={pdfBusy}
+                  onClick={() => void handleDownloadPdf()}
+                >
+                  Download PDF
+                </Button>
               </div>
             )}
           </div>
         </section>
 
-        {loading ? (
-          <StateBlock kind="loading" title="Loading report…" />
-        ) : error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : report ? (
-          <ReportView report={report} />
-        ) : (
+        {view.showSkeleton ? (
+          <LoadingRegion label="Loading report" className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <TileSkeleton />
+              <TileSkeleton />
+              <TileSkeleton />
+            </div>
+            <TableSkeleton columns={3} />
+          </LoadingRegion>
+        ) : null}
+
+        {view.showError ? (
           <StateBlock
-            kind="empty"
-            title="No report yet"
-            description="Choose a tax year above to generate this property's Schedule E report."
+            kind="error"
+            compact={view.errorIsStale}
+            title="Could not load the report"
+            description={error ?? undefined}
+            onRetry={
+              taxYear !== null ? () => void reload() : undefined
+            }
           />
-        )}
+        ) : null}
+
+        {view.refreshing ? <RefreshingIndicator /> : null}
+
+        {view.showContent ? (
+          report ? (
+            <ReportView report={report} />
+          ) : (
+            <EmptyGuide
+              title={EMPTY_COPY.reports.title}
+              description={EMPTY_COPY.reports.description}
+              primary={{
+                label: EMPTY_COPY.reports.primaryLabel,
+                to: propertyPath(propertyId, "transactions"),
+              }}
+              secondary={{
+                label: IMPORT_LINK_LABEL,
+                to: "/imports/schedule-e",
+              }}
+            />
+          )
+        ) : null}
       </div>
-    </>
+    </PageContainer>
   );
 }

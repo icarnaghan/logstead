@@ -117,8 +117,8 @@ def reports(transactions, depreciation, properties):
 
 
 @pytest.fixture
-def dashboard(properties, reports):
-    return DashboardService(properties, reports)
+def dashboard(properties, reports, depreciation):
+    return DashboardService(properties, reports, depreciation)
 
 
 # --- Seeding helpers ---------------------------------------------------------
@@ -250,3 +250,94 @@ def test_summary_alias_matches_portfolio_summary(dashboard, properties, transact
          type="income", category_id="rents-received")
 
     assert dashboard.summary(TAX_YEAR) == dashboard.portfolio_summary(TAX_YEAR)
+
+
+# --- Loan-aware data years (Requirement 6.11) --------------------------------
+
+
+class _FakeLoans:
+    """Minimal LoanService stand-in exposing the two data-year hooks."""
+
+    def __init__(self, years: list[int], earliest: int | None = None) -> None:
+        self._years = years
+        self._earliest = earliest
+
+    def report_years(self, property_id: str) -> list[int]:
+        return list(self._years)
+
+    def earliest_year(self, property_id: str) -> int | None:
+        return self._earliest
+
+
+def test_derive_data_years_unions_loan_years(properties, transactions, depreciation):
+    from logstead.services.dashboard import derive_data_years
+
+    pid = _make_property(properties, "LoanYears")
+    _txn(transactions, pid, date="2022-03-01", amount="100.00",
+         type="income", category_id="rents-received")
+    props = properties.list()
+
+    loans = _FakeLoans([2020, 2022, 2023])
+    assert derive_data_years(props, transactions, depreciation, loans) == [
+        2020, 2022, 2023,
+    ]
+
+
+def test_derive_data_years_unchanged_when_loans_none(
+    properties, transactions, depreciation
+):
+    from logstead.services.dashboard import derive_data_years
+
+    pid = _make_property(properties, "NoLoans")
+    _txn(transactions, pid, date="2022-03-01", amount="100.00",
+         type="income", category_id="rents-received")
+    props = properties.list()
+
+    assert derive_data_years(props, transactions, depreciation) == [2022]
+    assert derive_data_years(props, transactions, depreciation, None) == [2022]
+
+
+def test_derive_data_years_caps_future_loan_years(
+    properties, transactions, depreciation
+):
+    from logstead.services.dashboard import derive_data_years, latest_tax_year
+
+    _make_property(properties, "FutureLoan")
+    latest = latest_tax_year()
+    loans = _FakeLoans([latest - 1, latest, latest + 1, latest + 30])
+
+    assert derive_data_years(
+        properties.list(), transactions, depreciation, loans
+    ) == [latest - 1, latest]
+
+
+def test_earliest_data_year_includes_loan_year(properties, transactions, depreciation):
+    from logstead.services.dashboard import earliest_data_year
+
+    pid = _make_property(properties, "EarliestLoan")
+    _txn(transactions, pid, date="2022-03-01", amount="100.00",
+         type="income", category_id="rents-received")
+
+    assert earliest_data_year(pid, transactions, depreciation) == 2022
+    assert earliest_data_year(
+        pid, transactions, depreciation, _FakeLoans([], earliest=2019)
+    ) == 2019
+    # A later loan year does not displace an earlier transaction year.
+    assert earliest_data_year(
+        pid, transactions, depreciation, _FakeLoans([], earliest=2024)
+    ) == 2022
+    # Loan-only property: the loan year alone is returned.
+    other = _make_property(properties, "LoanOnly")
+    assert earliest_data_year(
+        other, transactions, depreciation, _FakeLoans([], earliest=2021)
+    ) == 2021
+
+
+def test_dashboard_service_passes_loans_to_data_years(
+    properties, reports, depreciation, transactions
+):
+    _make_property(properties, "ViaService")
+    svc = DashboardService(
+        properties, reports, depreciation, transactions, _FakeLoans([2018])
+    )
+    assert svc._derive_data_years(properties.list()) == [2018]

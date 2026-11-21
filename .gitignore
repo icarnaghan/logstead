@@ -44,3 +44,13 @@ local.mk
 Thumbs.db
 *.swp
 .idea/
+# Test / build caches
+.hypothesis/
+*.tsbuildinfo
+# Finder/iCloud conflict duplicates (e.g. "foo 2.tsx"). Verified no tracked
+# file has " 2" in its name; remove this guard if one is ever needed.
+* 2
+* 2.*
+
+# GitLab CI cache
+.cache/

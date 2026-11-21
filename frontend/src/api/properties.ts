@@ -129,6 +129,8 @@ export interface Property {
   property_type?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  /** Id of the owning business entity, when linked. */
+  business_id?: string | null;
   /** Stored RentCast-driven details, present only when persisted. */
   details?: PropertyDetails | null;
 }
@@ -311,4 +313,29 @@ export function setUsageDays(
       signal,
     },
   );
+}
+
+/** Response body of `GET /properties/{propertyId}/earliest-year`. */
+export interface EarliestYearResponse {
+  readonly earliest_year: number | null;
+}
+
+/**
+ * Fetch the earliest year with any activity (transaction or asset in-service
+ * year) for a property.
+ *
+ * Backend route: `GET /properties/{propertyId}/earliest-year` →
+ * `{ earliest_year: number | null }`. Resolves to `null` when the property has
+ * no activity yet.
+ */
+export function getEarliestDataYear(
+  propertyId: string,
+  signal?: AbortSignal,
+): Promise<number | null> {
+  return client
+    .get<EarliestYearResponse>(
+      `/properties/${encodeURIComponent(propertyId)}/earliest-year`,
+      { signal },
+    )
+    .then((body) => body.earliest_year);
 }

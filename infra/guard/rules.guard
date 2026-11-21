@@ -1,0 +1,164 @@
+#
+# cfn-guard (v3) rules for infra/template.yaml. Run from the repository root:
+#   cfn-guard validate -d infra/template.yaml -r infra/guard/rules.guard --show-summary fail
+#
+# Guard reads the RAW template, not the SAM-transformed one. The rules match
+# the SAM resource type (AWS::Serverless::Function and its `Policies` list)
+# next to the native types, so CI needs no SAM CLI or AWS credentials. Native
+# AWS::IAM::* resources are covered too, in case they are added later.
+#
+# Guard sees short-form tags (!Sub, !If, !Ref) as their long-form maps
+# (Fn::Sub, Fn::If, Ref). It cannot compare a map with a string, and a filter
+# on a scalar is an error, so values are split by shape (is_string,
+# is_struct, is_list) before comparing.
+#
+# These rules encode decisions from the security review
+# (.kiro/specs/security-and-refactor-backlog/review.md: S1, S4, S5, S6).
+# Exceptions are documented next to the rule that allows them.
+
+let buckets      = Resources.*[ Type == 'AWS::S3::Bucket' ]
+let functions    = Resources.*[ Type == 'AWS::Serverless::Function' ]
+let log_groups   = Resources.*[ Type == 'AWS::Logs::LogGroup' ]
+let dists        = Resources.*[ Type == 'AWS::CloudFront::Distribution' ]
+let iam_policies = Resources.*[ Type in ['AWS::IAM::Policy', 'AWS::IAM::ManagedPolicy'] ]
+let iam_roles    = Resources.*[ Type == 'AWS::IAM::Role' ]
+
+# --- S3: every bucket blocks public access and encrypts at rest --------------
+rule s3_block_public_access when %buckets !empty {
+    %buckets.Properties.PublicAccessBlockConfiguration {
+        BlockPublicAcls == true
+        BlockPublicPolicy == true
+        IgnorePublicAcls == true
+        RestrictPublicBuckets == true
+    }
+}
+
+rule s3_encryption when %buckets !empty {
+    %buckets.Properties.BucketEncryption.ServerSideEncryptionConfiguration[*] {
+        ServerSideEncryptionByDefault.SSEAlgorithm in ['AES256', 'aws:kms', 'aws:kms:dsse']
+    }
+}
+
+# --- S6: no "*" CORS origin or header on any bucket --------------------------
+# AllowedOrigins in FilesBucket is a nested !If (custom domain, else
+# AllowedSpaOrigin, else the Vite dev origin). Strings are collected at the top
+# level and at two levels of Fn::If branches; none may be "*". (The !If
+# condition names are strings too; they are never "*".)
+let cors_rules = %buckets[ Properties.CorsConfiguration exists ].Properties.CorsConfiguration.CorsRules[*]
+
+let origins        = %cors_rules.AllowedOrigins[*]
+let origin_str     = %origins[ this is_string ]
+let origin_map     = %origins[ this is_struct ]
+let origin_b1      = %origin_map[ 'Fn::If' exists ].'Fn::If'[*]
+let origin_b1_str  = %origin_b1[ this is_string ]
+let origin_b1_map  = %origin_b1[ this is_struct ]
+let origin_b2      = %origin_b1_map[ 'Fn::If' exists ].'Fn::If'[*]
+let origin_b2_str  = %origin_b2[ this is_string ]
+
+let headers        = %cors_rules.AllowedHeaders[*]
+let header_str     = %headers[ this is_string ]
+
+rule s3_cors_no_wildcard when %cors_rules !empty {
+    when %origin_str !empty    { %origin_str != '*' }
+    when %origin_b1_str !empty { %origin_b1_str != '*' }
+    when %origin_b2_str !empty { %origin_b2_str != '*' }
+    when %header_str !empty    { %header_str != '*' }
+}
+
+# --- S5: IAM least privilege --------------------------------------------------
+# No Action "*" on any statement. No Resource "*" on an Allow statement, except
+# one allowlisted case:
+#
+#   EXCEPTION textract: textract:StartDocumentAnalysis / GetDocumentAnalysis
+#   have no resource types and no condition keys (Service Authorization
+#   Reference), so "*" is the narrowest valid Resource. A statement with
+#   Resource "*" passes only if EVERY action in it starts with "textract:", so
+#   adding another action next to the wildcard fails the check.
+#
+# Deny statements (e.g. the s3:* DenyInsecureTransport bucket policies) are not
+# grants and are not checked for Resource "*".
+#
+# Statements come from: SAM function `Policies` inline statements, the same
+# inside an !If branch (!If [HasX, {Statement: ...}, !Ref AWS::NoValue]), and
+# native AWS::IAM::Policy / ManagedPolicy / Role inline policies. SAM policy
+# templates (DynamoDBCrudPolicy etc.) are AWS-defined and resource-scoped by
+# their parameters; they are not inspected here.
+let sam_policies   = %functions.Properties.Policies[*]
+# Chained filters ([a][b]) crash cfn-guard 3.2.1, so each filter gets its own let.
+let sam_pol_maps   = %sam_policies[ this is_struct ]
+let sam_stmts      = %sam_pol_maps[ Statement exists ].Statement[*]
+let sam_if_branch  = %sam_pol_maps[ 'Fn::If' exists ].'Fn::If'[*]
+let sam_if_maps    = %sam_if_branch[ this is_struct ]
+let sam_if_stmts   = %sam_if_maps[ Statement exists ].Statement[*]
+let iam_pol_stmts  = %iam_policies.Properties.PolicyDocument.Statement[*]
+let iam_role_stmts = %iam_roles.Properties.Policies[*].PolicyDocument.Statement[*]
+
+rule iam_statement_ok(stmts) {
+    %stmts {
+        # Action may be a string or a list; [*] covers both.
+        Action[*] != '*'
+        # Policies must not use NotAction / NotResource on Allow (they invert
+        # the grant and usually mean "almost everything").
+        when Effect == 'Allow' {
+            NotAction empty
+            NotResource empty
+        }
+        when Effect == 'Allow' Resource is_string Resource == '*' {
+            Action[*] == /^textract:/
+        }
+        when Effect == 'Allow' Resource is_list {
+            let res_str = Resource[ this is_string ]
+            let wild = %res_str[ this == '*' ]
+            when %wild !empty {
+                Action[*] == /^textract:/
+            }
+        }
+    }
+}
+
+rule iam_least_privilege {
+    when %sam_stmts !empty      { iam_statement_ok(%sam_stmts) }
+    when %sam_if_stmts !empty   { iam_statement_ok(%sam_if_stmts) }
+    when %iam_pol_stmts !empty  { iam_statement_ok(%iam_pol_stmts) }
+    when %iam_role_stmts !empty { iam_statement_ok(%iam_role_stmts) }
+}
+
+# --- S4/S5: Lambda reserved concurrency caps cost/availability abuse ---------
+rule lambda_reserved_concurrency when %functions !empty {
+    %functions.Properties.ReservedConcurrentExecutions exists
+    %functions.Properties.ReservedConcurrentExecutions >= 1
+}
+
+# --- S1: CloudFront security headers and HTTPS-only viewers ------------------
+rule cloudfront_default_behavior when %dists !empty {
+    %dists.Properties.DistributionConfig.DefaultCacheBehavior {
+        ResponseHeadersPolicyId exists
+        ViewerProtocolPolicy in ['redirect-to-https', 'https-only']
+    }
+}
+
+let dists_with_cb   = Resources.*[ Type == 'AWS::CloudFront::Distribution'
+                                Properties.DistributionConfig.CacheBehaviors exists ]
+let extra_behaviors = %dists_with_cb.Properties.DistributionConfig.CacheBehaviors[*]
+
+rule cloudfront_extra_behaviors when %extra_behaviors !empty {
+    %extra_behaviors {
+        ResponseHeadersPolicyId exists
+        ViewerProtocolPolicy in ['redirect-to-https', 'https-only']
+    }
+}
+
+# --- Logs: every log group has a finite retention ----------------------------
+rule log_group_retention when %log_groups !empty {
+    %log_groups.Properties.RetentionInDays exists
+}
+
+# CSP is a single !Sub string, so cfn-lint cannot see inside it. Backslash
+# escapes (e.g. "$\{FilesBucket\}") stop !Sub from substituting and ship a CSP
+# that allows no API, Cognito or S3 hosts, which breaks sign-in.
+let csp_policies = Resources.*[ Type == 'AWS::CloudFront::ResponseHeadersPolicy' ]
+
+rule csp_has_no_escapes when %csp_policies !empty {
+    %csp_policies.Properties.ResponseHeadersPolicyConfig.SecurityHeadersConfig.ContentSecurityPolicy.ContentSecurityPolicy.'Fn::Sub' != /\x5C/
+        <<CSP must not contain backslashes; they block !Sub substitution>>
+}

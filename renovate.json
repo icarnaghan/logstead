@@ -1,0 +1,85 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "timezone": "America/Los_Angeles",
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "enabledManagers": [
+    "npm",
+    "pip_requirements"
+  ],
+  "rangeStrategy": "pin",
+  "automerge": false,
+  "platformAutomerge": false,
+  "prConcurrentLimit": 5,
+  "labels": [
+    "dependencies"
+  ],
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "schedule": [
+      "at any time"
+    ],
+    "labels": [
+      "dependencies",
+      "security"
+    ],
+    "automerge": false
+  },
+  "osvVulnerabilityAlerts": true,
+  "packageRules": [
+    {
+      "description": "Group non-major npm updates into one weekly PR",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "groupName": "frontend non-major",
+      "rangeStrategy": "pin"
+    },
+    {
+      "description": "Group non-major Python runtime updates into one weekly PR",
+      "matchManagers": [
+        "pip_requirements"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "backend non-major"
+    },
+    {
+      "description": "Majors get their own PR per package, never grouped",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": null,
+      "labels": [
+        "dependencies",
+        "major"
+      ],
+      "dependencyDashboardApproval": false
+    },
+    {
+      "description": "Dev-only Python tooling is unpinned by policy; do not rewrite it",
+      "matchManagers": [
+        "pip_requirements"
+      ],
+      "matchFileNames": [
+        "backend/requirements-dev.txt"
+      ],
+      "enabled": false
+    }
+  ]
+}

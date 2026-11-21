@@ -38,7 +38,7 @@ export interface TileProps {
  */
 export function Tile({ title, headingId, className, children }: TileProps) {
   return (
-    <Card as="section" aria-labelledby={headingId} className={cn("p-4", className)}>
+    <Card as="section" aria-labelledby={headingId} className={cn("p-card", className)}>
       <h2 id={headingId} className="text-sm font-medium text-fg-subtle">
         {title}
       </h2>

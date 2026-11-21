@@ -4,7 +4,7 @@ import {
   OTHER_LINE,
   type ScheduleEReport,
 } from "../../api/reports";
-import { formatMoney } from "../../lib/money";
+import { formatMoneyWholeDollars } from "../../lib/money";
 import { Card } from "../ui";
 import { ScheduleELineTable } from "./ScheduleELineTable";
 import { OtherItemsList } from "./OtherItemsList";
@@ -164,6 +164,7 @@ export function ReportView({
           <ScheduleELineTable
             caption={`Schedule E expense lines for ${header.property_name}, tax year ${header.tax_year}`}
             lines={expenseLines}
+            line12={report.line12}
           />
         </div>
       </Card>
@@ -210,7 +211,7 @@ export function ReportView({
             Line 18 depreciation:{" "}
           </span>
           <span className="tabular-nums text-fg">
-            {formatMoney(depreciationLine?.total ?? "0.00")}
+            {formatMoneyWholeDollars(depreciationLine?.total ?? "0.00")}
           </span>
         </p>
       </Card>
@@ -233,7 +234,7 @@ export function ReportView({
               Line 19 total:{" "}
             </span>
             <span className="tabular-nums text-fg">
-              {formatMoney(otherLine.total)}
+              {formatMoneyWholeDollars(otherLine.total)}
             </span>
           </p>
         )}
@@ -261,13 +262,13 @@ export function ReportView({
           <div className="flex items-center justify-between">
             <dt className="font-medium text-fg-muted">Total income</dt>
             <dd className="font-medium tabular-nums text-fg">
-              {formatMoney(totals.total_income)}
+              {formatMoneyWholeDollars(totals.total_income)}
             </dd>
           </div>
           <div className="flex items-center justify-between">
             <dt className="font-medium text-fg-muted">Total expenses</dt>
             <dd className="font-medium tabular-nums text-fg">
-              {formatMoney(totals.total_expenses)}
+              {formatMoneyWholeDollars(totals.total_expenses)}
             </dd>
           </div>
           <div className="flex items-baseline justify-between border-t-2 border-border pt-3">
@@ -280,7 +281,7 @@ export function ReportView({
                 netLoss ? "text-danger" : "text-fg",
               ].join(" ")}
             >
-              {formatMoney(totals.net)}
+              {formatMoneyWholeDollars(totals.net)}
             </dd>
           </div>
         </dl>

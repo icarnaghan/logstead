@@ -70,6 +70,24 @@ describe("sample-backup.json fixture", () => {
     }
   });
 
+  it("contains exactly one Loan with a 2024 interest override", () => {
+    const loans = backup.properties.flatMap((p) => p.loans ?? []);
+    expect(loans).toHaveLength(1);
+    const loan = loans[0];
+    expect(loan.original_principal).toMatch(MONEY_RE);
+    expect(loan.annual_interest_rate).toMatch(NUMERIC_STRING_RE);
+    expect(loan.monthly_payment).toMatch(MONEY_RE);
+    expect(loan.anchor_balance).toMatch(MONEY_RE);
+    expect(loan.anchor_date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(Number(loan.anchor_date.slice(0, 4))).toBeGreaterThan(2024);
+    expect(loan).not.toHaveProperty("term_months");
+    expect(loan).not.toHaveProperty("first_payment_date");
+    expect(loan).not.toHaveProperty("payment_override");
+    expect(loan.interest_overrides).toEqual({ "2024": "11850.00" });
+    const owner = backup.properties.find((p) => p.loans?.includes(loan));
+    expect(loan.property_id).toBe(owner?.id);
+  });
+
   it("gives every property at least one asset", () => {
     for (const property of backup.properties) {
       expect(property.assets.length).toBeGreaterThanOrEqual(1);

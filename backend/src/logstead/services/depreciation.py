@@ -59,6 +59,7 @@ from __future__ import annotations
 
 import math
 import uuid
+from dataclasses import replace
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from typing import Any
@@ -72,10 +73,11 @@ from logstead.models.depreciation import (
 from logstead.models.result import Result
 from logstead.repository import keys
 from logstead.repository.dynamo_repo import DynamoRepository
-from logstead.util.money import Money, to_money
+from logstead.util.money import Money, money_to_str, to_money
 
 __all__ = [
     "DepreciationService",
+    "_apply_overrides",
     "asset_to_item",
     "compute_schedule_rows",
     "schedule_row_to_item",
@@ -91,6 +93,12 @@ _ASSET_MONEY_ATTRS: frozenset[str] = frozenset({"costBasis"})
 _SCHEDULE_MONEY_ATTRS: frozenset[str] = frozenset({"amount", "remainingBasis"})
 
 _SCHED_MARKER = f"#{keys.SCHED_PREFIX}"  # "#SCHED#" — marks schedule-row SKs.
+
+
+#: Upper bound on the recovery period (years). The longest depreciation class
+#: (ADS) is 50 years. The bound also keeps the schedule (ceil(period) + 1 rows)
+#: plus the asset item inside a single 100-item DynamoDB transaction.
+MAX_RECOVERY_PERIOD_YEARS = Decimal("50")
 
 
 def _now_iso() -> str:
@@ -201,6 +209,79 @@ def compute_schedule_rows(asset: DepreciableAsset) -> list[DepreciationScheduleR
         )
         prev_cum_money = cum_money
 
+    # Requirements 2.1-2.6, 5.1: apply any per-year overrides after computing
+    # the base schedule, rolling the delta into the tail year so both engine
+    # invariants (sum == cost_basis; remaining_basis non-increasing to 0.00)
+    # still hold by construction. An empty map returns ``rows`` unchanged.
+    return _apply_overrides(rows, asset.depreciation_overrides)
+
+
+def _apply_overrides(
+    base_rows: list[DepreciationScheduleRow],
+    overrides: dict[int, Decimal],
+) -> list[DepreciationScheduleRow]:
+    """Apply per-year overrides to a computed schedule (Requirements 2.1-2.6).
+
+    Pure reconciliation step called at the end of :func:`compute_schedule_rows`.
+    Each overridden year's ``amount`` is replaced with its override value, and
+    the total delta the overrides introduce is absorbed into the tail (final)
+    year so the per-year amounts still sum exactly to the asset's cost basis
+    (Requirement 2.3). Each ``remaining_basis`` is rebuilt as
+    ``cost_basis - cumulative`` over the ascending rows (Requirement 2.4). All
+    arithmetic is two-decimal ``Decimal`` — no float (Requirement 2.6).
+
+    When the tail year is itself overridden there is no non-overridden year to
+    absorb the delta; the validator (task 3.1) only accepts such maps when they
+    already sum to ``cost_basis`` (so the delta is zero), so the tail override
+    is applied as-is and the natural arithmetic preserves the sum.
+
+    An empty ``overrides`` map returns ``base_rows`` unchanged — byte-for-byte
+    identical to the pre-feature behavior (Requirement 5.1).
+
+    Args:
+        base_rows: The Computed_Schedule rows in ascending tax-year order.
+        overrides: Map of tax year to a two-decimal override amount.
+
+    Returns:
+        The Effective_Schedule rows, preserving each row's method, convention,
+        asset_id, property_id, and tax_year.
+    """
+    if not overrides:
+        return base_rows  # Requirement 5.1: identical to today.
+
+    tail_year = base_rows[-1].tax_year
+    base_amount = {row.tax_year: row.amount for row in base_rows}
+
+    # Effective amounts: start from the base, then pin each overridden year
+    # (Requirement 2.2).
+    eff_amount = dict(base_amount)
+    for year, value in overrides.items():
+        eff_amount[year] = to_money(value)
+
+    # The base amounts already sum to cost_basis, so the delta the tail must
+    # absorb to keep the sum at cost_basis is the base total of the overridden
+    # years minus the override total.
+    delta = sum(
+        (base_amount[year] for year in overrides), Decimal("0.00")
+    ) - sum((to_money(v) for v in overrides.values()), Decimal("0.00"))
+
+    if tail_year not in overrides:
+        # Requirement 2.3: tail absorbs the delta. When the tail IS overridden
+        # the validator guarantees delta == 0, so no special-casing is needed
+        # beyond not double-adding to an overridden tail.
+        eff_amount[tail_year] = to_money(base_amount[tail_year] + delta)
+
+    # cost_basis is exactly the sum of the base amounts (the engine pins the
+    # base tail to the exact cost basis).
+    cost_basis = sum(base_amount.values(), Decimal("0.00"))
+
+    rows: list[DepreciationScheduleRow] = []
+    cumulative = Decimal("0.00")
+    for row in base_rows:
+        amount = eff_amount[row.tax_year]
+        cumulative = to_money(cumulative + amount)
+        remaining = to_money(cost_basis - cumulative)
+        rows.append(replace(row, amount=amount, remaining_basis=remaining))
     return rows
 
 
@@ -222,7 +303,22 @@ def asset_to_item(asset: DepreciableAsset) -> dict[str, Any]:
     ``recoveryPeriodYears`` is stored as a plain ``Decimal`` string (not money)
     so periods keep their natural precision. Ids and timestamps are taken
     verbatim from ``asset`` so a restore can preserve the original values.
+
+    ``depreciationOverrides`` (Requirements 1.2, 5.3) is a DynamoDB Map of
+    two-decimal **strings** — ``{str(taxYear): money_to_str(amount)}`` — not a
+    top-level money attribute: the inner values are already rendered to strings
+    here with :func:`money_to_str`, so the repository's ``money_attrs`` scalar
+    serializer must never be pointed at the Map (``costBasis`` stays the only
+    money attribute). The attribute is **omitted** when there are no overrides
+    — set to ``None``, which the repository drops — so an override-free asset's
+    stored item is byte-for-byte identical to the pre-feature shape.
     """
+    overrides = asset.depreciation_overrides
+    override_item = (
+        {str(year): money_to_str(amount) for year, amount in overrides.items()}
+        if overrides
+        else None
+    )
     return {
         "PK": keys.property_scoped_pk(asset.property_id),
         "SK": keys.asset_sk(asset.id),
@@ -232,6 +328,7 @@ def asset_to_item(asset: DepreciableAsset) -> dict[str, Any]:
         "costBasis": asset.cost_basis,
         "placedInServiceDate": asset.placed_in_service_date,
         "recoveryPeriodYears": str(asset.recovery_period_years),
+        "depreciationOverrides": override_item,
         "createdAt": asset.created_at,
         "updatedAt": asset.updated_at,
     }
@@ -288,7 +385,9 @@ class DepreciationService:
 
         ``costBasis`` comes back as a ``Decimal`` (money-parsed by the repo);
         ``recoveryPeriodYears`` is parsed from its plain string back to a
-        ``Decimal``.
+        ``Decimal``. ``depreciationOverrides`` (Requirement 5.2) parses back
+        into ``dict[int, Decimal]`` with ``int`` tax-year keys and ``to_money``
+        values; an absent attribute reads as ``{}`` (no overrides).
         """
         return DepreciableAsset(
             id=str(item["id"]),
@@ -297,6 +396,10 @@ class DepreciationService:
             cost_basis=to_money(item["costBasis"]),
             placed_in_service_date=str(item["placedInServiceDate"]),
             recovery_period_years=Decimal(str(item["recoveryPeriodYears"])),
+            depreciation_overrides={
+                int(year): to_money(value)
+                for year, value in item.get("depreciationOverrides", {}).items()
+            },
             created_at=item.get("createdAt"),
             updated_at=item.get("updatedAt"),
         )
@@ -325,6 +428,164 @@ class DepreciationService:
         return Result.success(cost_basis)
 
     @staticmethod
+    def _coerce_overrides(
+        raw: dict[int, Decimal] | None,
+        placed_in_service_date: str,
+        recovery_period_years: Decimal,
+        cost_basis: Money,
+    ) -> Result[dict[int, Decimal]]:
+        """Validate a per-year override map so the engine invariants stay satisfiable.
+
+        Implements Requirement 3 (see the design's "Validation placement" and
+        the unsatisfiable-cases table). Returns the normalized map (``int``
+        tax-year keys, two-decimal ``Decimal`` values) or the first
+        field-identifying ``validation`` failure.
+
+        Rejection cases, each matching the engine's reconciliation in
+        :func:`_apply_overrides`:
+
+        * A negative or non-two-decimal amount →
+          ``field="depreciation_overrides.<year>"`` (Req 3.1).
+        * A year outside the computed schedule's span →
+          ``field="depreciation_overrides.<year>"`` (Req 3.2).
+        * ``sum(overrides) > cost_basis`` →
+          ``field="depreciation_overrides"`` (Req 3.3).
+        * Absorbing the delta would drive the tail amount negative →
+          ``field="depreciation_overrides"`` (Req 3.4).
+        * The tail year itself is overridden (no non-overridden absorber) and
+          the overrides don't already sum to ``cost_basis`` →
+          ``field="depreciation_overrides.<tailYear>"`` (Req 3.5).
+
+        Args:
+            raw: The override map from the input, or ``None``/empty.
+            placed_in_service_date: ISO-8601 ``YYYY-MM-DD`` placed-in-service
+                date; its year anchors the schedule span.
+            recovery_period_years: Positive recovery period; sets the span
+                length (``ceil(recovery) + 1`` tax years).
+            cost_basis: The asset's positive two-decimal cost basis.
+
+        Returns:
+            ``Result.success`` carrying the normalized override map (``{}`` when
+            there are no overrides, Req 5.2), or a ``validation`` failure.
+        """
+        # Requirement 5.2: absent / empty == no overrides.
+        if not raw:
+            return Result.success({})
+
+        # Derive the schedule's year span WITHOUT materializing, identical to
+        # the engine in ``compute_schedule_rows``: the placed-in-service year
+        # through ``ceil(recovery) + 1`` tax years.
+        try:
+            placed = datetime.strptime(placed_in_service_date, "%Y-%m-%d").date()
+        except (TypeError, ValueError):
+            return Result.failure(
+                "validation",
+                "Placed-in-service date is not a valid date.",
+                field="placed_in_service_date",
+            )
+        first_year = placed.year
+        num_years = math.ceil(recovery_period_years) + 1
+        last_year = first_year + num_years - 1
+        tail_year = last_year
+
+        # Parse / validate each override amount and year. Iterate in year order
+        # so the first field-identifying failure is deterministic.
+        normalized: dict[int, Decimal] = {}
+        for year in sorted(raw, key=lambda y: int(y)):
+            year_int = int(year)
+            field_name = f"depreciation_overrides.{year_int}"
+            value = raw[year]
+
+            # Requirement 3.1: a valid two-decimal, non-negative money amount.
+            try:
+                amount = to_money(value)
+            except (TypeError, ValueError, InvalidOperation):
+                return Result.failure(
+                    "validation",
+                    "Override amount is not a valid amount.",
+                    field=field_name,
+                )
+            if amount < Decimal("0"):
+                return Result.failure(
+                    "validation",
+                    "Override amount must not be negative.",
+                    field=field_name,
+                )
+            # ``to_money`` silently rounds extra precision; reject a value that
+            # carried more than two decimal places rather than quietly altering
+            # the user's filed figure.
+            if isinstance(value, Decimal) and amount != value:
+                return Result.failure(
+                    "validation",
+                    "Override amount must have at most two decimal places.",
+                    field=field_name,
+                )
+
+            # Requirement 3.2: the year must appear in the computed schedule.
+            if year_int < first_year or year_int > last_year:
+                return Result.failure(
+                    "validation",
+                    "Override year is not in the asset's depreciation schedule.",
+                    field=field_name,
+                )
+
+            normalized[year_int] = amount
+
+        # Requirement 3.3: the overrides cannot claim more than the cost basis.
+        override_total = sum(normalized.values(), Decimal("0.00"))
+        if override_total > cost_basis:
+            return Result.failure(
+                "validation",
+                "Override amounts cannot exceed the asset's cost basis.",
+                field="depreciation_overrides",
+            )
+
+        # Requirements 3.4, 3.5: mirror the engine's tail reconciliation. The
+        # base amounts already sum to cost_basis, so the delta the tail absorbs
+        # is sum(base over overridden years) - sum(override amounts). Compute
+        # the base per-year amounts from an override-free copy of the asset
+        # (the design notes this is acceptable).
+        base_asset = DepreciableAsset(
+            id="",
+            property_id="",
+            description="",
+            cost_basis=cost_basis,
+            placed_in_service_date=placed_in_service_date,
+            recovery_period_years=recovery_period_years,
+        )
+        base_amount = {
+            row.tax_year: row.amount for row in compute_schedule_rows(base_asset)
+        }
+
+        if tail_year in normalized:
+            # Requirement 3.5: the tail is pinned by the user, so no
+            # non-overridden year remains to absorb a delta. Accept only when
+            # the overrides already reconcile to the cost basis exactly.
+            if override_total != cost_basis:
+                return Result.failure(
+                    "validation",
+                    "Overriding the final schedule year requires the overrides "
+                    "to sum to the asset's cost basis.",
+                    field=f"depreciation_overrides.{tail_year}",
+                )
+        else:
+            # Requirement 3.4: the tail absorbs the delta; reject if that would
+            # drive the tail amount negative (breaking monotonicity).
+            delta = sum(
+                (base_amount[y] for y in normalized), Decimal("0.00")
+            ) - override_total
+            effective_tail = to_money(base_amount[tail_year] + delta)
+            if effective_tail < Decimal("0"):
+                return Result.failure(
+                    "validation",
+                    "Overrides cannot be reconciled: the final schedule year "
+                    "would be negative.",
+                    field="depreciation_overrides",
+                )
+
+        return Result.success(normalized)
+
+    @staticmethod
     def _coerce_recovery_period(raw: Decimal | None) -> Result[Decimal]:
         """Default the recovery period to 27.5 and require it to be positive (8.3, 8.4)."""
         if raw is None:
@@ -344,14 +605,25 @@ class DepreciationService:
                 "Recovery period must be greater than zero.",
                 field="recovery_period_years",
             )
+        if years > MAX_RECOVERY_PERIOD_YEARS:
+            # The schedule engine materializes ceil(years) + 1 rows, so an
+            # unbounded period is a CPU/memory denial of service.
+            return Result.failure(
+                "validation",
+                f"Recovery period must be at most {MAX_RECOVERY_PERIOD_YEARS} years.",
+                field="recovery_period_years",
+            )
         return Result.success(years)
 
     def _validate(self, data: AssetInput) -> Result[dict[str, Any]]:
         """Validate an asset input into normalized field values (8.2, 8.3, 8.4).
 
         Returns a success carrying ``{"property_id", "description",
-        "cost_basis", "placed_in_service_date", "recovery_period_years"}`` or
-        the first field-identifying validation failure.
+        "cost_basis", "placed_in_service_date", "recovery_period_years",
+        "depreciation_overrides"}`` or the first field-identifying validation
+        failure. The override map is validated last, after the cost basis and
+        recovery period are known, since those drive the override span and
+        sum checks (Req 3).
         """
         property_id = (data.property_id or "").strip()
         if not property_id:
@@ -381,6 +653,17 @@ class DepreciationService:
         if not period_result.is_ok:
             return Result(error=period_result.error)
 
+        # Requirement 3: validate overrides last — the span + sum checks need
+        # the coerced cost basis and recovery period above.
+        overrides_result = self._coerce_overrides(
+            data.depreciation_overrides,
+            placed,
+            period_result.value,
+            cost_result.value,
+        )
+        if not overrides_result.is_ok:
+            return Result(error=overrides_result.error)
+
         return Result.success(
             {
                 "property_id": property_id,
@@ -388,6 +671,7 @@ class DepreciationService:
                 "cost_basis": cost_result.value,
                 "placed_in_service_date": placed,
                 "recovery_period_years": period_result.value,
+                "depreciation_overrides": overrides_result.value,
             }
         )
 
@@ -536,6 +820,7 @@ class DepreciationService:
             cost_basis=fields["cost_basis"],
             placed_in_service_date=fields["placed_in_service_date"],
             recovery_period_years=fields["recovery_period_years"],
+            depreciation_overrides=fields["depreciation_overrides"],
             created_at=now,
             updated_at=now,
         )
@@ -605,6 +890,7 @@ class DepreciationService:
             cost_basis=fields["cost_basis"],
             placed_in_service_date=fields["placed_in_service_date"],
             recovery_period_years=fields["recovery_period_years"],
+            depreciation_overrides=fields["depreciation_overrides"],
             created_at=current.created_at,
             updated_at=_now_iso(),
         )

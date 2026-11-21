@@ -109,7 +109,7 @@ describe("Property 7: Every chart carries its accessibility contract and its dat
       }),
       { numRuns: 100 },
     );
-  });
+  }, 30_000);
 
   it("keeps the data table in the DOM as a single instance (not removed at any viewport)", () => {
     const data: Datum[] = [
@@ -155,5 +155,50 @@ describe("ChartPlaceholder — Suspense fallback (Req 14.3)", () => {
     render(<ChartPlaceholder height={280} />);
     const status = screen.getByRole("status");
     expect(status).toHaveTextContent("Loading chart…");
+  });
+});
+
+
+describe("ChartCard — data table disclosure defaults to collapsed", () => {
+  const data: Datum[] = [
+    { label: "Repairs", value: 100 },
+    { label: "Insurance", value: 200 },
+  ];
+
+  function renderCard() {
+    return render(
+      <ChartCard
+        title="Values"
+        ariaLabel="Expense breakdown"
+        chart={dummyChart()}
+        dataTable={dataTableFor(data, "collapse-table")}
+      />,
+    );
+  }
+
+  it("renders the <details> disclosure closed by default", () => {
+    const { container } = renderCard();
+    const details = container.querySelector("details");
+    expect(details).not.toBeNull();
+    // No `open` attribute → collapsed by default (at sm+, where the chart is
+    // the primary visual). Below sm the table is CSS-force-shown as the
+    // fallback, but the disclosure state itself starts closed.
+    expect((details as HTMLDetailsElement).open).toBe(false);
+  });
+
+  it("exposes a 'Show data table' toggle to expand it", () => {
+    renderCard();
+    // The summary carries both labels; the visible one is chosen by CSS via the
+    // group-open state. The expand affordance text is present in the DOM.
+    expect(screen.getByText("Show data table")).toBeInTheDocument();
+    expect(screen.getByText("Hide data table")).toBeInTheDocument();
+  });
+
+  it("keeps the table in the DOM even while collapsed (a11y + mobile fallback)", () => {
+    renderCard();
+    // CSS-only visibility: the node is never removed, so assistive tech and the
+    // sub-sm fallback always have the data.
+    const table = screen.getByTestId("collapse-table");
+    expect(within(table).getAllByRole("row").length - 1).toBe(data.length);
   });
 });

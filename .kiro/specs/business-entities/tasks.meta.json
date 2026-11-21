@@ -1,0 +1,423 @@
+{
+  "pbtResults": {
+    "2.2 Write property test: create → get round-trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1791850333927
+    }
+  },
+  "executionHistory": {
+    "1.1 Add `business_*` key helpers to `repository/keys.py`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848323737
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848332212
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848459369
+      }
+    ],
+    "1.3 Add `business_doc_key` to `adapters/s3_files.py`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848323842
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848336498
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848460663
+      }
+    ],
+    "1.5 Create `models/business.py`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848323949
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848337513
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848461714
+      }
+    ],
+    "8. Backend checkpoint": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848324043
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850129545
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248279706
+      }
+    ],
+    "9.1 Create `api/businesses.ts`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848324144
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848476229
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848728929
+      }
+    ],
+    "15. Final checkpoint": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848324184
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792249099779
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792250664522
+      }
+    ],
+    "1. Backend foundation: keys, S3 key helper, and model": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848461749
+      }
+    ],
+    "2. Implement `BusinessService` entity CRUD in `services/business.py`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848475320
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848728081
+      }
+    ],
+    "9. Frontend: typed api module and Business section UI": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848728971
+      }
+    ],
+    "3. Implement `BusinessService` document operations": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848735207
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791849007002
+      }
+    ],
+    "4. Add the property↔business link attribute and `PropertyService.set_business`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791848735886
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791849006334
+      }
+    ],
+    "5. Implement `BusinessService.linked_properties` and wire the link to `PropertyService`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791849011315
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791849648130
+      }
+    ],
+    "6. Implement guarded delete + document cascade in `BusinessService.delete`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791849648300
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791849886806
+      }
+    ],
+    "7. Add business + link routes and per-request wiring in `router/handler.py`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791849887729
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850128843
+      }
+    ],
+    "2.1 Write moto example/edge tests for entity CRUD": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850137257
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850360423
+      }
+    ],
+    "2.2 Write property test: create → get round-trip": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850138677
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850361270
+      }
+    ],
+    "3.1 Write moto S3 example tests for documents": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850139576
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850362207
+      }
+    ],
+    "4.1 Write moto tests for `set_business`": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850141068
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850363663
+      }
+    ],
+    "5.1 Write moto tests for `linked_properties` and both-side consistency": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850141926
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850364579
+      }
+    ],
+    "5.2 Write property test: at-most-one link, consistent both ways": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850142995
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850365495
+      }
+    ],
+    "6.1 Write moto tests for the delete-guard and cascade": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850461614
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850591827
+      }
+    ],
+    "6.2 Write property test: guarded delete all-or-nothing with cascade": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850462357
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850593236
+      }
+    ],
+    "7.1 Write handler/integration tests for the routes": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850594100
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791851206045
+      }
+    ],
+    "7.2 Write property test: user scoping isolates all business data": [
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791850595012
+      },
+      {
+        "executionId": "9d0f4d3a-423c-4fc4-a751-efbccd544b53",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791851207130
+      }
+    ],
+    "10. Add nav entry, Business list page, and route wiring": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248304228
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248443447
+      }
+    ],
+    "10.1 Write RTL + vitest-axe tests for the list page and nav": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248444318
+      }
+    ],
+    "11. Build Add/Edit business dialogs": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248448698
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248700029
+      }
+    ],
+    "13. Build the business documents UI": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248449466
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248701917
+      }
+    ],
+    "11.1 Write RTL + vitest-axe tests for the dialogs": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248700964
+      }
+    ],
+    "13.1 Write RTL + vitest-axe tests for documents UI": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248702928
+      }
+    ],
+    "12. Build the delete-business UI with 409 surfacing": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248706895
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248961041
+      }
+    ],
+    "14. Build the property↔business selector (both sides)": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248707606
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248963390
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792249002471
+      },
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792249093301
+      }
+    ],
+    "12.1 Write RTL + vitest-axe tests for delete UI": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248962453
+      }
+    ],
+    "14.1 Write RTL + vitest-axe tests for the selector and both-side views": [
+      {
+        "executionId": "c90a8df2-3fb9-4815-9f30-ab4bd4999635",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1792248964371
+      }
+    ]
+  }
+}

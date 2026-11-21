@@ -105,7 +105,7 @@ def _moto_service():
         transactions = TransactionService(repo, S3FileAdapter(s3, BUCKET))
         depreciation = DepreciationService(repo)
         reports = ReportingService(transactions, depreciation, properties)
-        dashboard = DashboardService(properties, reports)
+        dashboard = DashboardService(properties, reports, depreciation)
         yield dashboard, reports, properties, transactions
 
 

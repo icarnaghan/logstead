@@ -1,4 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import type { Category, Transaction } from "../../api/transactions";
 import { TransactionList } from "./TransactionList";
@@ -39,6 +40,7 @@ function makeTransaction(overrides: Partial<Transaction> = {}): Transaction {
 
 function renderList(transactions: readonly Transaction[]) {
   return render(
+    <MemoryRouter>
     <TransactionList
       transactions={transactions}
       categories={CATEGORIES}
@@ -47,15 +49,14 @@ function renderList(transactions: readonly Transaction[]) {
       onDelete={vi.fn()}
       onToggleReceipts={vi.fn()}
       renderReceipts={() => null}
-    />,
+    />
+    </MemoryRouter>,
   );
 }
 
 describe("TransactionList category rendering", () => {
   it("shows the category label and Schedule E line when the category is found", () => {
     renderList([makeTransaction({ category_id: "cat-rent" })]);
-    // ResponsiveTable renders both a <table> and a card fallback, so the label
-    // appears twice; scope the assertion to the table representation.
     const table = screen.getByRole("table");
     expect(
       within(table).getByText("Rents received (Line 3)"),
@@ -74,13 +75,13 @@ describe("TransactionList category rendering", () => {
 });
 
 describe("TransactionList responsive layout (Req 6.1, 6.2, 6.3)", () => {
-  it("renders the desktop table and a card fallback container hidden at >= sm", () => {
+  it("renders a single table that also serves narrow viewports", () => {
     const { container } = renderList([makeTransaction()]);
 
     // The scroll-wrapped table is present at desktop widths.
     expect(screen.getByRole("table")).toBeInTheDocument();
-    // ResponsiveTable also keeps a card list in the DOM, CSS-hidden at >= sm.
-    expect(container.querySelector("ul.sm\\:hidden")).not.toBeNull();
+    // One DOM serves both layouts: no separate card list.
+    expect(container.querySelector("ul")).toBeNull();
   });
 
   it("renders the expanded receipts panel below the table for the expanded row", () => {
@@ -97,5 +98,34 @@ describe("TransactionList responsive layout (Req 6.1, 6.2, 6.3)", () => {
     );
 
     expect(screen.getByText("receipts for t1")).toBeInTheDocument();
+  });
+});
+
+describe("TransactionList itemized rows (Req 10.2)", () => {
+  const itemized = makeTransaction({
+    id: "t-item",
+    type: "expense",
+    category_id: "cat-rent",
+    date: "2023-05-02",
+    itemized: true,
+  });
+
+  it("shows an Itemized badge and a link to the Repairs page for the entry's year", () => {
+    renderList([itemized]);
+    expect(screen.getByText("Itemized")).toBeInTheDocument();
+    const link = screen.getByRole("link", { name: /manage on repairs page/i });
+    expect(link).toHaveAttribute("href", "/properties/p1/repairs?year=2023");
+  });
+
+  it("hides Edit and Delete for itemized rows but keeps them for others", () => {
+    renderList([itemized, makeTransaction({ id: "t2", date: "2023-06-01" })]);
+    expect(
+      screen.getAllByRole("button", { name: /^edit transaction/i }),
+    ).toHaveLength(1);
+    expect(
+      screen.getAllByRole("button", { name: /^delete transaction/i }),
+    ).toHaveLength(1);
+    expect(screen.getAllByText("Itemized")).toHaveLength(1);
+    expect(screen.getAllByRole("link", { name: /manage on repairs/i })).toHaveLength(1);
   });
 });

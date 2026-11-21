@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { axe } from "vitest-axe";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Button } from "./Button";
 
 /**
@@ -75,6 +76,111 @@ describe("Button — asChild + disabled (Req 8.5)", () => {
   it("reflects the disabled state", () => {
     render(<Button disabled>Disabled</Button>);
     expect(screen.getByRole("button", { name: "Disabled" })).toBeDisabled();
+  });
+});
+
+describe("Button — loading, ghost, icon (Req 3.1-3.8)", () => {
+  it("sets aria-busy, shows a spinner, and keeps the label readable", () => {
+    const { container } = render(<Button loading>Save</Button>);
+    const button = screen.getByRole("button", { name: "Save" });
+    expect(button).toHaveAttribute("aria-busy", "true");
+    expect(container.querySelector("svg")).toBeInTheDocument();
+    expect(button).toHaveTextContent("Save");
+  });
+
+  it("does not set aria-busy when not loading", () => {
+    render(<Button>Save</Button>);
+    expect(screen.getByRole("button")).not.toHaveAttribute("aria-busy");
+  });
+
+  it("keeps width: label stays in flow (invisible), spinner is overlaid", () => {
+    const { container } = render(<Button loading>Save</Button>);
+    const button = screen.getByRole("button");
+    expect(button).toHaveClass("relative");
+    expect(screen.getByText("Save")).toHaveClass("opacity-0");
+    const svg = container.querySelector("svg")!;
+    expect(svg.parentElement).toHaveClass("absolute", "inset-0");
+  });
+
+  it("ignores clicks while loading", async () => {
+    const onClick = vi.fn();
+    render(
+      <Button loading onClick={onClick}>
+        Save
+      </Button>,
+    );
+    await userEvent.click(screen.getByRole("button"));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("calls onClick when not loading", async () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick}>Save</Button>);
+    await userEvent.click(screen.getByRole("button"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("blocks form submission while loading and allows it otherwise", async () => {
+    const onSubmit = vi.fn((e: React.FormEvent) => e.preventDefault());
+    const { rerender } = render(
+      <form onSubmit={onSubmit}>
+        <Button type="submit" loading>
+          Save
+        </Button>
+      </form>,
+    );
+    await userEvent.click(screen.getByRole("button"));
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    rerender(
+      <form onSubmit={onSubmit}>
+        <Button type="submit">Save</Button>
+      </form>,
+    );
+    await userEvent.click(screen.getByRole("button"));
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders the ghost variant with token classes", () => {
+    render(<Button variant="ghost">Ghost</Button>);
+    const button = screen.getByRole("button", { name: "Ghost" });
+    expect(button).toHaveClass("bg-transparent", "text-fg-muted");
+    expect(button).toHaveClass("hover:bg-accent-subtle", "hover:text-accent");
+  });
+
+  it("applies icon size classes", () => {
+    render(<Button size="icon" aria-label="Close" />);
+    const button = screen.getByRole("button", { name: "Close" });
+    expect(button).toHaveClass("h-9", "w-9", "p-0");
+    expect(button).toHaveClass("max-md:h-11", "max-md:w-11");
+  });
+
+  describe("dev warning", () => {
+    let warn: ReturnType<typeof vi.spyOn>;
+    beforeEach(() => {
+      warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    });
+    afterEach(() => warn.mockRestore());
+
+    it("warns once per mount for an unnamed icon button", () => {
+      const { rerender } = render(<Button size="icon" />);
+      rerender(<Button size="icon" className="x" />);
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      ["aria-label", { "aria-label": "Close" }],
+      ["aria-labelledby", { "aria-labelledby": "lbl" }],
+      ["title", { title: "Close" }],
+    ])("is silent when an accessible name is given via %s", (_n, attrs) => {
+      render(<Button size="icon" {...attrs} />);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it("is silent for non-icon buttons", () => {
+      render(<Button>Text</Button>);
+      expect(warn).not.toHaveBeenCalled();
+    });
   });
 });
 

@@ -1,0 +1,252 @@
+{
+  "pbtResults": {
+    "1.5 Write property tests for carried info and purity in `frontend/src/lib/carryforwardChain.carried.property.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794175313629
+    }
+  },
+  "executionHistory": {
+    "1.1 Create `frontend/src/lib/carryforwardChain.ts`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214080
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175216497
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175254602
+      }
+    ],
+    "1.2 Write unit tests in `frontend/src/lib/carryforwardChain.test.ts`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214109
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175260675
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175337042
+      }
+    ],
+    "2.1 Add the summary block and carried hint to `frontend/src/pages/CarryforwardPage.tsx`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214188
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175260533
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175339939
+      }
+    ],
+    "2.2 Keep the existing page tests passing": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214215
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175343665
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175413611
+      }
+    ],
+    "2.3 Write RTL tests in `frontend/src/pages/CarryforwardPage.chainSummary.test.tsx`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214242
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175344553
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175423918
+      }
+    ],
+    "3. Checkpoint - tests green": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214274
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175427662
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175458564
+      }
+    ],
+    "4.1 Add a `CHANGELOG.md` entry under `## [Unreleased]`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214305
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175346427
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175415633
+      }
+    ],
+    "4.2 Mark the idea as addressed in `docs/future-improvements.md`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214333
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175347163
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175416442
+      }
+    ],
+    "5. Final verification": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175214401
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175458930
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175517170
+      }
+    ],
+    "1.3 Write property tests for break detection in `frontend/src/lib/carryforwardChain.breaks.property.test.ts`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175254631
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175261742
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175337220
+      }
+    ],
+    "1.4 Write property tests for amounts and totals in `frontend/src/lib/carryforwardChain.amounts.property.test.ts`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175255408
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175262593
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175338216
+      }
+    ],
+    "1.5 Write property tests for carried info and purity in `frontend/src/lib/carryforwardChain.carried.property.test.ts`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175256369
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175263155
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175339002
+      }
+    ],
+    "2.4 Write property tests in `frontend/src/pages/CarryforwardPage.chainSummary.property.test.tsx`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175257023
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175345386
+      },
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175414584
+      }
+    ],
+    "1. Pure derivation in `frontend/src/lib/`": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175337138
+      }
+    ],
+    "4. Documentation": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175416501
+      }
+    ],
+    "2. Page: summary block and carried hint": [
+      {
+        "executionId": "7fe88f18-a811-4bf1-b614-fb22236b8090",
+        "chatSessionId": "sess_73cdcefa-2722-4b58-ad4a-283c6cf5900c",
+        "timestamp": 1794175423961
+      }
+    ]
+  }
+}

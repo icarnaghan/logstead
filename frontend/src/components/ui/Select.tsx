@@ -9,7 +9,7 @@ export interface SelectProps
 }
 
 const BASE_CLASSES =
-  "rounded-md border border-border bg-surface px-3 py-2 text-sm text-fg";
+  "rounded-md border border-border-strong bg-surface px-3 py-2 text-sm max-md:text-base text-fg max-md:min-h-11";
 
 /**
  * Shared styled native `<select>` primitive with token-only styling and the

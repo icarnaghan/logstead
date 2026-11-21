@@ -51,10 +51,15 @@ from decimal import Decimal
 from typing import Any, Iterable, Mapping, Sequence
 
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
+from botocore.exceptions import ClientError
 
 from logstead.util.money import money_to_str, to_money
 
-__all__ = ["DEFAULT_MONEY_ATTRS", "DynamoRepository"]
+__all__ = ["DEFAULT_MONEY_ATTRS", "ConditionFailed", "DynamoRepository"]
+
+
+class ConditionFailed(Exception):
+    """A conditional write's condition expression evaluated to false."""
 
 #: Top-level attribute names stored as two-decimal money strings across the
 #: Logstead item types (Transaction.amount, DepreciableAsset.costBasis,
@@ -153,17 +158,40 @@ class DynamoRepository:
         item: Mapping[str, Any],
         *,
         money_attrs: Iterable[str] | None = None,
+        condition: str | None = None,
+        names: Mapping[str, str] | None = None,
+        values: Mapping[str, Any] | None = None,
     ) -> None:
         """Write a single item (sparse; money as strings).
 
         ``None`` values are dropped so the stored item is sparse (12.2), and
         money attributes are stored as two-decimal strings (13.3).
+
+        When ``condition`` is given it is passed as a ``ConditionExpression``
+        with the optional ``names`` (``ExpressionAttributeNames``) and plain
+        Python ``values`` (serialized to ``ExpressionAttributeValues``). A failed
+        condition raises :class:`ConditionFailed`.
         """
         attrs = self._money_attrs if money_attrs is None else set(money_attrs)
-        self._client.put_item(
-            TableName=self._table_name,
-            Item=_prepare_item(item, attrs),
-        )
+        kwargs: dict[str, Any] = {
+            "TableName": self._table_name,
+            "Item": _prepare_item(item, attrs),
+        }
+        if condition is not None:
+            kwargs["ConditionExpression"] = condition
+            if names:
+                kwargs["ExpressionAttributeNames"] = dict(names)
+            if values:
+                kwargs["ExpressionAttributeValues"] = {
+                    k: _SERIALIZER.serialize(v) for k, v in values.items()
+                }
+        try:
+            self._client.put_item(**kwargs)
+        except ClientError as exc:
+            code = exc.response.get("Error", {}).get("Code")
+            if code == "ConditionalCheckFailedException":
+                raise ConditionFailed(str(exc)) from exc
+            raise
 
     def delete_item(
         self, pk: str, sk: str, *, pk_name: str = "PK", sk_name: str = "SK"
@@ -262,6 +290,8 @@ class DynamoRepository:
         sk_name: str | None = None,
         ascending: bool = True,
         money_attrs: Iterable[str] | None = None,
+        limit: int | None = None,
+        start_key: Mapping[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         """Query a partition on the base table or a GSI.
 
@@ -280,11 +310,23 @@ class DynamoRepository:
                 use inverted dates, so the default ascending scan already yields
                 newest-first; callers rarely need to change this.
             money_attrs: Override the money-attribute set for parsing results.
+            limit: Optional maximum number of items to return. When set, it is
+                passed to DynamoDB as ``Limit`` (the number of items still
+                needed) and pagination stops once ``limit`` items have been
+                collected. Combine with ``ascending=False`` to read just the
+                last item(s) in key order. ``None`` (default) returns all
+                matching items. Must be a positive integer when given.
+            start_key: Optional plain-valued key mapping (the table key plus
+                any index key attributes) sent as ``ExclusiveStartKey`` on the
+                first request only; later pages use ``LastEvaluatedKey``.
 
         Returns:
-            All matching items (paginated internally), money parsed to
-            ``Decimal``, in DynamoDB sort-key order.
+            All matching items (paginated internally), or at most ``limit``
+            items when ``limit`` is set, money parsed to ``Decimal``, in
+            DynamoDB sort-key order.
         """
+        if limit is not None and limit < 1:
+            raise ValueError(f"limit must be a positive integer, got {limit}")
         attrs = self._money_attrs if money_attrs is None else set(money_attrs)
         resolved_pk_name, resolved_sk_name = self._key_names(
             index_name, pk_name, sk_name
@@ -309,15 +351,23 @@ class DynamoRepository:
             kwargs["IndexName"] = index_name
 
         items: list[dict[str, Any]] = []
-        last_key: Mapping[str, Any] | None = None
+        last_key: Mapping[str, Any] | None = (
+            {k: _SERIALIZER.serialize(v) for k, v in start_key.items()}
+            if start_key
+            else None
+        )
         while True:
             if last_key is not None:
                 kwargs["ExclusiveStartKey"] = last_key
+            if limit is not None:
+                kwargs["Limit"] = limit - len(items)
             resp = self._client.query(**kwargs)
             for raw in resp.get("Items", []):
                 parsed = _parse_item(raw, attrs)
                 if parsed is not None:
                     items.append(parsed)
+                    if limit is not None and len(items) >= limit:
+                        return items
             last_key = resp.get("LastEvaluatedKey")
             if not last_key:
                 break

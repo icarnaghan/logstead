@@ -79,14 +79,15 @@ export function ChartCard({
       {/*
         Data table: rendered exactly ONCE and ALWAYS in the DOM (Req 12.1), so
         there is one row per datum regardless of viewport. It lives inside a real,
-        focusable `<details>` disclosure that starts open; the `<summary>` toggle
-        is shown only at `sm`+ (where the chart is the primary visual and the card
-        stays calm), and is hidden below `sm` so the table simply shows as the
-        visible fallback (Req 15.3). CSS-only visibility — the table node is never
-        removed from the DOM, so assistive tech always has the data. The
-        `<summary>` control is itself focus-ringed (Req 12.3).
+        focusable `<details>` disclosure. At `sm`+ the chart is the primary
+        visual and the table starts COLLAPSED behind a "Show data table" toggle,
+        so the card stays calm; the toggle is a focus-ringed `<summary>` control
+        (Req 12.3). Below `sm` the chart is hidden, so the toggle is hidden and
+        the table is force-shown as the visible fallback (Req 15.3) — never gated
+        behind a toggle on mobile. Visibility is CSS-only; the table node is never
+        removed from the DOM, so assistive tech always has the data.
       */}
-      <details className="group mt-3" open>
+      <details className="group mt-3">
         <summary
           className={cn(
             "hidden cursor-pointer list-none rounded text-sm font-medium text-accent sm:block",
@@ -96,7 +97,12 @@ export function ChartCard({
           <span className="group-open:hidden">Show data table</span>
           <span className="hidden group-open:inline">Hide data table</span>
         </summary>
-        <div className="mt-3">{dataTable}</div>
+        {/*
+          Below `sm`: always shown (chart hidden there, table is the sole
+          representation). At `sm`+: shown only when the disclosure is open, so
+          the table starts collapsed on desktop. CSS-only — never removed.
+        */}
+        <div className="mt-3 block sm:hidden sm:group-open:block">{dataTable}</div>
       </details>
     </Card>
   );

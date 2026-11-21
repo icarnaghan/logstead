@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
-import { centsToMoney, formatMoney, toCents, toMoneyString } from "./money";
+import {
+  centsToMoney,
+  formatMoney,
+  formatMoneyWholeDollars,
+  toCents,
+  toMoneyString,
+} from "./money";
 
 /**
  * Property-based tests for the canonical money helpers (tasks 1.5, 1.6).
@@ -63,6 +69,77 @@ describe("Property 2: Money ↔ integer-cents round-trip (no floating point)", (
         const normalized = cents === 0 ? "0.00" : toMoneyString(input);
         expect(centsToMoney(cents)).toBe(normalized);
       }),
+      { numRuns: 100 },
+    );
+  });
+});
+
+
+// Feature: depreciation-override-and-whole-dollar-display, Property 6:
+// Whole-dollar formatter rounds to the nearest dollar, half-up by magnitude,
+// sign-preserving, integer-cents only.
+describe("Property 6: Whole-dollar formatter rounds to nearest dollar (integer cents)", () => {
+  it("matches an independent integer-cents oracle, with no cents shown and the sign preserved", () => {
+    fc.assert(
+      fc.property(moneyString, (input) => {
+        const formatted = formatMoneyWholeDollars(input);
+
+        // Independent oracle computed purely in integer cents (no float).
+        const cents = toCents(input);
+        const sign = cents < 0 ? -1 : 1;
+        const abs = Math.abs(cents);
+        let dollars = Math.floor(abs / 100);
+        if (abs % 100 >= 50) dollars += 1; // half-up by magnitude, not ceiling
+        const rounded = dollars === 0 ? 0 : sign * dollars; // normalize -0
+        const expected = rounded.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
+        expect(formatted).toBe(expected);
+
+        // Whole dollars only: no decimal point in the output.
+        expect(formatted.includes(".")).toBe(false);
+
+        // Sign preserved: a negative magnitude keeps its minus; a rounded-to-
+        // zero value is never shown as "-$0".
+        if (rounded < 0) {
+          expect(formatted.startsWith("-")).toBe(true);
+        } else {
+          expect(formatted.startsWith("-")).toBe(false);
+        }
+      }),
+      { numRuns: 100 },
+    );
+  });
+});
+
+describe("formatMoneyWholeDollars negative rounding examples", () => {
+  it("never shows -$0 and rounds half-up by magnitude", () => {
+    expect(formatMoneyWholeDollars("-0.01")).toBe("$0");
+    expect(formatMoneyWholeDollars("-0.49")).toBe("$0");
+    expect(formatMoneyWholeDollars("-0.50")).toBe("-$1");
+  });
+});
+
+// Feature: depreciation-override-and-whole-dollar-display, Property 7:
+// Formatter passthrough for empty, null, and non-numeric input.
+describe("Property 7: Whole-dollar formatter passthrough", () => {
+  it("returns '' for empty/null/undefined", () => {
+    for (const v of ["", null, undefined]) {
+      expect(formatMoneyWholeDollars(v)).toBe("");
+    }
+  });
+
+  it("returns non-numeric strings unchanged (same contract as formatMoney)", () => {
+    fc.assert(
+      fc.property(
+        fc.string().filter((s) => s.trim() !== "" && !Number.isFinite(Number(s))),
+        (garbage) => {
+          expect(formatMoneyWholeDollars(garbage)).toBe(garbage);
+        },
+      ),
       { numRuns: 100 },
     );
   });

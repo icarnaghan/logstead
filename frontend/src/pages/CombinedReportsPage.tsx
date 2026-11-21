@@ -1,9 +1,33 @@
 import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { CombinedReportView } from "../components/reports/CombinedReportView";
-import { Select, StateBlock } from "../components/ui";
 import {
+  Button,
+  EmptyGuide,
+  LoadingRegion,
+  PageHeader,
+  RefreshingIndicator,
+  Select,
+  StateBlock,
+  TableSkeleton,
+  TileSkeleton,
+  useFirstLoad,
+  useToast,
+} from "../components/ui";
+import { propertyPath } from "../components/navConfig";
+import { useShellProperties } from "../components/ShellPropertiesContext";
+import { EMPTY_COPY, IMPORT_LINK_LABEL } from "../lib/emptyCopy";
+import { startDownload } from "../lib/packageJob";
+import { useMarkReportVisited } from "../lib/checklistStorage";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
+import { latestCompletedTaxYear, parseYearParam } from "../lib/taxYears";
+import { usePortfolioYearRange } from "../lib/usePortfolioYearRange";
+import { isAsyncLoading, useAsyncResource } from "../lib/useAsyncResource";
+import {
+  createCombinedReportPdf,
   getCombinedReport,
   type CombinedScheduleEReport,
+  type PdfDownload,
 } from "../api/reports";
 
 interface CombinedReportsPageProps {
@@ -13,18 +37,10 @@ interface CombinedReportsPageProps {
    * page renders with no network access (Requirement 10, 16.2).
    */
   loadCombined?: (taxYear: number) => Promise<CombinedScheduleEReport>;
+  /** Injectable combined PDF builder; defaults to the real API call. */
+  createPdf?: (taxYear: number) => Promise<PdfDownload>;
   /** Candidate tax years to offer in the selector. */
   years?: readonly number[];
-}
-
-/** Recent tax years, newest first, offered by default in the year selector. */
-function defaultYears(): number[] {
-  const current = new Date().getFullYear();
-  const years: number[] = [];
-  for (let year = current; year >= current - 6; year -= 1) {
-    years.push(year);
-  }
-  return years;
 }
 
 /**
@@ -43,47 +59,77 @@ function defaultYears(): number[] {
  */
 export default function CombinedReportsPage({
   loadCombined = getCombinedReport,
+  createPdf = (taxYear: number) => createCombinedReportPdf(taxYear),
   years,
 }: CombinedReportsPageProps = {}) {
-  const yearOptions = years ?? defaultYears();
+  useDocumentTitle("Reports");
+  useMarkReportVisited();
+  const { notify } = useToast();
+  const [searchParams] = useSearchParams();
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const { properties: shellProperties } = useShellProperties();
+  const firstProperty = shellProperties[0];
+  // The selectable years run from the earliest activity across every property
+  // through the latest completed tax year. An injected `years` prop overrides
+  // them for tests.
+  const portfolioYears = usePortfolioYearRange();
+  const yearOptions = years ?? portfolioYears;
 
-  const [taxYear, setTaxYear] = useState<number | null>(null);
-  const [report, setReport] = useState<CombinedScheduleEReport | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleYearChange(value: string) {
+  // Default to the latest completed tax year (or the first injected year) and
+  // load its report on mount, so the page lands on a report rather than an
+  // empty prompt. Choosing the blank option still clears the selection.
+  const [taxYear, setTaxYear] = useState<number | null>(
+    () =>
+      parseYearParam(searchParams.get("year")) ??
+      years?.[0] ??
+      latestCompletedTaxYear(),
+  );
+  // A tax-year change keeps the prior report mounted while the new one loads
+  // (Requirements 14.1-14.3); clearing the year disables loading.
+  const {
+    data: report,
+    error,
+    status,
+    reload,
+    setData: setReport,
+  } = useAsyncResource(() => loadCombined(taxYear as number), {
+    deps: [taxYear],
+    enabled: taxYear !== null,
+    describeError: () =>
+      "Unable to load the combined Schedule E report for this year.",
+  });
+  // Skeleton only before the first success.
+  const view = useFirstLoad({ loading: isAsyncLoading(status), error });
+  function handleYearChange(value: string) {
     if (value === "") {
       setTaxYear(null);
       setReport(null);
-      setError(null);
       return;
     }
-    const year = Number(value);
-    setTaxYear(year);
-    setLoading(true);
-    setError(null);
-    setReport(null);
+    setTaxYear(Number(value));
+  }
+  async function handleDownloadPdf() {
+    if (taxYear === null || pdfBusy) return;
+    setPdfBusy(true);
     try {
-      const result = await loadCombined(year);
-      setReport(result);
-    } catch {
-      setError("Unable to load the combined Schedule E report for this year.");
+      const pdf = await createPdf(taxYear);
+      startDownload(pdf.download_url);
+    } catch (err) {
+      notify({
+        variant: "error",
+        title: "Could not create the PDF",
+        description: err instanceof Error ? err.message : undefined,
+      });
     } finally {
-      setLoading(false);
+      setPdfBusy(false);
     }
   }
-
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-semibold text-fg">Reports</h1>
-        <p className="mt-1 text-sm text-fg-muted">
-          Combined Schedule E — a printable, portfolio-wide hand-off document.
-          Select a tax year to roll every property's Schedule E report into one
-          view with portfolio totals.
-        </p>
-      </header>
+      <PageHeader
+        title="Reports"
+        description="Combined Schedule E — a printable, portfolio-wide hand-off document. Select a tax year to roll every property's Schedule E report into one view with portfolio totals."
+      />
 
       <div className="mt-8 space-y-6">
         <section
@@ -93,6 +139,7 @@ export default function CombinedReportsPage({
           <h2 id="combined-report-controls-heading" className="sr-only">
             Report controls
           </h2>
+          <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
             <label
               htmlFor="combined-report-tax-year"
@@ -103,7 +150,7 @@ export default function CombinedReportsPage({
             <Select
               id="combined-report-tax-year"
               value={taxYear === null ? "" : String(taxYear)}
-              onChange={(event) => void handleYearChange(event.target.value)}
+              onChange={(event) => handleYearChange(event.target.value)}
             >
               <option value="">Select a year…</option>
               {yearOptions.map((year) => (
@@ -113,23 +160,69 @@ export default function CombinedReportsPage({
               ))}
             </Select>
           </div>
+          {report ? (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              loading={pdfBusy}
+              onClick={() => void handleDownloadPdf()}
+            >
+              Download PDF
+            </Button>
+          ) : null}
+          <Link
+            to="/accountant-package"
+            className="text-sm font-medium text-accent underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            Prepare an accountant package
+          </Link>
+          </div>
         </section>
 
-        {loading ? (
-          <StateBlock kind="loading" title="Loading combined report…" />
-        ) : error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : report ? (
-          <CombinedReportView report={report} />
-        ) : (
+        {view.showSkeleton ? (
+          <LoadingRegion label="Loading combined report" className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <TileSkeleton />
+              <TileSkeleton />
+              <TileSkeleton />
+            </div>
+            <TableSkeleton columns={3} />
+          </LoadingRegion>
+        ) : null}
+
+        {view.showError ? (
           <StateBlock
-            kind="empty"
-            title="No report yet"
-            description="Choose a tax year above to generate the combined Schedule E report across all your properties."
+            kind="error"
+            compact={view.errorIsStale}
+            title="Could not load the combined report"
+            description={error ?? undefined}
+            onRetry={taxYear !== null ? () => void reload() : undefined}
           />
-        )}
+        ) : null}
+
+        {view.refreshing ? <RefreshingIndicator /> : null}
+
+        {view.showContent ? (
+          report ? (
+            <CombinedReportView report={report} />
+          ) : (
+            <EmptyGuide
+              title={EMPTY_COPY.combinedReports.title}
+              description={EMPTY_COPY.combinedReports.description}
+              primary={{
+                label: EMPTY_COPY.combinedReports.primaryLabel,
+                to: firstProperty
+                  ? propertyPath(firstProperty.id, "transactions")
+                  : "/properties",
+              }}
+              secondary={{
+                label: IMPORT_LINK_LABEL,
+                to: "/imports/schedule-e",
+              }}
+            />
+          )
+        ) : null}
       </div>
     </>
   );

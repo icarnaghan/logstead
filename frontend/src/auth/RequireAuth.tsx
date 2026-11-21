@@ -9,6 +9,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { isAuthenticated as defaultIsAuthenticated } from "../lib/session";
+import { BrandSplash } from "../components/brand/BrandSplash";
 import { login as defaultLogin, type AuthDeps } from "../lib/auth";
 
 export interface RequireAuthProps {
@@ -34,12 +35,11 @@ export default function RequireAuth({
 
   if (!authed) {
     return (
-      <div
-        role="status"
-        aria-live="polite"
-        className="flex min-h-screen items-center justify-center text-fg-muted"
-      >
-        Redirecting to sign in…
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 text-fg-muted">
+        <BrandSplash />
+        <div role="status" aria-live="polite">
+          Redirecting to sign in…
+        </div>
       </div>
     );
   }

@@ -1,0 +1,154 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "5. Checkpoint — verify the full frontend suite and build": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766138359
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766929656
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791767141570
+      }
+    ],
+    "1. Update the per-property navigation model (`frontend/src/components/navConfig.ts`)": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766153826
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766250486
+      }
+    ],
+    "2. Extract `resolvePropertyName` into a shared module (`frontend/src/components/propertyName.ts`)": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766154713
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766251894
+      }
+    ],
+    "3. Extract shared `PropertySectionTabs` and refactor `PropertySection` (`frontend/src/components/PropertySectionTabs.tsx`, `frontend/src/components/PropertySection.tsx`)": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766256712
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766344823
+      }
+    ],
+    "4. Rework `PropertyDetailPage` to consume the shared context and machinery (`frontend/src/pages/PropertyDetailPage.tsx`)": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766345879
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766684508
+      }
+    ],
+    "1.1 Unit test navConfig changes": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766691800
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766920868
+      }
+    ],
+    "2.1 Unit test `resolvePropertyName`": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766692745
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766922166
+      }
+    ],
+    "3.1 Component test `PropertySectionTabs`": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766694154
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766923138
+      }
+    ],
+    "4.1 Component tests — overview orientation": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766694927
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766925532
+      }
+    ],
+    "3.2 Regression test `PropertySection` sub-page": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766698737
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766924554
+      }
+    ],
+    "4.2 Component tests — identity from context and content seams": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766699694
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766926466
+      }
+    ],
+    "4.3 Accessibility tests — overview": [
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766700751
+      },
+      {
+        "executionId": "dc5477a8-446d-43ea-b5ae-81384105e7bc",
+        "chatSessionId": "sess_9fa69670-2795-4928-b8f4-9700e73bd298",
+        "timestamp": 1791766927856
+      }
+    ]
+  }
+}

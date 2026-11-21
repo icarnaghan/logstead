@@ -1,0 +1,594 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Add a CloudFront response headers policy": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616414
+      },
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662621808
+      },
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794663502611
+      }
+    ],
+    "1.2 Stop persisting the refresh token and decide on renewal": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616449
+      },
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662621867
+      },
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794663389067
+      }
+    ],
+    "1.3 Audit apiClient for token leakage": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616487
+      },
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662622275
+      },
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794663501666
+      }
+    ],
+    "2.1 Add API throttling": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616599
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794664102509
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665886285
+      }
+    ],
+    "2.2 Review public /categories access": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616632
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794666978034
+      },
+      {
+        "executionId": "7369fab6-66c2-4cda-b186-41098543cbf8",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794677130083
+      }
+    ],
+    "2.3 Add budget and usage alarms for RentCast, Location and Textract": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616671
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794666978118
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794678771085
+      }
+    ],
+    "2.4 Write a decision note on AWS WAF for CloudFront and the API": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616709
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794664104887
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665889236
+      }
+    ],
+    "3.1 Scope IAM actions and resources in infra/template.yaml": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616747
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665901305
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794666963743
+      }
+    ],
+    "3.2 Remove the wildcard S3 CORS fallback for production": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616793
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794666978297
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794678566782
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794678771235
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679185857
+      }
+    ],
+    "3.3 Run cfn-lint and cfn-guard against the template in CI": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616923
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794681133566
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794686753511
+      }
+    ],
+    "4.1 Audit authorization on every route": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616958
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794664102862
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665887284
+      }
+    ],
+    "4.2 Audit input validation and error responses": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662616988
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665901718
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794666977855
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794667071729
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794671477393
+      }
+    ],
+    "4.3 Audit presigned upload creation": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617015
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794666978747
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794678566843
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794678566895
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679198681
+      }
+    ],
+    "4.4 Audit logging for sensitive data": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617041
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794678771620
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679201812
+      }
+    ],
+    "4.5 Run pip-audit and settle a pinning policy for requirements files": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617142
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794664105352
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665890219
+      }
+    ],
+    "5.1 Add ESLint (typescript-eslint, react-hooks, jsx-a11y, a security plugin)": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617173
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665903220
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794666964658
+      }
+    ],
+    "5.2 Add CI steps: install, tsc -b, lint, test, build, npm audit --omit=dev": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617205
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679567274
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794681113050
+      }
+    ],
+    "5.3 Add Dependabot or Renovate and a version-range policy": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617233
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679569076
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794681114265
+      }
+    ],
+    "5.4 Move shared jsdom polyfills and storage stubs into the vitest setup file": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617265
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794664103407
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665888232
+      }
+    ],
+    "5.5 Confirm .gitignore covers .hypothesis, .pytest_cache, .aws-sam, dist and tsbuildinfo files; purge any duplicate files with \" 2\" in the name": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617293
+      },
+      {
+        "executionId": "9e14ed0c-05e8-4038-9222-0845216fbc7d",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794665903851
+      },
+      {
+        "executionId": "87d1af28-57de-4b8f-81fa-4769e55395e1",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794666966017
+      }
+    ],
+    "6.1 Extract useAsyncResource and migrate pages off hand-rolled load state": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617383
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679569324
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794681114865
+      }
+    ],
+    "6.2 Split CarryforwardPage into a feature folder": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617409
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794686764789
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794687489998
+      }
+    ],
+    "6.3 Split PropertyDetailPage and AssetsPage the same way": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617437
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794686765943
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794687491175
+      }
+    ],
+    "6.4 Rework ResponsiveTable to render a single layout": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617463
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794687499998
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794687986315
+      }
+    ],
+    "6.5 Add a top-level error boundary with safe messaging": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617491
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679569439
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794681116131
+      }
+    ],
+    "6.6 Document and test Undo ID changes (links, imports, receipts)": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617585
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794686766760
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794687492467
+      }
+    ],
+    "7.1 Add Playwright and axe checks for key routes in both themes (real contrast)": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617615
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794686767685
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794687493355
+      }
+    ],
+    "7.2 Replace source-scan class-contract tests with rendered assertions or lint rules where feasible": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617654
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679569831
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794681116953
+      }
+    ],
+    "7.3 Add an e2e smoke test: sign-in callback, create property, add transaction, delete with Undo": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617687
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794687990867
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794688731357
+      }
+    ],
+    "8. Checkpoint - re-run the review": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794662617719
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794688734610
+      },
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794689730031
+      }
+    ],
+    "1. P0 - Browser hardening": [
+      {
+        "executionId": "bef3eb67-0c34-4dfa-bb8f-a8231449ebac",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794663502660
+      }
+    ],
+    "2. P0 - API abuse and cost controls": [
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794678771186
+      }
+    ],
+    "4. P1 - Backend audit (not yet reviewed)": [
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794679213052
+      }
+    ],
+    "5. P1 - Tooling and CI": [
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794681114331
+      }
+    ],
+    "3. P1 - Infrastructure least privilege": [
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794686753578
+      }
+    ],
+    "6. P2 - Frontend refactors": [
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794687986408
+      }
+    ],
+    "7. P2 - Test quality": [
+      {
+        "executionId": "f0d8c4bf-921d-44e9-8ca5-43e07a7757d3",
+        "chatSessionId": "sess_fdb11dce-f56a-4392-b39a-cd29c3d649b0",
+        "timestamp": 1794688731446
+      }
+    ]
+  }
+}

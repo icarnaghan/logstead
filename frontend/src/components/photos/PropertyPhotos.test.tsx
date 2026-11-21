@@ -18,6 +18,7 @@ function photo(
       content_type: contentType,
       original_filename: filename,
       uploaded_at: "2024-01-01T00:00:00Z",
+      is_cover: false,
     },
     display_url: `https://s3.example/${id}`,
   };
@@ -33,6 +34,7 @@ function presign(id: string, filename: string, contentType: string): PresignedUp
       content_type: contentType,
       original_filename: filename,
       uploaded_at: null,
+      is_cover: false,
     },
   };
 }
@@ -50,6 +52,11 @@ function makeApi(initial: PhotoWithUrl[] = []) {
     deletePhoto: vi.fn(async (_propertyId: string, photoId: string) => {
       const idx = store.findIndex((p) => p.photo.id === photoId);
       if (idx >= 0) store.splice(idx, 1);
+    }),
+    setCover: vi.fn(async (_propertyId: string, photoId: string) => {
+      for (const item of store) {
+        item.photo = { ...item.photo, is_cover: item.photo.id === photoId };
+      }
     }),
   };
 }
@@ -192,4 +199,47 @@ describe("PropertyPhotos — accessibility (Req 14.4)", () => {
 
 beforeEach(() => {
   vi.restoreAllMocks();
+});
+
+
+describe("PropertyPhotos — cover selection", () => {
+  it("sets a photo as the cover and reflects the Cover badge", async () => {
+    const user = userEvent.setup();
+    const api = makeApi([photo("p1", "front.jpg"), photo("p2", "back.png", "image/png")]);
+    render(<PropertyPhotos propertyId="prop-1" api={api} />);
+
+    await screen.findByAltText("front.jpg");
+    // No cover yet: both show the "Set as cover" affordance.
+    const setButtons = screen.getAllByRole("button", { name: /set as cover/i });
+    expect(setButtons).toHaveLength(2);
+
+    await user.click(setButtons[0]);
+
+    await waitFor(() => expect(api.setCover).toHaveBeenCalledWith("prop-1", "p1"));
+    // After refresh, exactly one photo is marked as the cover.
+    expect(await screen.findByText("Cover")).toBeInTheDocument();
+    // The chosen photo's control now reads as the current cover and is disabled.
+    const coverBtn = await screen.findByRole("button", { name: /cover photo/i });
+    expect(coverBtn).toBeDisabled();
+  });
+});
+
+describe("PropertyPhotos — lightbox", () => {
+  it("opens a full-size dialog when a gallery image is clicked", async () => {
+    const user = userEvent.setup();
+    const api = makeApi([photo("p1", "front.jpg")]);
+    render(<PropertyPhotos propertyId="prop-1" api={api} />);
+
+    await screen.findByAltText("front.jpg");
+    await user.click(
+      screen.getByRole("button", { name: /view front\.jpg larger/i }),
+    );
+
+    // A modal dialog opens showing the same image, with a close control.
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("button", { name: /close photo/i }),
+    ).toBeInTheDocument();
+  });
 });

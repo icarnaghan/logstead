@@ -12,6 +12,13 @@ function renderEmptyState(prompt?: string | null) {
 }
 
 describe("DashboardEmptyState (Req 11.4)", () => {
+  it("offers the sample data link (ui-polish 24.3)", () => {
+    renderEmptyState(null);
+    expect(
+      screen.getByRole("link", { name: /explore with sample data/i }),
+    ).toHaveAttribute("href", "/profile?focus=backup");
+  });
+
   it("renders the prompt text supplied by the API", () => {
     renderEmptyState("You have no properties yet — add one to begin.");
 

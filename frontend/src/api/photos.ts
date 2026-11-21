@@ -52,6 +52,8 @@ export interface PropertyPhoto {
   content_type: string;
   original_filename: string;
   uploaded_at: string | null;
+  /** True for the property's chosen cover/default photo (card + detail header). */
+  is_cover: boolean;
 }
 
 /** Response body of `POST /properties/{propertyId}/photos`. */
@@ -73,11 +75,11 @@ export interface PhotoWithUrl {
  * and global `fetch`; tests construct their own instance with injected doubles.
  */
 export class PhotosApi {
-  private readonly client: Pick<ApiClient, "get" | "post" | "delete">;
+  private readonly client: Pick<ApiClient, "get" | "post" | "put" | "delete">;
   private readonly fetchImpl: typeof fetch;
 
   constructor(
-    client: Pick<ApiClient, "get" | "post" | "delete"> = apiClient,
+    client: Pick<ApiClient, "get" | "post" | "put" | "delete"> = apiClient,
     fetchImpl: typeof fetch = globalThis.fetch.bind(globalThis),
   ) {
     this.client = client;
@@ -113,6 +115,18 @@ export class PhotosApi {
       `/properties/${encodeURIComponent(propertyId)}/photos/${encodeURIComponent(
         photoId,
       )}`,
+    );
+  }
+
+  /**
+   * Set a photo as the property's cover/default image. The backend clears any
+   * previous cover so at most one photo per property is the cover.
+   */
+  setCover(propertyId: string, photoId: string): Promise<void> {
+    return this.client.put<void>(
+      `/properties/${encodeURIComponent(propertyId)}/photos/${encodeURIComponent(
+        photoId,
+      )}/cover`,
     );
   }
 
@@ -155,6 +169,11 @@ export const deletePhoto = (
   propertyId: string,
   photoId: string,
 ): Promise<void> => photosApi.deletePhoto(propertyId, photoId);
+
+export const setCover = (
+  propertyId: string,
+  photoId: string,
+): Promise<void> => photosApi.setCover(propertyId, photoId);
 
 export const uploadToPresignedUrl = (
   url: string,

@@ -29,6 +29,7 @@ __all__ = [
     "BackupUsageYear",
     "BackupTransaction",
     "BackupAsset",
+    "BackupLoan",
     "BackupProperty",
     "BackupDocument",
     "RestoreSummary",
@@ -69,6 +70,9 @@ class BackupTransaction:
     description: str | None = None
     created_at: str | None = None
     updated_at: str | None = None
+    imported: bool = False
+    itemized: bool = False
+    notes: str | None = None
 
 
 @dataclass(frozen=True)
@@ -87,6 +91,36 @@ class BackupAsset:
     cost_basis: Decimal
     placed_in_service_date: str
     recovery_period_years: Decimal
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+@dataclass(frozen=True)
+class BackupLoan:
+    """A mortgage Loan as carried in a backup document (Requirement 9.1).
+
+    A Loan is a balance anchor: ``anchor_balance`` is the principal balance after
+    the payment made on ``anchor_date``, and ``monthly_payment`` is the
+    principal-and-interest payment. Money fields are two-decimal ``Decimal``;
+    ``annual_interest_rate`` is a plain full-precision ``Decimal`` (not money).
+    ``original_principal`` and ``closing_date`` are optional and informational.
+    ``interest_overrides`` maps a tax year to its override amount. Payment and
+    rollup rows are never carried; they are recomputed on restore.
+    """
+
+    id: str
+    property_id: str
+    description: str
+    annual_interest_rate: Decimal
+    monthly_payment: Decimal
+    anchor_balance: Decimal
+    anchor_date: str
+    extra_principal: Decimal = Decimal("0.00")
+    payoff_date: str | None = None
+    original_principal: Decimal | None = None
+    closing_date: str | None = None
+    include_in_report: bool = True
+    interest_overrides: dict[int, Decimal] = field(default_factory=dict)
     created_at: str | None = None
     updated_at: str | None = None
 
@@ -112,6 +146,7 @@ class BackupProperty:
     usage: list[BackupUsageYear] = field(default_factory=list)
     transactions: list[BackupTransaction] = field(default_factory=list)
     assets: list[BackupAsset] = field(default_factory=list)
+    loans: list[BackupLoan] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -137,6 +172,7 @@ class RestoreSummary:
     transactions: int
     assets: int
     usage_years: int
+    loans: int = 0
 
 
 @dataclass(frozen=True)
@@ -153,3 +189,4 @@ class ClearSummary:
     photos: int
     receipts: int
     failed_s3_keys: list[str] = field(default_factory=list)
+    loans: int = 0

@@ -33,6 +33,8 @@ Validation order (first failure wins), matching design "Validation model":
 
 from __future__ import annotations
 
+import logging
+
 from collections.abc import Iterable
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
@@ -42,6 +44,7 @@ from logstead.models.backup import (
     SCHEMA_VERSION,
     BackupAsset,
     BackupDocument,
+    BackupLoan,
     BackupProperty,
     BackupTransaction,
     BackupUsageYear,
@@ -52,6 +55,7 @@ from logstead.models.depreciation import (
     DEFAULT_RECOVERY_PERIOD_YEARS,
     DepreciableAsset,
 )
+from logstead.models.loan import Loan, LoanInput
 from logstead.models.property import Property, PropertyDetails
 from logstead.models.property_details_json import details_from_dict, details_to_dict
 from logstead.models.result import Result
@@ -59,11 +63,23 @@ from logstead.models.transaction import Transaction
 from logstead.models.user import UserContext
 from logstead.repository import keys
 from logstead.services.auth import user_id_of
+from logstead.services.itemized import ITEMIZED_CATEGORIES
 from logstead.services.depreciation import (
     DepreciationService,
     asset_to_item,
     compute_schedule_rows,
     schedule_row_to_item,
+)
+from logstead.services.loan import (
+    _LOAN_MONEY,
+    _ROLLUP_MONEY,
+    _loan_from_item,
+    build_yearly_rollups,
+    compute_payment_rows,
+    loan_to_item,
+    override_year_allowed,
+    rollup_to_item,
+    validate_loan_fields,
 )
 from logstead.services.property import (
     PropertyService,
@@ -77,9 +93,11 @@ from logstead.services.transaction import (
     category_by_id,
     transaction_to_item,
 )
+from logstead.util.logsafe import exc_summary
 from logstead.util.money import to_money
 
 _DATE_FMT = "%Y-%m-%d"
+_NOTES_MAX_LENGTH = 1000
 
 if TYPE_CHECKING:
     from logstead.adapters.s3_files import S3FileAdapter
@@ -239,6 +257,189 @@ def _validate_details(
     return Result.success(details_from_dict(raw))
 
 
+def _validate_loan(
+    raw_loan: Any,
+    prop_id: str,
+    property_ids: set[str],
+    seen_loan_ids: set[str],
+) -> Result[BackupLoan]:
+    """Validate one raw backup loan (pure; no store access)."""
+    if not isinstance(raw_loan, dict):
+        return Result.failure(
+            "validation",
+            f"property {prop_id!r}: each loan must be a JSON object",
+            field="loans",
+        )
+    label = _entity_label("loan", raw_loan)
+    where = f"property {prop_id!r}, {label}"
+
+    def fail(message: str, field_name: str) -> Result[BackupLoan]:
+        return Result.failure(
+            "validation", f"{where}: {message}", field=field_name
+        )
+
+    for field_name in (
+        "id",
+        "property_id",
+        "description",
+        "annual_interest_rate",
+        "monthly_payment",
+        "anchor_balance",
+        "anchor_date",
+    ):
+        if _missing(raw_loan.get(field_name)):
+            return fail(f"missing required field {field_name!r}", field_name)
+
+    loan_id = str(raw_loan["id"])
+    ref = str(raw_loan["property_id"])
+    if ref not in property_ids:
+        return fail(f"references unknown property_id {ref!r}", "property_id")
+    if ref != prop_id:
+        return fail(
+            f"property_id {ref!r} does not match its parent property "
+            f"{prop_id!r}",
+            "property_id",
+        )
+    if loan_id in seen_loan_ids:
+        return fail(f"duplicate loan id {loan_id!r}", "id")
+    seen_loan_ids.add(loan_id)
+
+    # Parse decimals exactly from strings (never floats). Values with too many
+    # decimals are kept as-is so validate_loan_fields rejects (not rounds) them.
+    parsed: dict[str, Decimal | None] = {}
+    for field_name in (
+        "annual_interest_rate",
+        "monthly_payment",
+        "anchor_balance",
+        "extra_principal",
+        "original_principal",
+    ):
+        raw_value = raw_loan.get(field_name)
+        if raw_value is None or raw_value == "":
+            parsed[field_name] = None
+            continue
+        if not isinstance(raw_value, str):
+            return fail(
+                f"{field_name} must be a decimal string, got {raw_value!r}",
+                field_name,
+            )
+        res = _parse_plain_decimal(
+            raw_value, field_name=field_name, location=where
+        )
+        if not res.is_ok:
+            return Result(error=res.error)
+        parsed[field_name] = res.value
+
+    include = raw_loan.get("include_in_report", True)
+    if not isinstance(include, bool):
+        return fail("include_in_report must be a boolean", "include_in_report")
+
+    validated = validate_loan_fields(
+        LoanInput(
+            property_id=ref,
+            description=raw_loan["description"],
+            annual_interest_rate=parsed["annual_interest_rate"],
+            monthly_payment=parsed["monthly_payment"],
+            anchor_balance=parsed["anchor_balance"],
+            anchor_date=raw_loan["anchor_date"],
+            extra_principal=parsed["extra_principal"],
+            payoff_date=raw_loan.get("payoff_date"),
+            original_principal=parsed["original_principal"],
+            closing_date=raw_loan.get("closing_date"),
+            include_in_report=include,
+        )
+    )
+    if not validated.is_ok:
+        err = validated.error
+        return fail(err.message, err.field or "loans")
+    v = validated.value
+
+    # Overrides: string year keys -> non-negative two-decimal amounts, and each
+    # year must be a rollup year of the recomputed schedule.
+    raw_overrides = raw_loan.get("interest_overrides")
+    if raw_overrides is None:
+        raw_overrides = {}
+    if not isinstance(raw_overrides, dict):
+        return fail("interest_overrides must be a JSON object",
+                    "interest_overrides")
+    draft = Loan(
+        id=loan_id,
+        property_id=ref,
+        description=v.description,
+        annual_interest_rate=v.annual_interest_rate,
+        monthly_payment=to_money(v.monthly_payment),
+        anchor_balance=to_money(v.anchor_balance),
+        anchor_date=v.anchor_date,
+        extra_principal=to_money(v.extra_principal),
+        payoff_date=v.payoff_date,
+        original_principal=(
+            to_money(v.original_principal)
+            if v.original_principal is not None
+            else None
+        ),
+        closing_date=v.closing_date,
+        include_in_report=v.include_in_report,
+        interest_overrides={},
+        created_at="",
+        updated_at="",
+    )
+    rows, _ = compute_payment_rows(draft)
+    generated_years = {int(r.date[0:4]) for r in rows}
+    anchor_year = int(v.anchor_date[0:4])
+
+    overrides: dict[int, Decimal] = {}
+    for year_key, amount in raw_overrides.items():
+        fname = f"interest_overrides.{year_key}"
+        if (
+            not isinstance(year_key, str)
+            or not year_key.isascii()
+            or not year_key.isdigit()
+        ):
+            return fail(f"override year {year_key!r} is not a tax year", fname)
+        year = int(year_key)
+        if not override_year_allowed(year, anchor_year, generated_years):
+            return fail(
+                f"override year {year} is not allowed: it must be between "
+                f"1900 and the anchor year {anchor_year}, or a year with "
+                "generated payments",
+                fname,
+            )
+        if not isinstance(amount, str):
+            return fail(f"override for {year} must be a decimal string", fname)
+        res = _parse_plain_decimal(amount, field_name=fname, location=where)
+        if not res.is_ok:
+            return Result(error=res.error)
+        dec = res.value
+        exp = dec.normalize().as_tuple().exponent
+        if dec < 0 or not isinstance(exp, int) or exp < -2:
+            return fail(
+                f"override for {year} must be non-negative with at most "
+                "2 decimal places",
+                fname,
+            )
+        overrides[year] = to_money(dec)
+
+    return Result.success(
+        BackupLoan(
+            id=loan_id,
+            property_id=ref,
+            description=draft.description,
+            annual_interest_rate=draft.annual_interest_rate,
+            monthly_payment=draft.monthly_payment,
+            anchor_balance=draft.anchor_balance,
+            anchor_date=draft.anchor_date,
+            extra_principal=draft.extra_principal,
+            payoff_date=draft.payoff_date,
+            original_principal=draft.original_principal,
+            closing_date=draft.closing_date,
+            include_in_report=draft.include_in_report,
+            interest_overrides=overrides,
+            created_at=raw_loan.get("created_at"),
+            updated_at=raw_loan.get("updated_at"),
+        )
+    )
+
+
 # --- Public validator --------------------------------------------------------
 
 
@@ -277,6 +478,7 @@ def validate_document(raw: Any) -> Result[BackupDocument]:
     raw_properties: list[Any] = raw["properties"]
     property_ids: set[str] = set()
     parsed_properties: list[BackupProperty] = []
+    seen_loan_ids: set[str] = set()
 
     # First pass over properties: required fields + collect ids for the
     # cross-reference check.
@@ -385,6 +587,58 @@ def validate_document(raw: Any) -> Result[BackupDocument]:
                     field="property_id",
                 )
 
+            imported = raw_txn.get("imported", False)
+            if imported is None:
+                imported = False
+            if not isinstance(imported, bool):
+                return Result.failure(
+                    "validation",
+                    f"{_entity_label('transaction', raw_txn)}: imported "
+                    f"must be a boolean, got {imported!r}",
+                    field="imported",
+                )
+            itemized = raw_txn.get("itemized", False)
+            if itemized is None:
+                itemized = False
+            if not isinstance(itemized, bool):
+                return Result.failure(
+                    "validation",
+                    f"{_entity_label('transaction', raw_txn)}: itemized "
+                    f"must be a boolean, got {itemized!r}",
+                    field="itemized",
+                )
+            if imported and itemized:
+                return Result.failure(
+                    "validation",
+                    f"{_entity_label('transaction', raw_txn)}: a transaction "
+                    "cannot be both imported and itemized",
+                    field="itemized",
+                )
+            if itemized and category_id not in ITEMIZED_CATEGORIES:
+                return Result.failure(
+                    "validation",
+                    f"{_entity_label('transaction', raw_txn)}: itemized "
+                    f"requires an itemized category, got {category_id!r}",
+                    field="itemized",
+                )
+            if itemized and str(raw_txn["type"]) != "expense":
+                return Result.failure(
+                    "validation",
+                    f"{_entity_label('transaction', raw_txn)}: itemized "
+                    "requires type 'expense'",
+                    field="itemized",
+                )
+            notes = raw_txn.get("notes")
+            if notes is not None and (
+                not isinstance(notes, str) or len(notes) > _NOTES_MAX_LENGTH
+            ):
+                return Result.failure(
+                    "validation",
+                    f"{_entity_label('transaction', raw_txn)}: notes must be "
+                    f"a string of at most {_NOTES_MAX_LENGTH} characters",
+                    field="notes",
+                )
+
             schedule_e_line = raw_txn.get("schedule_e_line")
             parsed_txns.append(
                 BackupTransaction(
@@ -402,6 +656,9 @@ def validate_document(raw: Any) -> Result[BackupDocument]:
                     description=raw_txn.get("description"),
                     created_at=raw_txn.get("created_at"),
                     updated_at=raw_txn.get("updated_at"),
+                    imported=imported,
+                    itemized=itemized,
+                    notes=notes,
                 )
             )
 
@@ -482,6 +739,26 @@ def validate_document(raw: Any) -> Result[BackupDocument]:
                 )
             )
 
+        # Loans: required fields -> exact decimals -> loan field rules ->
+        # override years. A missing ``loans`` key means zero loans.
+        raw_loans = raw_prop.get("loans")
+        if raw_loans is None:
+            raw_loans = []
+        if not isinstance(raw_loans, list):
+            return Result.failure(
+                "validation",
+                f"property {prop_id!r}: loans must be a JSON array",
+                field="loans",
+            )
+        parsed_loans: list[BackupLoan] = []
+        for raw_loan in raw_loans:
+            loan_result = _validate_loan(
+                raw_loan, prop_id, property_ids, seen_loan_ids
+            )
+            if not loan_result.is_ok:
+                return Result(error=loan_result.error)
+            parsed_loans.append(loan_result.value)
+
         note = raw_prop.get("note")
         parsed_properties.append(
             BackupProperty(
@@ -496,6 +773,7 @@ def validate_document(raw: Any) -> Result[BackupDocument]:
                 usage=parsed_usage,
                 transactions=parsed_txns,
                 assets=parsed_assets,
+                loans=parsed_loans,
             )
         )
 
@@ -612,6 +890,9 @@ class BackupService:
                 description=txn.description,
                 created_at=txn.created_at,
                 updated_at=txn.updated_at,
+                imported=txn.imported,
+                itemized=txn.itemized,
+                notes=txn.notes,
             )
             for txn in (txn_result.value if txn_result.is_ok else [])
         ]
@@ -642,7 +923,48 @@ class BackupService:
             usage=usage,
             transactions=transactions,
             assets=assets,
+            loans=self._list_loans(property_id),
         )
+
+    def _list_loans(self, property_id: str) -> list[BackupLoan]:
+        """List a property's stored Loans for export (Requirement 11.1).
+
+        Issues the raw ``LOAN#`` prefix query with ``money_attrs=set()`` (the
+        strict reader needs the stored strings) and skips yearly rollup rows;
+        rollups and payment rows are never exported (they are recomputed on
+        restore). Override year keys stay ints here; ``_to_jsonable`` renders
+        them as strings.
+        """
+        rows = self._repo.query(
+            keys.property_scoped_pk(property_id),
+            sk_begins_with=keys.loan_list_prefix(),
+            money_attrs=set(),
+        )
+        loans: list[BackupLoan] = []
+        for row in rows:
+            if keys.is_loan_year_sk(row["SK"]):
+                continue
+            loan = _loan_from_item(row)
+            loans.append(
+                BackupLoan(
+                    id=loan.id,
+                    property_id=loan.property_id,
+                    description=loan.description,
+                    annual_interest_rate=loan.annual_interest_rate,
+                    monthly_payment=loan.monthly_payment,
+                    anchor_balance=loan.anchor_balance,
+                    anchor_date=loan.anchor_date,
+                    extra_principal=loan.extra_principal,
+                    payoff_date=loan.payoff_date,
+                    original_principal=loan.original_principal,
+                    closing_date=loan.closing_date,
+                    include_in_report=loan.include_in_report,
+                    interest_overrides=dict(loan.interest_overrides),
+                    created_at=loan.created_at,
+                    updated_at=loan.updated_at,
+                )
+            )
+        return loans
 
     def _list_usage(self, property_id: str) -> list[BackupUsageYear]:
         """List all of a property's usage-year rows (Requirement 1.5).
@@ -714,6 +1036,22 @@ class BackupService:
             return Result(error=validated.error)
         document = validated.value
 
+        # 1b. Refuse to restore over another user's property. Restore preserves
+        #     document ids, and ``PROPERTY#<id>`` partitions are keyed by property
+        #     id alone, so a document reusing a foreign property id would
+        #     overwrite that user's rows and take the property over. This read
+        #     happens before the clear, so nothing is mutated on refusal.
+        for prop in document.properties:
+            meta = self._repo.get_item(
+                keys.property_scoped_pk(prop.id), keys.property_meta_sk()
+            )
+            if meta is not None and str(meta.get("userId")) != self._user_id:
+                return Result.failure(
+                    "validation",
+                    f"property {prop.id!r}: this id cannot be restored.",
+                    field="id",
+                )
+
         # 2. Replace-all: remove everything the user owns first (Requirement
         #    2.1). A clear failure here is before any new write, so the store is
         #    simply the pre-existing data — surface it as a retryable error too.
@@ -726,7 +1064,11 @@ class BackupService:
         if not document.properties:
             return Result.success(
                 RestoreSummary(
-                    properties=0, transactions=0, assets=0, usage_years=0
+                    properties=0,
+                    transactions=0,
+                    assets=0,
+                    usage_years=0,
+                    loans=0,
                 )
             )
 
@@ -739,10 +1081,14 @@ class BackupService:
         asset_items: list[dict[str, Any]] = []  # money_attrs: {costBasis}
         sched_items: list[dict[str, Any]] = []  # money_attrs: {amount, remainingBasis}
 
+        loan_items: list[dict[str, Any]] = []  # money_attrs: _LOAN_MONEY
+        rollup_items: list[dict[str, Any]] = []  # money_attrs: _ROLLUP_MONEY
+
         property_count = 0
         transaction_count = 0
         asset_count = 0
         usage_year_count = 0
+        loan_count = 0
 
         for prop in document.properties:
             property_count += 1
@@ -813,6 +1159,9 @@ class BackupService:
                     description=txn.description,
                     created_at=txn.created_at,
                     updated_at=txn.updated_at,
+                    imported=txn.imported,
+                    itemized=txn.itemized,
+                    notes=txn.notes,
                 )
                 txn_date = datetime.strptime(txn.date, _DATE_FMT).date()
                 txn_items.append(transaction_to_item(restored_txn, txn_date))
@@ -836,6 +1185,36 @@ class BackupService:
                 for row in compute_schedule_rows(restored_asset):
                     sched_items.append(schedule_row_to_item(row))
 
+            # Loans: preserve id/timestamps, then RECOMPUTE the yearly rollups
+            # from the restored loan (Requirement 11.3) — rollups are never read
+            # from the document.
+            for loan in prop.loans:
+                loan_count += 1
+                stamp = (
+                    datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+                )
+                restored_loan = Loan(
+                    id=loan.id,
+                    property_id=loan.property_id,
+                    description=loan.description,
+                    annual_interest_rate=loan.annual_interest_rate,
+                    monthly_payment=loan.monthly_payment,
+                    anchor_balance=loan.anchor_balance,
+                    anchor_date=loan.anchor_date,
+                    extra_principal=loan.extra_principal,
+                    payoff_date=loan.payoff_date,
+                    original_principal=loan.original_principal,
+                    closing_date=loan.closing_date,
+                    include_in_report=loan.include_in_report,
+                    interest_overrides=dict(loan.interest_overrides),
+                    created_at=loan.created_at or stamp,
+                    updated_at=loan.updated_at or loan.created_at or stamp,
+                )
+                loan_items.append(loan_to_item(restored_loan))
+                loan_rows, _ = compute_payment_rows(restored_loan)
+                for rollup in build_yearly_rollups(restored_loan, loan_rows):
+                    rollup_items.append(rollup_to_item(rollup))
+
         # Flush each money-attr group in ≤ _TRANSACT_MAX-action batches. A
         # repository failure mid-write (after the clear) is caught and surfaced
         # as a retryable error (Requirement 12.2 / Property 9): we do NOT claim
@@ -845,6 +1224,8 @@ class BackupService:
             (txn_items, None),  # default money attrs (amount)
             (asset_items, {"costBasis"}),
             (sched_items, {"amount", "remainingBasis"}),
+            (loan_items, _LOAN_MONEY),
+            (rollup_items, _ROLLUP_MONEY),
         ]
         try:
             for items, money_attrs in write_groups:
@@ -855,11 +1236,15 @@ class BackupService:
                         money_attrs=money_attrs,
                     )
         except Exception as exc:  # noqa: BLE001 — surface as a retryable error
+            # Type and location are logged (not the message, which may echo
+            # item values); nothing is returned to the client.
+            logging.getLogger(__name__).error(
+                "Backup restore write failed: %s", exc_summary(exc)
+            )
             return Result.failure(
                 "conflict",
                 "The restore did not complete after clearing existing data; "
-                "your stored data may be incomplete. Please retry the restore "
-                f"({exc}).",
+                "your stored data may be incomplete. Please retry the restore.",
             )
 
         return Result.success(
@@ -868,6 +1253,7 @@ class BackupService:
                 transactions=transaction_count,
                 assets=asset_count,
                 usage_years=usage_year_count,
+                loans=loan_count,
             )
         )
 
@@ -912,6 +1298,7 @@ class BackupService:
         property_count = 0
         transaction_count = 0
         asset_count = 0
+        loan_count = 0
         photo_count = 0
         receipt_count = 0
         failed_s3_keys: list[str] = []
@@ -959,6 +1346,10 @@ class BackupService:
                 elif sk.startswith(keys.ASSET_PREFIX) and keys.SCHED_PREFIX not in sk:
                     # A base ASSET row (its SCHED# rows are children, not counted).
                     asset_count += 1
+                elif sk.startswith(keys.loan_list_prefix()) and not keys.is_loan_year_sk(sk):
+                    # A base LOAN row; its yearly rollup rows are deleted by the
+                    # generic child delete below but are not counted.
+                    loan_count += 1
 
                 child_actions.append({"delete": {"pk": pk, "sk": sk}})
 
@@ -991,5 +1382,6 @@ class BackupService:
                 photos=photo_count,
                 receipts=receipt_count,
                 failed_s3_keys=failed_s3_keys,
+                loans=loan_count,
             )
         )

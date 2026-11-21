@@ -1,0 +1,1613 @@
+{
+  "pbtResults": {
+    "16.2 Property test: preview in new `frontend/src/lib/amortization.property.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794184702786
+    },
+    "16.11 Property test: report row in new `frontend/src/components/reports/ScheduleELineTable.line12.property.test.tsx`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794184960651
+    },
+    "16.8 Tests: override control in new `frontend/src/components/loans/InterestOverrideControl.property.test.tsx` and `InterestOverrideControl.test.tsx`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794184962926
+    },
+    "16.9 Property test: notice in new `frontend/src/components/loans/SupersededInterestNotice.property.test.tsx`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794184965410
+    },
+    "16.7 Tests: yearly table in new `frontend/src/components/loans/YearlyRollupTable.property.test.tsx` and `YearlyRollupTable.test.tsx`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794184988340
+    },
+    "15.4 Property test: default payment oracle in new `backend/tests/services/test_loan_default_payment_property.py`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794185059405
+    },
+    "15.9 Property tests: overrides in new `backend/tests/services/test_loan_override_property.py`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794189627942
+    },
+    "15.6 Property test: serialization round trip in new `backend/tests/services/test_loan_roundtrip_property.py`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794191289712
+    },
+    "15.8 Property tests: storage in new `backend/tests/services/test_loan_storage_property.py`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794190764434
+    },
+    "15.11 Property tests: Line 12 in new `backend/tests/services/test_report_line12_property.py`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794264406483
+    },
+    "15.12 Property test: exports in new `backend/tests/services/test_report_line12_export_property.py`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794264524118
+    },
+    "15.13 Property test: carryforward in new `backend/tests/services/test_carryforward_loan_property.py`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794265174639
+    }
+  },
+  "executionHistory": {
+    "1.1 Add Loan key builders in `backend/src/logstead/repository/keys.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181930622
+      },
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181940028
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182978345
+      }
+    ],
+    "1.2 Add `errors` to `Error` in `backend/src/logstead/models/result.py` and emit it from `_error_body` in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181930678
+      },
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181940078
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182302487
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182302840
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182978440
+      }
+    ],
+    "1.3 Create `backend/src/logstead/models/loan.py` and export it from `backend/src/logstead/models/__init__.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181930723
+      },
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181940558
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182302553
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182303655
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182979602
+      }
+    ],
+    "2.1 Create the engine: interest, default payment, payment dates, rows and rollups": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181930770
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183169606
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183770518
+      }
+    ],
+    "2.2 Add `validate_loan_fields` to `backend/src/logstead/services/loan.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181930810
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184716462
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184805820
+      }
+    ],
+    "2.3 Add item builders and strict readers to `backend/src/logstead/services/loan.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181930882
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185004120
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185095976
+      }
+    ],
+    "3.1 Implement create, list, get, update and delete with one atomic `transact_write`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181930927
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185145631
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185262073
+      }
+    ],
+    "3.2 Implement `schedule_for`, `set_interest_override` and `clear_interest_override`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181930970
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185314256
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186933586
+      }
+    ],
+    "3.3 Implement the read seams used by reports, dashboard and carryforward": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931010
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186966743
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189648268
+      }
+    ],
+    "4. Checkpoint - backend core": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931050
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265616253
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794266187214
+      }
+    ],
+    "5.1 Add Loan helpers in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931102
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185314868
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186933670
+      }
+    ],
+    "5.2 Register the Loan routes and handlers in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931173
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186967145
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189649396
+      }
+    ],
+    "5.3 Register `GET /properties/{propertyId}/loans/line-12-impact` in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931212
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265110382
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265299102
+      }
+    ],
+    "6.1 Add Line 12 data shapes and precedence in `backend/src/logstead/services/report.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931260
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189659158
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191258615
+      }
+    ],
+    "6.2 Extend the backend export serializers in `backend/src/logstead/services/report.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931310
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191339634
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794193509715
+      }
+    ],
+    "6.3 Add `ReportingService.line12_impact` in `backend/src/logstead/services/report.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931358
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794264475160
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265103770
+      }
+    ],
+    "6.4 REQUIRED: fix existing export and report tests forced by the serializer change": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931400
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794264475629
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265103949
+      }
+    ],
+    "7.1 Add the optional `loans` collaborator in `backend/src/logstead/services/dashboard.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931445
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189659224
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191258770
+      }
+    ],
+    "7.2 Add the optional `loans` collaborator in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931483
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191339709
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794193509831
+      }
+    ],
+    "7.3 Wire the loan service in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931560
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794264476894
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265104735
+      }
+    ],
+    "8.1 Guard property deletion when Loans exist in `backend/src/logstead/services/property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931608
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183169950
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183770622
+      }
+    ],
+    "9.1 Extend `backend/src/logstead/models/backup.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931645
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183171151
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184211171
+      }
+    ],
+    "9.2 Validate Loans inside `validate_document` in `backend/src/logstead/services/backup.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931684
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185145996
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185263267
+      }
+    ],
+    "9.3 Export Loans in `backend/src/logstead/services/backup.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931727
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185315645
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186933741
+      }
+    ],
+    "9.4 Restore Loans in `backend/src/logstead/services/backup.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931774
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186968298
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189650624
+      }
+    ],
+    "9.5 Count Loans in `BackupService.clear` in `backend/src/logstead/services/backup.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931811
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189659627
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191259787
+      }
+    ],
+    "9.6 REQUIRED: add a Loan to the sample backup and update the two sample-fixture tests": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931861
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191340723
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794193511049
+      }
+    ],
+    "10. Checkpoint - backend complete": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931930
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794266191717
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794314220527
+      }
+    ],
+    "11.1 Create `frontend/src/api/loans.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181931975
+      },
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181941341
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182302621
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182304455
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182980451
+      }
+    ],
+    "11.2 Add Line 12 types and CSV rows in `frontend/src/api/reports.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932011
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182992063
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183131266
+      }
+    ],
+    "11.3 Add Loan types in `frontend/src/api/backup.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932049
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182992488
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183132266
+      }
+    ],
+    "11.4 Create `frontend/src/lib/amortization.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932093
+      },
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181941693
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182305048
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182447771
+      }
+    ],
+    "11.5 Generate the shared golden vectors in `frontend/src/data/loan-payment-vectors.json`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932133
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184813316
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184905395
+      }
+    ],
+    "12.1 Create `frontend/src/components/loans/loanForm.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932177
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183172352
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184030903
+      }
+    ],
+    "12.2 Create `frontend/src/components/loans/LoanForm.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932225
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184717206
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184806925
+      }
+    ],
+    "12.3 Create `frontend/src/components/loans/LoanList.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932265
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183777648
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184210542
+      }
+    ],
+    "12.4 Create `frontend/src/components/loans/YearlyRollupTable.tsx` and `frontend/src/components/loans/PaymentRowsTable.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932309
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183778862
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184210727
+      }
+    ],
+    "12.5 Create `frontend/src/components/loans/InterestOverrideControl.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932344
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183779671
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184031188
+      }
+    ],
+    "12.6 Create `frontend/src/components/loans/EstimateNotice.tsx` and `frontend/src/components/loans/SupersededInterestNotice.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932414
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184217359
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184497137
+      }
+    ],
+    "12.7 Create the hooks `useLoans.ts`, `useLoanSchedule.ts` and `useLine12Impact.ts` in `frontend/src/components/loans/`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932457
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184218613
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184658775
+      }
+    ],
+    "12.8 Create `frontend/src/pages/LoansPage.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932504
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185005298
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185096339
+      }
+    ],
+    "13.1 REQUIRED: add \"Loans\" to `PROPERTY_NAV` in `frontend/src/components/navConfig.ts` and fix `navConfig.test.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932543
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182993594
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183133600
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185100859
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185139817
+      }
+    ],
+    "13.2 Add the route in `frontend/src/App.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932582
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185147218
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185264460
+      }
+    ],
+    "13.3 Render the Line 12 label and superseded amount in `frontend/src/components/reports/ScheduleELineTable.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932626
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183173801
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183770814
+      }
+    ],
+    "13.4 Pass `line12` through `frontend/src/components/reports/ReportView.tsx` and `frontend/src/components/reports/CombinedReportView.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932664
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184718253
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184807955
+      }
+    ],
+    "13.5 REQUIRED: give existing frontend report fixtures a `line12` value": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932709
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185006108
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185096106
+      }
+    ],
+    "14. Checkpoint - frontend complete": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932748
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794314225218
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794314319853
+      }
+    ],
+    "15.1 Key helper tests in `backend/tests/repository/test_keys.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932793
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184219595
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184497272
+      }
+    ],
+    "15.2 Error `errors` tests in new `backend/tests/models/test_error_errors.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932831
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184501432
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184710516
+      }
+    ],
+    "15.3 Property tests: engine in new `backend/tests/services/test_loan_engine_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932906
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184813492
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184906602
+      }
+    ],
+    "15.4 Property test: default payment oracle in new `backend/tests/services/test_loan_default_payment_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932944
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185007375
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185096687
+      }
+    ],
+    "15.5 Property test: validation in new `backend/tests/services/test_loan_validation_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181932981
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185316857
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186934493
+      }
+    ],
+    "15.6 Property test: serialization round trip in new `backend/tests/services/test_loan_roundtrip_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933026
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189660793
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191331476
+      }
+    ],
+    "15.7 Examples and failure injection in new `backend/tests/services/test_loan_service.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933065
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191267833
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191332212
+      }
+    ],
+    "15.8 Property tests: storage in new `backend/tests/services/test_loan_storage_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933110
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189661872
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191261112
+      }
+    ],
+    "15.9 Property tests: overrides in new `backend/tests/services/test_loan_override_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933149
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186969106
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189651714
+      }
+    ],
+    "15.10 Router tests in new `backend/tests/router/test_loan_routes.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933193
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265304118
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265612107
+      }
+    ],
+    "15.11 Property tests: Line 12 in new `backend/tests/services/test_report_line12_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933232
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794193517173
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794264469191
+      }
+    ],
+    "15.12 Property test: exports in new `backend/tests/services/test_report_line12_export_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933307
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794264477677
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265105775
+      }
+    ],
+    "15.13 Property test: carryforward in new `backend/tests/services/test_carryforward_loan_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933348
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265111370
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265300067
+      }
+    ],
+    "15.14 Property tests: backup in new `backend/tests/services/test_backup_loan_roundtrip_property.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933391
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794193517355
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794264313108
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794264469872
+      }
+    ],
+    "15.15 Property deletion guard test in new `backend/tests/services/test_property_delete_loans.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933431
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185317736
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186935476
+      }
+    ],
+    "15.16 Data-year tests in `backend/tests/services/test_dashboard.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933477
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191341824
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794193511784
+      }
+    ],
+    "15.17 Documentation and key-discipline tests in new `backend/tests/infra/test_loan_docs.py`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933515
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191267899
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794191333381
+      }
+    ],
+    "16.1 Golden vector and edge tests in new `frontend/src/lib/amortization.test.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933559
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185008322
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185096178
+      }
+    ],
+    "16.2 Property test: preview in new `frontend/src/lib/amortization.property.test.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933598
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184662699
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184711638
+      }
+    ],
+    "16.3 API tests in new `frontend/src/api/loans.test.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933643
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184502589
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184658217
+      }
+    ],
+    "16.4 Form validation tests in new `frontend/src/components/loans/loanForm.test.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933681
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184814719
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184907829
+      }
+    ],
+    "16.5 Component tests in new `frontend/src/components/loans/LoanForm.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933724
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185101675
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185140491
+      }
+    ],
+    "16.6 Component tests in new `frontend/src/components/loans/LoanList.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933765
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184815490
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184908392
+      }
+    ],
+    "16.7 Tests: yearly table in new `frontend/src/components/loans/YearlyRollupTable.property.test.tsx` and `YearlyRollupTable.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933811
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184912196
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184997163
+      }
+    ],
+    "16.8 Tests: override control in new `frontend/src/components/loans/InterestOverrideControl.property.test.tsx` and `InterestOverrideControl.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933848
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184913258
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184998243
+      }
+    ],
+    "16.9 Property test: notice in new `frontend/src/components/loans/SupersededInterestNotice.property.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933924
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184914434
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184999474
+      }
+    ],
+    "16.10 Page tests in new `frontend/src/pages/LoansPage.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933962
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185148062
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185265307
+      }
+    ],
+    "16.11 Property test: report row in new `frontend/src/components/reports/ScheduleELineTable.line12.property.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181933998
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184915319
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185000138
+      }
+    ],
+    "16.12 Line 12 cases in `frontend/src/components/reports/ReportView.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181934041
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185148939
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185266236
+      }
+    ],
+    "16.13 Export tests in `frontend/src/api/reports.test.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181934081
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185272809
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185308879
+      }
+    ],
+    "16.14 Route test in `frontend/src/App.test.tsx`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181934124
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186939787
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186960734
+      }
+    ],
+    "16.15 Backup type tests in `frontend/src/api/backup.test.ts`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181934164
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184663528
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184712380
+      }
+    ],
+    "17.1 Update `docs/data-model.md`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181934210
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182994749
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183134267
+      }
+    ],
+    "17.2 Update `docs/api.md`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181934286
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182995274
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183135091
+      }
+    ],
+    "17.3 Add entries under `## [Unreleased]` in `CHANGELOG.md`": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181934328
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183137781
+      },
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183165287
+      }
+    ],
+    "18. Final verification - suites green, no deploy": [
+      {
+        "executionId": "a8b25d88-0c6c-4c43-a36e-b92b8c69efaa",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794181934361
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794314323604
+      },
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794315423509
+      }
+    ],
+    "1. Keys, models and the additive Error `errors` list": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794182979659
+      }
+    ],
+    "17. Documentation and CHANGELOG": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183165402
+      }
+    ],
+    "8. PropertyService delete guard": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794183770683
+      }
+    ],
+    "11. Frontend: API modules and the client-side payment preview": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794184905481
+      }
+    ],
+    "2. Pure engine, validation and item builders in `backend/src/logstead/services/loan.py`": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185096041
+      }
+    ],
+    "12. Frontend: Loans page, form, tables, override controls and notices": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185096391
+      }
+    ],
+    "13. Frontend: navigation, route and report view Line 12 label and superseded amount": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794185264519
+      }
+    ],
+    "16. Frontend tests": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794186960777
+      }
+    ],
+    "3. `LoanService` in `backend/src/logstead/services/loan.py`": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794189648348
+      }
+    ],
+    "9. BackupService: export, restore, validate and summary": [
+      {
+        "executionId": "5a4fd0a5-123c-46d6-8974-766d4b9524c9",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794193511148
+      }
+    ],
+    "6. ReportingService: Line 12 precedence, combined report and backend export serializers": [
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265104033
+      }
+    ],
+    "7. Data years, earliest year, Dashboard and Carryforward loan wiring": [
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265104777
+      }
+    ],
+    "5. Router: ownership helper, routes and string-only money": [
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265299203
+      }
+    ],
+    "15. Backend tests": [
+      {
+        "executionId": "8a366939-1ff0-46cb-89b0-8814d8885b81",
+        "chatSessionId": "sess_37a2c10d-b744-4a7f-9230-d5464e1efa91",
+        "timestamp": 1794265612220
+      }
+    ]
+  }
+}

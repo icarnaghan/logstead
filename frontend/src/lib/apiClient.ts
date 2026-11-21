@@ -68,13 +68,64 @@ function resolveBaseUrl(explicit?: string): string {
   return base.replace(/\/+$/, "");
 }
 
+/** Thrown when a request path could target anything other than the API origin. */
+export class UnsafeApiPathError extends Error {
+  constructor(path: string) {
+    super(`Refusing to send request: path is not relative to the API origin (${JSON.stringify(path)})`);
+    this.name = "UnsafeApiPathError";
+  }
+}
+
+// Placeholder origin used only to resolve paths when no absolute base is set.
+const RELATIVE_BASE = "http://relative.invalid";
+
+/**
+ * Join `path` onto `baseUrl`, guaranteeing the result stays on the base origin
+ * (and under its path prefix). The bearer token is attached to this URL, so
+ * absolute URLs, protocol-relative (`//host`), backslash tricks, control
+ * characters and dot-segment traversal are all rejected.
+ */
 function buildUrl(
   baseUrl: string,
   path: string,
   query?: RequestOptions["query"],
 ): string {
+  // eslint-disable-next-line no-control-regex
+  const hasControl = /[\u0000-\u001f\u007f\\]/.test(path);
+  const hasScheme = /^\s*[a-z][a-z0-9+.-]*:/i.test(path);
+  const segments = path.split("?")[0].split("#")[0].split("/");
+  const hasDotSegment = segments.some((seg) => {
+    // WHATWG treats only ".", ".." and their %2e forms as dot segments;
+    // %2F / %5C inside a segment are not separators. Undecodable segments
+    // are sent verbatim and cannot form a dot segment.
+    const lower = seg.toLowerCase().replace(/%2e/g, ".");
+    return lower === ".." || lower === ".";
+  });
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const url = `${baseUrl}${normalizedPath}`;
+  if (
+    hasControl ||
+    hasScheme ||
+    hasDotSegment ||
+    normalizedPath.startsWith("//")
+  ) {
+    throw new UnsafeApiPathError(path);
+  }
+
+  const joined = `${baseUrl}${normalizedPath}`;
+  const base = new URL(baseUrl || "/", RELATIVE_BASE);
+  const resolved = new URL(joined, RELATIVE_BASE);
+  const basePrefix = base.pathname.replace(/\/+$/, "");
+  if (
+    resolved.origin !== base.origin ||
+    !(
+      resolved.pathname === basePrefix ||
+      resolved.pathname.startsWith(`${basePrefix}/`)
+    )
+  ) {
+    throw new UnsafeApiPathError(path);
+  }
+
+  let url = baseUrl ? resolved.href : joined;
   if (!query) return url;
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {
@@ -82,7 +133,8 @@ function buildUrl(
     params.append(key, String(value));
   }
   const qs = params.toString();
-  return qs ? `${url}?${qs}` : url;
+  if (qs) url += url.includes("?") ? `&${qs}` : `?${qs}`;
+  return url;
 }
 
 export class ApiClient {

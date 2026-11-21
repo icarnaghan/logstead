@@ -155,6 +155,40 @@ describe("handleAuthCallback", () => {
     expect(storage.getItem("logstead.pkce.verifier")).toBeNull();
   });
 
+  it("never writes a refresh_token to storage and removes the legacy key", async () => {
+    const storage = memoryStorage();
+    storage.setItem("logstead.oauth.state", "state-1");
+    storage.setItem("logstead.pkce.verifier", "verifier-1");
+    window.sessionStorage.setItem("logstead.refreshToken", "old-refresh");
+
+    const fetchImpl = vi.fn().mockResolvedValue(
+      tokenResponse({
+        id_token: "id-tok",
+        access_token: "access-tok",
+        refresh_token: "refresh-secret",
+        expires_in: 3600,
+      }),
+    );
+    const tokens = await handleAuthCallback(
+      { code: "auth-code", state: "state-1" },
+      { config, storage, fetchImpl },
+    );
+
+    expect(tokens).not.toHaveProperty("refreshToken");
+    expect(window.sessionStorage.getItem("logstead.refreshToken")).toBeNull();
+    for (const s of [window.sessionStorage, window.localStorage, storage]) {
+      for (let i = 0; i < s.length; i++) {
+        expect(s.getItem(s.key(i)!)).not.toContain("refresh-secret");
+      }
+    }
+  });
+
+  it("clearSession removes a legacy refresh token key", () => {
+    window.sessionStorage.setItem("logstead.refreshToken", "old-refresh");
+    clearSession();
+    expect(window.sessionStorage.getItem("logstead.refreshToken")).toBeNull();
+  });
+
   it("rejects a mismatched state without exchanging or storing a session", async () => {
     const storage = memoryStorage();
     storage.setItem("logstead.oauth.state", "expected-state");

@@ -35,12 +35,12 @@ describe("ScheduleELineTable — rows (Req 10.1)", () => {
     expect(within(rents).getByText("3")).toBeInTheDocument();
     expect(within(rents).getByText("Rents received")).toBeInTheDocument();
     expect(within(rents).getByText("income")).toBeInTheDocument();
-    expect(within(rents).getByText("$24,000.00")).toBeInTheDocument();
+    expect(within(rents).getByText("$24,000")).toBeInTheDocument();
 
     const repairs = within(rowgroups[1]).getByRole("row", { name: /repairs/i });
     expect(within(repairs).getByText("14")).toBeInTheDocument();
     expect(within(repairs).getByText("expense")).toBeInTheDocument();
-    expect(within(repairs).getByText("$1,200.50")).toBeInTheDocument();
+    expect(within(repairs).getByText("$1,201")).toBeInTheDocument();
   });
 
   it("exposes an accessible caption", () => {

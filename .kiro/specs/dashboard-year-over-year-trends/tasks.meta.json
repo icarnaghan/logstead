@@ -1,0 +1,531 @@
+{
+  "pbtResults": {
+    "1.8 Property test — a property with no data in a Data_Year contributes 0.00 and still appears": {
+      "status": "passed",
+      "lastRunTimestamp": 1792330563350
+    },
+    "1.7 Property test — series contains exactly the Data_Years, ascending, no gaps, no cap": {
+      "status": "passed",
+      "lastRunTimestamp": 1792330700259
+    },
+    "1.4 Property test — per-property figures reconcile to the Schedule E report": {
+      "status": "passed",
+      "lastRunTimestamp": 1792330729338
+    },
+    "1.6 Property test — portfolio depreciation is the exact sum across properties": {
+      "status": "passed",
+      "lastRunTimestamp": 1792330980483
+    },
+    "1.9 Property test — every series year is total (all figures present, non-null, two-decimal)": {
+      "status": "passed",
+      "lastRunTimestamp": 1792331310339
+    },
+    "6.2 Property test — net-by-property preparation yields one full series per property with unique labels": {
+      "status": "passed",
+      "lastRunTimestamp": 1792336783543
+    }
+  },
+  "executionHistory": {
+    "1.1 Add the trends transport dataclasses to `backend/src/logstead/services/dashboard.py`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625379
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287632467
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287946087
+      }
+    ],
+    "1.2 Implement `_derive_data_years(properties)` private helper on `DashboardService`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625489
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287633375
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287947463
+      }
+    ],
+    "1.3 Implement `trends_summary()` on `DashboardService`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625573
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287951714
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288138699
+      }
+    ],
+    "2. Checkpoint — backend service": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625659
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288151865
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288546083
+      }
+    ],
+    "3.1 Add the `_dashboard_trends` handler and route registration in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625711
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288554714
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288653776
+      }
+    ],
+    "4. Checkpoint — backend endpoint": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625791
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288657875
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288701335
+      }
+    ],
+    "5.1 Add trends types and `getTrends()` to `frontend/src/api/dashboard.ts`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625845
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287634550
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287948437
+      }
+    ],
+    "6.1 Add the three trend builders to `frontend/src/components/charts/prepare.ts`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625883
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287952630
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288138647
+      }
+    ],
+    "7.1 Add `IncomeExpenseNetTrendTable` and `IncomeExpenseNetTrendChart`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625922
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288556112
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288650221
+      }
+    ],
+    "7.2 Add `NetByPropertyTrendTable` and `NetByPropertyTrendChart`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625960
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288557508
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288651542
+      }
+    ],
+    "7.3 Add `DepreciationTrendTable` and `DepreciationTrendChart`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287625993
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288558487
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288652879
+      }
+    ],
+    "8. Checkpoint — frontend data + chart layer": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287626038
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288658775
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288702366
+      }
+    ],
+    "9.1 Fetch trends and render the headline + three code-split charts": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287626075
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288705744
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288831241
+      }
+    ],
+    "9.2 Render the retained portfolio/navigation tiles and the empty/no-data states; drop superseded tiles": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287626112
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288835489
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792289067693
+      }
+    ],
+    "10. Final checkpoint — full suite": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287626157
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792289070822
+      },
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792291077648
+      }
+    ],
+    "5. Frontend: trends API types and `getTrends()`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792287948486
+      }
+    ],
+    "6. Frontend: `prepare.ts` trend builders": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288138751
+      }
+    ],
+    "1. Backend: trends dataclasses and `trends_summary()` on `DashboardService`": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288138807
+      }
+    ],
+    "7. Frontend: trend chart components and Recharts-free table fallbacks": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288652924
+      }
+    ],
+    "3. Backend: register the `GET /dashboard/trends` route": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792288653824
+      }
+    ],
+    "9. Frontend: redesign `DashboardPage.tsx` and wire the trends view": [
+      {
+        "executionId": "daff2381-bfb6-4c1f-8c1c-80922e256adf",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792289067777
+      }
+    ],
+    "1.4 Property test — per-property figures reconcile to the Schedule E report": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330422542
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330995216
+      }
+    ],
+    "1.5 Property test — portfolio net is the exact-cent sum of per-property nets": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330423847
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330996567
+      }
+    ],
+    "1.6 Property test — portfolio depreciation is the exact sum across properties": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330424815
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330997936
+      }
+    ],
+    "1.7 Property test — series contains exactly the Data_Years, ascending, no gaps, no cap": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330426211
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330999344
+      }
+    ],
+    "1.8 Property test — a property with no data in a Data_Year contributes 0.00 and still appears": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792330427210
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792331000152
+      }
+    ],
+    "1.9 Property test — every series year is total (all figures present, non-null, two-decimal)": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792331003819
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336702392
+      }
+    ],
+    "1.10 Property test — user scoping, no cross-user leakage": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792331004684
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336703705
+      }
+    ],
+    "1.11 Property test — each per-(property, year) derivation runs exactly once per pair": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792331006136
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336705183
+      }
+    ],
+    "1.12 Property test — no properties yields an empty series": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792331007530
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336706068
+      }
+    ],
+    "3.2 Property test — every figure is a two-decimal money string, never a float/Number": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792331008338
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336707151
+      }
+    ],
+    "3.3 Route example tests for `GET /dashboard/trends`": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336710805
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336852616
+      }
+    ],
+    "5.2 Unit test — `getTrends()` calls the route and types money as strings": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336712282
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336850685
+      }
+    ],
+    "6.2 Property test — net-by-property preparation yields one full series per property with unique labels": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336713674
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336847782
+      }
+    ],
+    "6.3 Property test — chart and data-table render identical money for the same datum": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336715036
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336849248
+      }
+    ],
+    "7.4 Unit tests for the three trend chart/table modules": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336715887
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336851586
+      }
+    ],
+    "9.3 Property test — depreciation summary reconciles exactly with the depreciation trend's last point": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336855834
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336980540
+      }
+    ],
+    "9.4 RTL tests for all page states, error boundary, and code-splitting": [
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336856799
+      },
+      {
+        "executionId": "3e8fb0ea-f275-4ad1-b498-6b2198517bcc",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792336979371
+      }
+    ]
+  }
+}

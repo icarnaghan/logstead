@@ -1,0 +1,11 @@
+{
+  "_comment": "HAND-BUILT APPROXIMATION of a Textract response for a page that is NOT Schedule E Part I (here a Form 1040 Schedule C). It carries no Part-I title marker and none of the Schedule E line labels, so the parser must return no_schedule_e_found with zero columns. Real Textract output differs; the user confirms downstream.",
+  "blocks": [
+    { "Id": "page-1", "BlockType": "PAGE", "Page": 1, "Relationships": [ { "Type": "CHILD", "Ids": ["ttl", "l1", "l2", "l3", "l4"] } ] },
+    { "Id": "ttl", "BlockType": "LINE", "Page": 1, "Text": "SCHEDULE C (Form 1040) Profit or Loss From Business", "Confidence": 99.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.02, "Width": 0.6, "Height": 0.02 } } },
+    { "Id": "l1", "BlockType": "LINE", "Page": 1, "Text": "A Principal business or profession", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.1, "Width": 0.4, "Height": 0.02 } } },
+    { "Id": "l2", "BlockType": "LINE", "Page": 1, "Text": "1 Gross receipts or sales", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.2, "Width": 0.4, "Height": 0.02 } } },
+    { "Id": "l3", "BlockType": "LINE", "Page": 1, "Text": "2 Returns and allowances", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.25, "Width": 0.4, "Height": 0.02 } } },
+    { "Id": "l4", "BlockType": "LINE", "Page": 1, "Text": "28 Total expenses", "Confidence": 98.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.3, "Width": 0.4, "Height": 0.02 } } }
+  ]
+}

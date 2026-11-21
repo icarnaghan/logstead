@@ -4,3 +4,6 @@ __pycache__/
 .pytest_cache/
 .hypothesis/
 *.egg-info/
+
+# throwaway local helper scripts (not part of the app)
+scripts/

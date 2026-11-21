@@ -7,7 +7,17 @@ import type {
   TransactionType,
 } from "../../api/transactions";
 import { CategorySelect } from "./CategorySelect";
-import { Button } from "../ui";
+import {
+  Button,
+  ErrorSummary,
+  FormField,
+  MoneyInput,
+  Textarea,
+  useFocusFirstInvalid,
+  ModalFormActions,
+} from "../ui";
+import { orderedErrors, type ErrorSummaryItem } from "../../lib/formErrors";
+import { useDirtyReporter } from "../../lib/dirty";
 import { isPositiveAmount, toMoneyString } from "../../lib/money";
 
 interface TransactionFormProps {
@@ -17,6 +27,11 @@ interface TransactionFormProps {
    * date field is hidden and the stored date defaults to Dec 31 of this year.
    */
   taxYear: number;
+  /**
+   * Keys (`categoryId:year`) of categories with itemized entries in the loaded
+   * list. Drives the Requirement 10.4 hint; never blocks saving.
+   */
+  itemizedYears?: ReadonlySet<string>;
   /** When present, the form edits this transaction; otherwise it creates one. */
   initial?: Transaction;
   /**
@@ -27,11 +42,22 @@ interface TransactionFormProps {
   submitting?: boolean;
   onSubmit: (input: TransactionInput) => void;
   onCancel: () => void;
+  /** Reports whether the form has unsaved edits. */
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 type FieldErrors = Partial<
   Record<"date" | "amount" | "category_id" | "description", string>
 >;
+
+const FIELD_ORDER = ["amount", "category_id", "description"] as const;
+const FIELD_IDS: Record<(typeof FIELD_ORDER)[number], string> = {
+  amount: "tx-amount",
+  category_id: "tx-category",
+  description: "tx-description",
+};
+const idFor = (field: string) =>
+  FIELD_IDS[field as keyof typeof FIELD_IDS] ?? field;
 
 /** Dec 31 of the given tax year as an ISO date (year-end totals default). */
 const yearEnd = (year: number) => `${year}-12-31`;
@@ -50,11 +76,13 @@ const yearEnd = (year: number) => `${year}-12-31`;
 export function TransactionForm({
   categories,
   taxYear,
+  itemizedYears,
   initial,
   serverError,
   submitting = false,
   onSubmit,
   onCancel,
+  onDirtyChange,
 }: TransactionFormProps) {
   const [type, setType] = useState<TransactionType>(initial?.type ?? "expense");
   // Year-end totals: keep an editing entry's own date, else default to the
@@ -67,13 +95,34 @@ export function TransactionForm({
   const [description, setDescription] = useState<string>(
     initial?.description ?? "",
   );
+  const [initialValues] = useState(() => ({
+    type: initial?.type ?? "expense",
+    amount: initial?.amount ?? "",
+    categoryId: initial?.category_id ?? "",
+    description: initial?.description ?? "",
+  }));
+  useDirtyReporter(
+    initialValues,
+    { type, amount, categoryId, description },
+    onDirtyChange,
+  );
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [attempt, setAttempt] = useState(0);
+  const [prevServerError, setPrevServerError] = useState(serverError);
+  if (prevServerError !== serverError) {
+    setPrevServerError(serverError);
+    if (serverError?.field) setAttempt((n) => n + 1);
+  }
 
   const selectedCategory = useMemo(
     () => categories.find((c) => c.id === categoryId),
     [categories, categoryId],
   );
   const descriptionRequired = selectedCategory?.requires_description ?? false;
+  const showItemizedHint =
+    !initial &&
+    selectedCategory !== undefined &&
+    (itemizedYears?.has(`${selectedCategory.id}:${taxYear}`) ?? false);
 
   function validate(): FieldErrors {
     const next: FieldErrors = {};
@@ -94,7 +143,10 @@ export function TransactionForm({
     event.preventDefault();
     const found = validate();
     setErrors(found);
-    if (Object.keys(found).length > 0) return;
+    if (Object.keys(found).length > 0) {
+      setAttempt((n) => n + 1);
+      return;
+    }
 
     const input: TransactionInput = {
       date,
@@ -120,13 +172,29 @@ export function TransactionForm({
   const generalServerError =
     serverError && !serverError.field ? serverError.message : undefined;
 
+  const shownErrors: Partial<Record<(typeof FIELD_ORDER)[number], string>> = {
+    amount: fieldError("amount"),
+    category_id: fieldError("category_id"),
+    description: fieldError("description"),
+  };
+  useFocusFirstInvalid({
+    errors: shownErrors,
+    order: FIELD_ORDER,
+    idFor,
+    attempt,
+  });
+  const summaryItems: ErrorSummaryItem[] = [
+    ...orderedErrors(shownErrors, FIELD_ORDER),
+    ...(generalServerError ? [{ message: generalServerError }] : []),
+  ];
+
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      {generalServerError ? (
-        <p role="alert" className="text-sm text-danger">
-          {generalServerError}
-        </p>
-      ) : null}
+      <ErrorSummary
+        items={summaryItems}
+        idFor={idFor}
+        headingId="tx-error-summary"
+      />
 
       <fieldset>
         <legend className="text-sm font-medium text-fg">Type</legend>
@@ -160,108 +228,80 @@ export function TransactionForm({
         </div>
       </fieldset>
 
-      <div>
-        <label
-          htmlFor="tx-amount"
-          className="text-sm font-medium text-fg"
-        >
-          Amount
-        </label>
-        <input
-          id="tx-amount"
-          type="text"
-          inputMode="decimal"
-          placeholder="0.00"
-          value={amount}
-          aria-invalid={fieldError("amount") ? true : undefined}
-          aria-describedby={
-            fieldError("amount") ? "tx-amount-error" : undefined
-          }
-          onChange={(event) => setAmount(event.target.value)}
-          className="mt-1 block w-full rounded-md border border-border px-3 py-2 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        />
-        {fieldError("amount") ? (
-          <p
-            id="tx-amount-error"
-            role="alert"
-            className="mt-1 text-sm text-danger"
-          >
-            {fieldError("amount")}
-          </p>
-        ) : null}
-      </div>
+      <FormField
+        id="tx-amount"
+        errorId="tx-amount-error"
+        label="Amount"
+        error={fieldError("amount")}
+      >
+        {(control) => (
+          <MoneyInput
+            {...control}
+            placeholder="0.00"
+            value={amount}
+            onValueChange={setAmount}
+            className="block w-full"
+          />
+        )}
+      </FormField>
 
-      <div>
-        <label
-          htmlFor="tx-category"
-          className="text-sm font-medium text-fg"
-        >
-          Category
-        </label>
-        <CategorySelect
-          id="tx-category"
-          categories={categories}
-          value={categoryId}
-          kind={type}
-          onChange={setCategoryId}
-          invalid={fieldError("category_id") ? true : undefined}
-          describedBy={
-            fieldError("category_id") ? "tx-category-error" : undefined
-          }
-        />
-        {selectedCategory ? (
-          <p className="mt-1 text-xs text-fg-subtle">
-            Schedule E Line {selectedCategory.schedule_e_line}
-          </p>
-        ) : null}
-        {fieldError("category_id") ? (
-          <p
-            id="tx-category-error"
-            role="alert"
-            className="mt-1 text-sm text-danger"
-          >
-            {fieldError("category_id")}
-          </p>
-        ) : null}
-      </div>
+      <FormField
+        id="tx-category"
+        errorId="tx-category-error"
+        label="Category"
+        hint={
+          selectedCategory
+            ? `Schedule E Line ${selectedCategory.schedule_e_line}`
+            : undefined
+        }
+        error={fieldError("category_id")}
+      >
+        {(control) => (
+          <CategorySelect
+            id={control.id}
+            categories={categories}
+            value={categoryId}
+            kind={type}
+            onChange={setCategoryId}
+            invalid={control.invalid}
+            describedBy={control["aria-describedby"]}
+          />
+        )}
+      </FormField>
 
-      <div>
-        <label
-          htmlFor="tx-description"
-          className="text-sm font-medium text-fg"
-        >
-          Description{descriptionRequired ? " (required)" : " (optional)"}
-        </label>
-        <textarea
-          id="tx-description"
-          rows={2}
-          value={description}
-          aria-invalid={fieldError("description") ? true : undefined}
-          aria-describedby={
-            fieldError("description") ? "tx-description-error" : undefined
-          }
-          onChange={(event) => setDescription(event.target.value)}
-          className="mt-1 block w-full rounded-md border border-border px-3 py-2 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        />
-        {fieldError("description") ? (
-          <p
-            id="tx-description-error"
-            role="alert"
-            className="mt-1 text-sm text-danger"
-          >
-            {fieldError("description")}
-          </p>
-        ) : null}
-      </div>
+      {showItemizedHint ? (
+        <p id="tx-itemized-hint" className="text-sm text-fg-muted">
+          This year has itemized {selectedCategory?.label.toLowerCase()}{" "}
+          entries. The new transaction becomes the entered total and replaces
+          the itemized sum on line {selectedCategory?.schedule_e_line}.
+        </p>
+      ) : null}
 
-      <div className="flex justify-end gap-2">
+      <FormField
+        id="tx-description"
+        errorId="tx-description-error"
+        label={`Description${descriptionRequired ? " (required)" : " (optional)"}`}
+        error={fieldError("description")}
+      >
+        {(control) => (
+          <Textarea
+            {...control}
+            rows={2}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            className="block w-full"
+          />
+        )}
+      </FormField>
+
+      <ModalFormActions>
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
         <Button type="submit" variant="primary" disabled={submitting}>
           {initial ? "Save changes" : "Add transaction"}
         </Button>
-      </div>
+      </ModalFormActions>
     </form>
   );
 }

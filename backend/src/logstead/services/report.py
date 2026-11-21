@@ -55,18 +55,22 @@ from __future__ import annotations
 import csv
 import io
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import TYPE_CHECKING, Literal
 
-from logstead.adapters.s3_files import export_key
+from logstead.adapters.s3_files import combined_export_key, export_key
 from logstead.models.result import Result
+from logstead.services.csv_safe import neutralize_cell
 from logstead.services.category import CATEGORY_CATALOG
+from logstead.services.itemized import LineAccumulator, is_itemized_category
+from logstead.services.loan import StoredLoanError
 from logstead.util.money import Money, money_to_str, to_money
 
 if TYPE_CHECKING:
     from logstead.adapters.s3_files import S3FileAdapter
     from logstead.services.depreciation import DepreciationService
+    from logstead.services.loan import LoanService
     from logstead.services.property import PropertyService
     from logstead.services.transaction import TransactionService
 
@@ -79,6 +83,12 @@ __all__ = [
     "ReportLine",
     "ReportHeader",
     "ReportTotals",
+    "Line12Source",
+    "SupersededManualInterest",
+    "Line12Detail",
+    "Line12ImpactYear",
+    "Line12Portfolio",
+    "MORTGAGE_INTEREST_LINE",
     "ScheduleEReport",
     "CombinedScheduleEReport",
     "ExportFormat",
@@ -88,6 +98,13 @@ __all__ = [
 
 #: The export formats the report service can serialize to (Requirement 10.7).
 ExportFormat = Literal["csv", "json"]
+
+#: Schedule E Line 12 — Mortgage interest paid to banks. Loan-generated interest
+#: takes precedence over manually entered transactions on this line.
+MORTGAGE_INTEREST_LINE: int = 12
+
+#: Where a report's Line 12 amount came from.
+Line12Source = Literal["loan-generated", "transaction-entered"]
 
 
 # --- Schedule E line reference ----------------------------------------------
@@ -138,10 +155,15 @@ class OtherItem:
         description: The transaction's free-text description (required for the
             Other category, Requirement 7.4).
         amount: The transaction amount as a two-decimal ``Decimal``.
+        imported: Whether the source transaction was synthesized by Schedule E
+            Import (its imported marker). Defaults to ``False`` for ordinary
+            user-tracked Other items. Purely surfacing; it does not affect any
+            total (schedule-e-import Req 7.4).
     """
 
     description: str
     amount: Money
+    imported: bool = False
 
 
 @dataclass(frozen=True)
@@ -154,12 +176,18 @@ class ReportLine:
         kind: ``"income"`` or ``"expense"`` — whether the line contributes to
             total income or total expenses.
         total: The two-decimal total for the line.
+        includes_imported: ``True`` when any transaction contributing to this
+            line carried the imported marker. Defaults to ``False`` so a line
+            fed only by user-tracked transactions is unmarked. Purely
+            surfacing; it does not affect ``total`` or any aggregation
+            (schedule-e-import Req 7.4).
     """
 
     line: int
     label: str
     kind: str
     total: Money
+    includes_imported: bool = False
 
 
 @dataclass(frozen=True)
@@ -202,6 +230,48 @@ class ReportTotals:
 
 
 @dataclass(frozen=True)
+class SupersededManualInterest:
+    """Manual Line 12 transactions excluded because loan interest took precedence.
+
+    Attributes:
+        amount: Total of the superseded transactions (``0.00`` when none).
+        count: Number of superseded transactions (``0`` when none).
+    """
+
+    amount: Money = Decimal("0.00")
+    count: int = 0
+
+
+@dataclass(frozen=True)
+class Line12Detail:
+    """How a per-property report's Line 12 was produced."""
+
+    source: Line12Source = "transaction-entered"
+    superseded_manual_interest: SupersededManualInterest = field(
+        default_factory=SupersededManualInterest
+    )
+
+
+@dataclass(frozen=True)
+class Line12ImpactYear:
+    """One tax year where included-loan interest supersedes manual Line 12 entries."""
+
+    tax_year: int
+    loan_interest: Money
+    superseded_manual_interest: SupersededManualInterest
+
+
+@dataclass(frozen=True)
+class Line12Portfolio:
+    """Portfolio Line 12 total plus the summed superseded manual interest."""
+
+    total: Money = Decimal("0.00")
+    superseded_manual_interest: SupersededManualInterest = field(
+        default_factory=SupersededManualInterest
+    )
+
+
+@dataclass(frozen=True)
 class ScheduleEReport:
     """A per-property Schedule E report (Requirements 10.1-10.5).
 
@@ -216,6 +286,7 @@ class ScheduleEReport:
     lines: tuple[ReportLine, ...]
     other_items: tuple[OtherItem, ...]
     totals: ReportTotals
+    line12: Line12Detail = field(default_factory=Line12Detail)
 
     def line(self, number: int) -> ReportLine | None:
         """Return the :class:`ReportLine` for a given line number, if present."""
@@ -240,6 +311,7 @@ class CombinedScheduleEReport:
     tax_year: int
     properties: tuple[ScheduleEReport, ...]
     totals: ReportTotals
+    line12: Line12Portfolio = field(default_factory=Line12Portfolio)
 
 
 @dataclass(frozen=True)
@@ -286,9 +358,9 @@ def _report_to_csv(report: ScheduleEReport) -> bytes:
     writer = csv.writer(buf)
     h = report.header
     writer.writerow(["Schedule E Report"])
-    writer.writerow(["Property", h.property_name])
-    writer.writerow(["Address", h.address])
-    writer.writerow(["Property Type", h.property_type or ""])
+    writer.writerow(["Property", neutralize_cell(h.property_name)])
+    writer.writerow(["Address", neutralize_cell(h.address)])
+    writer.writerow(["Property Type", neutralize_cell(h.property_type or "")])
     writer.writerow(["Tax Year", h.tax_year])
     writer.writerow(["Fair Rental Days", h.fair_rental_days])
     writer.writerow(["Personal Use Days", h.personal_use_days])
@@ -297,12 +369,16 @@ def _report_to_csv(report: ScheduleEReport) -> bytes:
     writer.writerow(["Line", "Label", "Kind", "Amount"])
     for row in report.lines:
         writer.writerow([row.line, row.label, row.kind, money_to_str(row.total)])
+    superseded = report.line12.superseded_manual_interest
+    writer.writerow(["Line 12 Source", report.line12.source])
+    writer.writerow(["Line 12 Superseded Manual Interest", money_to_str(superseded.amount)])
+    writer.writerow(["Line 12 Superseded Transaction Count", superseded.count])
     writer.writerow([])
 
     writer.writerow(["Other (Line 19) Itemization"])
     writer.writerow(["Description", "Amount"])
     for item in report.other_items:
-        writer.writerow([item.description, money_to_str(item.amount)])
+        writer.writerow([neutralize_cell(item.description), money_to_str(item.amount)])
     writer.writerow([])
 
     writer.writerow(["Total Income", money_to_str(report.totals.total_income)])
@@ -318,6 +394,10 @@ def _totals_dict(totals: ReportTotals) -> dict:
         "total_expenses": money_to_str(totals.total_expenses),
         "net": money_to_str(totals.net),
     }
+
+
+def _superseded_dict(superseded: SupersededManualInterest) -> dict:
+    return {"amount": money_to_str(superseded.amount), "count": superseded.count}
 
 
 def _report_dict(report: ScheduleEReport) -> dict:
@@ -346,6 +426,12 @@ def _report_dict(report: ScheduleEReport) -> dict:
             for item in report.other_items
         ],
         "totals": _totals_dict(report.totals),
+        "line12": {
+            "source": report.line12.source,
+            "superseded_manual_interest": _superseded_dict(
+                report.line12.superseded_manual_interest
+            ),
+        },
     }
 
 
@@ -374,7 +460,25 @@ def _combined_to_csv(report: CombinedScheduleEReport) -> bytes:
     writer.writerow(["Total Income", money_to_str(report.totals.total_income)])
     writer.writerow(["Total Expenses", money_to_str(report.totals.total_expenses)])
     writer.writerow(["Net", money_to_str(report.totals.net)])
+    superseded = report.line12.superseded_manual_interest
+    writer.writerow(["Line 12 Total", money_to_str(report.line12.total)])
+    writer.writerow(["Line 12 Superseded Manual Interest", money_to_str(superseded.amount)])
+    writer.writerow(["Line 12 Superseded Transaction Count", superseded.count])
     return buf.getvalue().encode("utf-8")
+
+
+def serialize_report(report: ScheduleEReport, format: Literal["csv", "json"]) -> bytes:
+    """Serialize a per-property report to CSV or JSON bytes (public wrapper)."""
+    if format == "json":
+        return _report_to_json(report)
+    return _report_to_csv(report)
+
+
+def serialize_combined(report: CombinedScheduleEReport, format: Literal["csv", "json"]) -> bytes:
+    """Serialize a combined report to CSV or JSON bytes (public wrapper)."""
+    if format == "json":
+        return _combined_to_json(report)
+    return _combined_to_csv(report)
 
 
 def _combined_to_json(report: CombinedScheduleEReport) -> bytes:
@@ -382,6 +486,12 @@ def _combined_to_json(report: CombinedScheduleEReport) -> bytes:
         "tax_year": report.tax_year,
         "properties": [_report_dict(c) for c in report.properties],
         "totals": _totals_dict(report.totals),
+        "line12": {
+            "total": money_to_str(report.line12.total),
+            "superseded_manual_interest": _superseded_dict(
+                report.line12.superseded_manual_interest
+            ),
+        },
     }
     return json.dumps(payload, indent=2).encode("utf-8")
 
@@ -413,11 +523,13 @@ class ReportingService:
         depreciation: "DepreciationService",
         properties: "PropertyService",
         files: "S3FileAdapter | None" = None,
+        loans: "LoanService | None" = None,
     ) -> None:
         self._transactions = transactions
         self._depreciation = depreciation
         self._properties = properties
         self._files = files
+        self._loans = loans
 
     # --- Per-property report (Requirements 10.1-10.5) -----------------------
 
@@ -446,14 +558,76 @@ class ReportingService:
             )
         prop = prop_result.value
 
-        report = self._build_report(
-            property_id=property_id,
-            property_name=prop.name,
-            address=prop.address_text,
-            property_type=prop.property_type,
-            tax_year=tax_year,
-        )
+        try:
+            report = self._build_report(
+                property_id=property_id,
+                property_name=prop.name,
+                address=prop.address_text,
+                property_type=prop.property_type,
+                tax_year=tax_year,
+            )
+        except StoredLoanError as exc:
+            # Corrupt stored loan data: fail rather than report wrong interest.
+            return Result.failure(
+                "conflict",
+                f"Stored loan has an invalid {exc.field} value.",
+                exc.field,
+            )
         return Result.success(report)
+
+    # --- Line 12 impact (Requirements 6.3, 9.16) -----------------------------
+
+    def line12_impact(self, property_id: str) -> Result[list[Line12ImpactYear]]:
+        """Per-year manual Line 12 interest superseded by included-loan interest.
+
+        Returns only years where included-loan Effective_Interest is greater
+        than ``0.00`` and at least one manual Line 12 transaction exists,
+        ascending by year. ``not_found`` if the property is missing/not owned;
+        ``conflict`` if stored loan data is invalid.
+        """
+        prop_result = self._properties.get(property_id)
+        if not prop_result.is_ok:
+            return Result.failure(
+                prop_result.error.kind,
+                prop_result.error.message,
+                prop_result.error.field,
+            )
+        if self._loans is None:
+            return Result.success([])
+
+        manual: dict[int, tuple[Decimal, int]] = {}
+        for txn in self._transactions.list_for_property(property_id).value:
+            if int(txn.schedule_e_line) != MORTGAGE_INTEREST_LINE:
+                continue
+            year = int(txn.date[:4])
+            total, count = manual.get(year, (Decimal("0.00"), 0))
+            manual[year] = (total + to_money(txn.amount), count + 1)
+
+        try:
+            years = sorted(self._loans.report_years(property_id) & manual.keys())
+            impact: list[Line12ImpactYear] = []
+            for year in years:
+                loan_interest = self._loans.property_effective_interest_for_year(
+                    property_id, year
+                )
+                if loan_interest > Decimal("0.00"):
+                    total, count = manual[year]
+                    impact.append(
+                        Line12ImpactYear(
+                            tax_year=year,
+                            loan_interest=to_money(loan_interest),
+                            superseded_manual_interest=SupersededManualInterest(
+                                to_money(total), count
+                            ),
+                        )
+                    )
+        except StoredLoanError as exc:
+            return Result.failure(
+                "conflict",
+                f"Stored loan has an invalid {exc.field} value.",
+                exc.field,
+            )
+        return Result.success(impact)
 
     # --- Combined portfolio report (Requirement 10.6) -----------------------
 
@@ -490,6 +664,7 @@ class ReportingService:
                 tax_year=tax_year,
                 properties=tuple(columns),
                 totals=totals,
+                line12=self._portfolio_line12(columns),
             )
         )
 
@@ -547,7 +722,7 @@ class ReportingService:
 
         Mirrors :meth:`export_report` for the combined report
         (Requirement 10.6): the export lands under
-        ``exports/combined/<tax_year>/<filename>`` and a pre-signed GET URL is
+        ``exports/combined/<user_id>/<tax_year>/<filename>`` and a pre-signed GET URL is
         returned (Requirement 10.7).
         """
         fmt_error = self._validate_format(format)
@@ -573,7 +748,7 @@ class ReportingService:
             content = _combined_to_csv(combined)
 
         filename = f"schedule-e-combined-{tax_year}.{format}"
-        key = export_key("combined", str(tax_year), filename)
+        key = combined_export_key(self._properties.user_id, tax_year, filename)
         return Result.success(self._store_export(key, filename, format, content))
 
     @staticmethod
@@ -625,27 +800,70 @@ class ReportingService:
         line_totals: dict[int, Decimal] = {
             line: Decimal("0.00") for line in _ALL_LINES
         }
+        # Per-line imported marker: True once any contributing transaction
+        # carried the imported marker. Purely additive surfacing alongside the
+        # running totals — it never changes a total (schedule-e-import Req 7.4).
+        line_imported: dict[int, bool] = {line: False for line in _ALL_LINES}
+        # One accumulator per line that receives transactions; resolved below.
+        accumulators: dict[int, LineAccumulator] = {}
         other_items: list[OtherItem] = []
+        manual_12_count = 0
 
         txn_result = self._transactions.list_for_property(property_id, tax_year)
         # list_for_property always returns a success list here.
         for txn in txn_result.value:
             line = int(txn.schedule_e_line)
             amount = to_money(txn.amount)
+            # Reference the marker defensively so this surfacing works whether
+            # or not the transaction model carries the attribute.
+            imported = bool(getattr(txn, "imported", False))
             # Defensive: only accumulate onto lines the report models. A stored
             # depreciation line (18) never comes from a transaction, but guard
             # anyway so a stray value can't double-count against Line 18.
             if line == DEPRECIATION_LINE:
                 continue
-            line_totals[line] = line_totals.get(line, Decimal("0.00")) + amount
+            if line == MORTGAGE_INTEREST_LINE:
+                manual_12_count += 1
+            accumulators.setdefault(line, LineAccumulator()).add(
+                amount,
+                itemized=bool(getattr(txn, "itemized", False))
+                and is_itemized_category(txn.category_id),
+                imported=imported,
+            )
 
             if line == OTHER_LINE:
                 other_items.append(
                     OtherItem(
                         description=(txn.description or ""),
                         amount=amount,
+                        imported=imported,
                     )
                 )
+
+        # Resolve each line through the itemized precedence rule: an entered
+        # total wins over itemized rows; otherwise the itemized sum applies.
+        for line, accumulator in accumulators.items():
+            resolution = accumulator.resolve()
+            line_totals[line] = resolution.line_total
+            line_imported[line] = resolution.total_imported
+
+        # Line 12 precedence: included-loan Effective_Interest > 0.00 replaces
+        # (never adds to) manual mortgage-interest transactions.
+        manual_total = line_totals[MORTGAGE_INTEREST_LINE]
+        loan_total = (
+            self._loans.property_effective_interest_for_year(property_id, tax_year)
+            if self._loans is not None
+            else Decimal("0.00")
+        )
+        if loan_total > Decimal("0.00"):
+            line_totals[MORTGAGE_INTEREST_LINE] = to_money(loan_total)
+            line_imported[MORTGAGE_INTEREST_LINE] = False
+            line12 = Line12Detail(
+                "loan-generated",
+                SupersededManualInterest(to_money(manual_total), manual_12_count),
+            )
+        else:
+            line12 = Line12Detail()
 
         # Line 18 comes from the depreciation schedules (Requirement 10.3).
         line_totals[DEPRECIATION_LINE] = self._depreciation.property_depreciation_for_year(
@@ -658,6 +876,7 @@ class ReportingService:
                 label=SCHEDULE_E_LINE_LABELS[line],
                 kind="income" if _is_income_line(line) else "expense",
                 total=to_money(line_totals[line]),
+                includes_imported=line_imported.get(line, False),
             )
             for line in _ALL_LINES
         )
@@ -671,6 +890,7 @@ class ReportingService:
             lines=lines,
             other_items=tuple(other_items),
             totals=totals,
+            line12=line12,
         )
 
     def _header(
@@ -722,6 +942,25 @@ class ReportingService:
             total_income=total_income,
             total_expenses=total_expenses,
             net=to_money(total_income - total_expenses),
+        )
+
+    @staticmethod
+    def _portfolio_line12(columns: list[ScheduleEReport]) -> Line12Portfolio:
+        """Sum Line 12 totals and superseded manual interest across columns."""
+        total = Decimal("0.00")
+        amount = Decimal("0.00")
+        count = 0
+        for col in columns:
+            row = col.line(MORTGAGE_INTEREST_LINE)
+            if row is not None:
+                total += row.total
+            amount += col.line12.superseded_manual_interest.amount
+            count += col.line12.superseded_manual_interest.count
+        return Line12Portfolio(
+            total=to_money(total),
+            superseded_manual_interest=SupersededManualInterest(
+                to_money(amount), count
+            ),
         )
 
     @staticmethod

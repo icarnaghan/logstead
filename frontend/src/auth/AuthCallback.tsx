@@ -15,6 +15,7 @@ import {
   type AuthDeps,
 } from "../lib/auth";
 import { Button } from "../components/ui";
+import { BrandSplash } from "../components/brand/BrandSplash";
 
 export interface AuthCallbackProps {
   /** Overridable for tests. */
@@ -56,6 +57,7 @@ export default function AuthCallback({
   if (error) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 text-fg-muted">
+        <BrandSplash />
         <p role="alert">Sign-in failed: {error}</p>
         <Button
           type="button"
@@ -71,12 +73,11 @@ export default function AuthCallback({
   }
 
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="flex min-h-screen items-center justify-center text-fg-muted"
-    >
-      Completing sign in…
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 text-fg-muted">
+      <BrandSplash />
+      <div role="status" aria-live="polite">
+        Completing sign in…
+      </div>
     </div>
   );
 }

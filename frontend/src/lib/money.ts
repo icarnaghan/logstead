@@ -122,3 +122,46 @@ export function formatMoney(amount: string | null | undefined): string {
     currency: "USD",
   });
 }
+
+/**
+ * Format a money string for display as US currency rounded to the **nearest
+ * whole dollar**, the way a tax return reports line amounts (Requirement 8),
+ * e.g. "5090.91" → "$5,091", "5090.10" → "$5,090", "5090.50" → "$5,091", and
+ * "-125.50" → "-$126".
+ *
+ * This mirrors the {@link formatMoney} contract for non-numeric input:
+ * - Empty string, `null`, or `undefined` → "" (Requirement 8.4).
+ * - Non-numeric input → passed through unchanged (never throws).
+ *
+ * Rounding uses the IRS convention — half-up **by magnitude**, explicitly not
+ * ceiling (Requirement 8.1, 8.2): a cents remainder of 50 or more rounds the
+ * dollar magnitude away from zero, below 50 truncates toward zero. The round is
+ * computed on exact integer cents from {@link toCents}; there is **no
+ * floating-point arithmetic** (Requirement 8.3). The sign is preserved by
+ * rounding the magnitude and reapplying the sign, so losses keep their leading
+ * minus (Requirement 8.5); a magnitude that rounds to zero displays as "$0"
+ * (never a signed "-$0"). The result renders in the app's US-currency format
+ * with no cents shown (Requirement 8.6).
+ */
+export function formatMoneyWholeDollars(
+  amount: string | null | undefined,
+): string {
+  if (amount === null || amount === undefined || amount === "") return "";
+  const value = Number(amount);
+  if (!Number.isFinite(value)) return amount;
+  const cents = toCents(amount);
+  const sign = cents < 0 ? -1 : 1;
+  const absCents = Math.abs(cents);
+  let wholeDollars = Math.floor(absCents / 100);
+  const remainder = absCents % 100; // 0..99
+  if (remainder >= 50) wholeDollars += 1; // half-up by magnitude, not ceiling
+  // Normalize negative zero: a sub-dollar loss (e.g. "-0.01") rounds to a
+  // magnitude of 0, which must display as "$0" rather than a signed "-$0".
+  const roundedDollars = wholeDollars === 0 ? 0 : sign * wholeDollars;
+  return roundedDollars.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}

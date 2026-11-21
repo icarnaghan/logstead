@@ -42,6 +42,27 @@ Parameters:
     Default: "false"
     AllowedValues: ["true", "false"]
     Description: Attach DomainName + CertificateArn to CloudFront. Requires CertificateArn.
+  IdentityProviders:
+    Type: CommaDelimitedList
+    Default: COGNITO
+    Description: >
+      Sign-in providers enabled on the SPA app client, e.g. "COGNITO" (user
+      pool passwords), "IAMIdentityCenter" (a SAML provider), or both. Federated
+      providers are created in the Cognito console, outside this stack, and must
+      exist before deploying. The stack sets the full list on every client
+      update, so this must match what you want enabled or a deploy will reset it.
+  AllowedSpaOrigin:
+    Type: String
+    Default: ""
+    AllowedPattern: "^(https://[A-Za-z0-9.-]+(:[0-9]+)?)?$"
+    Description: >
+      Browser origin allowed by the files bucket CORS when UseCustomDomain=false,
+      e.g. https://d111111abcdef8.cloudfront.net (no trailing slash). Leave blank
+      on the first deploy (CORS then allows only http://localhost:5173), then set
+      it to the CloudFrontDomain stack output and redeploy. Ignored when
+      UseCustomDomain=true (DomainName is used). It cannot be derived in the
+      template because the CSP policy references this bucket and the
+      distribution references the policy (circular dependency).
   CognitoDomainPrefix:
     Type: String
     Default: logstead-auth
@@ -54,9 +75,24 @@ Parameters:
       (e.g. /logstead/rentcast-api-key). The secret itself is never stored in
       this template or the Lambda env; the function reads it at runtime with
       decryption. Leave blank to run without enrichment (routes 503).
+  AlertEmail:
+    Type: String
+    Default: ""
+    Description: >
+      Email address for cost and usage alerts (AWS Budgets and the paid-route
+      request-count alarms). Leave blank to create the alarms without
+      notifications and skip the budget. The subscription must be confirmed
+      from the email AWS sends.
+  BudgetMonthlyUsd:
+    Type: Number
+    Default: 20
+    MinValue: 1
+    Description: Monthly account cost budget in USD (alerts at 80% actual and 100% forecasted).
 
 Conditions:
+  HasAlertEmail: !Not [!Equals [!Ref AlertEmail, ""]]
   HasCustomDomain: !Equals [!Ref UseCustomDomain, "true"]
+  HasAllowedSpaOrigin: !Not [!Equals [!Ref AllowedSpaOrigin, ""]]
   HasRentCastParam: !Not [!Equals [!Ref RentCastApiKeyParam, ""]]
 
 Globals:
@@ -120,6 +156,12 @@ Resources:
             ProjectionType: ALL
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
+      # Sparse TTL: only items carrying a `ttl` attribute (the transient
+      # Extraction_Job records) are reaped; every existing entity lacks `ttl`
+      # and is unaffected.
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
 
   # --- S3: file bucket (photos, receipts, uploaded PDFs, exports) ------------
   FilesBucket:
@@ -146,10 +188,17 @@ Resources:
               SSEAlgorithm: AES256
       CorsConfiguration:
         CorsRules:
-          - AllowedMethods: [GET, PUT, POST, HEAD]
+          # No wildcard origin. Without a custom domain, only the explicit
+          # AllowedSpaOrigin (CloudFront domain, set on the second deploy) or
+          # the Vite dev origin is allowed. The frontend only PUTs to presigned
+          # URLs with Content-Type; other methods/headers are not needed.
+          - AllowedMethods: [GET, PUT, HEAD]
             AllowedOrigins:
-              - !If [HasCustomDomain, !Sub "https://${DomainName}", "*"]
-            AllowedHeaders: ["*"]
+              - !If
+                - HasCustomDomain
+                - !Sub "https://${DomainName}"
+                - !If [HasAllowedSpaOrigin, !Ref AllowedSpaOrigin, "http://localhost:5173"]
+            AllowedHeaders: [Content-Type]
             ExposedHeaders: [ETag]
             MaxAge: 3000
       LifecycleConfiguration:
@@ -162,6 +211,33 @@ Resources:
             Status: Enabled
             Prefix: exports/
             ExpirationInDays: 30
+          # Defense-in-depth backstop for abandoned Schedule E extraction
+          # uploads. The ExtractionService explicitly deletes the PDF on a
+          # terminal state; this rule guarantees nothing lingers (shortest
+          # whole-day S3 lifecycle TTL).
+          - Id: ExpireScheduleEImports
+            Status: Enabled
+            Prefix: imports/schedule-e/
+            ExpirationInDays: 1
+          # Accountant packages and generated PDFs are short-lived downloads
+          # (links last 15 minutes). The bucket is versioned, so expiring the
+          # current version leaves the bytes as a noncurrent version; the
+          # NoncurrentVersionExpiration makes the data actually go. These
+          # prefixes also match the 30-day ExpireExports rule; the shorter
+          # expiry governs. The existing rules above are intentionally left
+          # as they are (see docs/future-improvements.md).
+          - Id: ExpireAccountantPackages
+            Status: Enabled
+            Prefix: exports/packages/
+            ExpirationInDays: 1
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+          - Id: ExpireGeneratedPdfs
+            Status: Enabled
+            Prefix: exports/pdf/
+            ExpirationInDays: 1
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
 
   FilesBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -235,6 +311,54 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
+  # Security headers for the SPA (review finding S1). CSP notes:
+  #  - script-src 'self': the theme bootstrap is a static file (theme-init.js).
+  #  - style-src keeps 'unsafe-inline': Radix Dialog (react-remove-scroll) injects
+  #    <style> elements at runtime, which style-src 'self' alone would block.
+  #    Tailwind itself ships as a static CSS file and does not need it.
+  #  - connect-src: API (wildcard on execute-api to avoid a template dependency
+  #    cycle HttpApi -> UserPoolClient -> SpaDistribution), the Cognito token
+  #    endpoint, and the files bucket (presigned PUT uploads).
+  #  - img-src: presigned S3 GET URLs for photos, plus data: URIs.
+  SpaResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub "logstead-spa-security-headers-${AWS::Region}"
+        Comment: Security headers for the Logstead SPA.
+        SecurityHeadersConfig:
+          ContentSecurityPolicy:
+            Override: true
+            ContentSecurityPolicy: !Sub >-
+              default-src 'self';
+              script-src 'self';
+              style-src 'self' 'unsafe-inline';
+              img-src 'self' data: https://${FilesBucket}.s3.${AWS::Region}.amazonaws.com https://${FilesBucket}.s3.amazonaws.com;
+              font-src 'self';
+              connect-src 'self' https://*.execute-api.${AWS::Region}.amazonaws.com https://${CognitoDomainPrefix}.auth.${AWS::Region}.amazoncognito.com https://${FilesBucket}.s3.${AWS::Region}.amazonaws.com https://${FilesBucket}.s3.amazonaws.com;
+              object-src 'none';
+              frame-ancestors 'none';
+              base-uri 'self';
+              form-action 'self'
+          StrictTransportSecurity:
+            Override: true
+            AccessControlMaxAgeSec: 31536000
+            IncludeSubdomains: true
+            Preload: false
+          ContentTypeOptions:
+            Override: true
+          FrameOptions:
+            Override: true
+            FrameOption: DENY
+          ReferrerPolicy:
+            Override: true
+            ReferrerPolicy: strict-origin-when-cross-origin
+        CustomHeadersConfig:
+          Items:
+            - Header: Permissions-Policy
+              Value: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+              Override: true
+
   SpaDistribution:
     Type: AWS::CloudFront::Distribution
     Metadata:
@@ -266,6 +390,7 @@ Resources:
           TargetOriginId: SpaS3Origin
           ViewerProtocolPolicy: redirect-to-https
           Compress: true
+          ResponseHeadersPolicyId: !Ref SpaResponseHeadersPolicy
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
         CustomErrorResponses:
           - ErrorCode: 403
@@ -307,7 +432,7 @@ Resources:
       AllowedOAuthFlows: [code]
       AllowedOAuthFlowsUserPoolClient: true
       AllowedOAuthScopes: [openid, email, profile]
-      SupportedIdentityProviders: [COGNITO]
+      SupportedIdentityProviders: !Ref IdentityProviders
       # Always register the CloudFront origin (the SPA host when there is no
       # custom domain) and localhost for dev. When a custom domain is enabled,
       # register it too. Cognito rejects any redirect_uri not in these lists.
@@ -333,6 +458,64 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: prod
+      # Throttling (review S4). Stage default applies to every route; the paid
+      # third-party routes get much lower limits. Per-route settings only take
+      # effect for routes that exist explicitly (see the Throttled* events on
+      # ApiFunction), not for the ANY /{proxy+} catch-all.
+      # DetailedMetricsEnabled publishes per-route Count metrics (dimensions
+      # ApiId, Stage, Route) used by the paid-route usage alarms below.
+      DefaultRouteSettings:
+        ThrottlingRateLimit: 10
+        ThrottlingBurstLimit: 20
+        DetailedMetricsEnabled: true
+      RouteSettings:
+        # Static reference data (authenticated, cached by the browser).
+        "GET /categories":
+          ThrottlingRateLimit: 5
+          ThrottlingBurstLimit: 10
+          DetailedMetricsEnabled: true
+        # Amazon Location autocomplete / secondary (unit) addresses.
+        "GET /addresses":
+          ThrottlingRateLimit: 2
+          ThrottlingBurstLimit: 5
+          DetailedMetricsEnabled: true
+        "GET /addresses/units":
+          ThrottlingRateLimit: 2
+          ThrottlingBurstLimit: 5
+          DetailedMetricsEnabled: true
+        # RentCast enrichment.
+        "POST /properties/enrich":
+          ThrottlingRateLimit: 1
+          ThrottlingBurstLimit: 2
+          DetailedMetricsEnabled: true
+        # Schedule E PDF extraction (Textract).
+        "POST /imports/schedule-e/extractions":
+          ThrottlingRateLimit: 1
+          ThrottlingBurstLimit: 2
+          DetailedMetricsEnabled: true
+        "POST /imports/schedule-e/extractions/{jobId}/start":
+          ThrottlingRateLimit: 1
+          ThrottlingBurstLimit: 2
+          DetailedMetricsEnabled: true
+        # Accountant package creation (starts the worker Lambda) and the two
+        # synchronous PDF report routes (each writes an object to S3).
+        "POST /accountant-packages":
+          ThrottlingRateLimit: 1
+          ThrottlingBurstLimit: 2
+          DetailedMetricsEnabled: true
+        "POST /properties/{propertyId}/report/pdf":
+          ThrottlingRateLimit: 2
+          ThrottlingBurstLimit: 5
+          DetailedMetricsEnabled: true
+        "POST /reports/combined/pdf":
+          ThrottlingRateLimit: 2
+          ThrottlingBurstLimit: 5
+          DetailedMetricsEnabled: true
+        # Global search (reads the user's records through the existing services).
+        "GET /search":
+          ThrottlingRateLimit: 2
+          ThrottlingBurstLimit: 5
+          DetailedMetricsEnabled: true
       AccessLogSettings:
         DestinationArn: !GetAtt ApiAccessLogGroup.Arn
         Format: >-
@@ -372,20 +555,73 @@ Resources:
           # Only the SSM parameter NAME is passed; the Lambda reads the secret
           # value at runtime with decryption (never plaintext in the env).
           RENTCAST_API_KEY_PARAM: !Ref RentCastApiKeyParam
+          # Name of the worker that builds accountant packages. The API starts
+          # it with an asynchronous invoke; unset locally, the create route 503s.
+          PACKAGE_WORKER_FUNCTION: !Ref PackageWorkerFunction
+      # Reserved concurrency caps cost/availability abuse (review S4/S5,
+      # docs/decisions/waf.md). The app is single-user, so 10 is ample.
+      ReservedConcurrentExecutions: 10
       Policies:
+        # DynamoDBCrudPolicy grants BatchGetItem, BatchWriteItem, PutItem,
+        # DeleteItem, GetItem, Scan, Query, UpdateItem, ConditionCheckItem,
+        # DescribeTable on the table and its indexes. The backend uses only
+        # GetItem, PutItem, DeleteItem, Query and TransactWriteItems (which is
+        # authorized by the underlying PutItem/DeleteItem). The extra actions
+        # (Scan, Batch*, UpdateItem) are unused, but the policy is scoped to this
+        # one table and its indexes, so it is kept for simplicity.
         - DynamoDBCrudPolicy:
             TableName: !Ref LogsteadTable
-        - S3CrudPolicy:
-            BucketName: !Ref FilesBucket
+        # Explicit S3 grants (replaces S3CrudPolicy, which allows s3:* style
+        # CRUD on the whole bucket). Actions are limited to what the backend
+        # calls: put_object (exports), delete_object, get_object (Range read and
+        # page count of the Schedule E PDF), and presigned PUT/GET URLs, which
+        # are signed by this role and need the matching s3:PutObject /
+        # s3:GetObject. Textract async reads the PDF from S3 using the caller's
+        # (this role's) credentials, so it needs s3:GetObject on imports/.
+        # No ListBucket: S3 errors on reads are already handled as "absent".
+        - Statement:
+            - Sid: FilesBucketReadWrite
+              Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !Sub "${FilesBucket.Arn}/photos/*"
+                - !Sub "${FilesBucket.Arn}/receipts/*"
+                - !Sub "${FilesBucket.Arn}/business-docs/*"
+                - !Sub "${FilesBucket.Arn}/imports/*"
+                - !Sub "${FilesBucket.Arn}/exports/*"
+            - Sid: FilesBucketDelete
+              Effect: Allow
+              Action: s3:DeleteObject
+              Resource:
+                # exports/ expire via lifecycle and are not deleted by the app,
+                # except the two prefixes below: a user can delete a finished
+                # accountant package, and the generated PDFs sit beside it.
+                - !Sub "${FilesBucket.Arn}/photos/*"
+                - !Sub "${FilesBucket.Arn}/receipts/*"
+                - !Sub "${FilesBucket.Arn}/business-docs/*"
+                - !Sub "${FilesBucket.Arn}/imports/*"
+                - !Sub "${FilesBucket.Arn}/exports/packages/*"
+                - !Sub "${FilesBucket.Arn}/exports/pdf/*"
+        # Start the package worker (asynchronous invoke) and nothing else.
+        - Statement:
+            - Sid: InvokePackageWorker
+              Effect: Allow
+              Action: lambda:InvokeFunction
+              Resource: !GetAtt PackageWorkerFunction.Arn
         # Address autocomplete uses Amazon Location Service (geo-places), called
-        # with the Lambda's IAM role (SigV4) - no API key. geo-places is a
-        # resource-less API, so the action is granted on "*".
+        # with the Lambda's IAM role (SigV4) - no API key. Per the Service
+        # Authorization Reference, geo-places:Autocomplete and Geocode support the
+        # "provider" resource type (arn:${Partition}:geo-places:${Region}::provider/default)
+        # and have no condition keys, so the grant is scoped to that ARN.
+        # https://docs.aws.amazon.com/service-authorization/latest/reference/list_geo-places.html
         - Statement:
             - Effect: Allow
               Action:
                 - geo-places:Autocomplete
                 - geo-places:Geocode
-              Resource: "*"
+              Resource: !Sub "arn:${AWS::Partition}:geo-places:${AWS::Region}::provider/default"
         # Read the RentCast API key from its SSM SecureString parameter (only
         # granted when a parameter name is configured). SSM decrypts with the
         # account's default SSM KMS key, so no explicit kms:Decrypt is needed.
@@ -396,16 +632,31 @@ Resources:
                 Action: ssm:GetParameter
                 Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${RentCastApiKeyParam}"
           - !Ref "AWS::NoValue"
+        # Schedule E PDF extraction uses Amazon Textract async document analysis
+        # (StartDocumentAnalysis / GetDocumentAnalysis). Textract async analysis
+        # supports no resource-level permissions for these actions: the Service
+        # Authorization Reference lists only "adapter" and "adapterversion"
+        # resource types (for adapter actions) and neither action has condition
+        # keys, so "*" is the narrowest valid Resource.
+        # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazontextract.html
+        # (machine-readable: https://servicereference.us-east-1.amazonaws.com/v1/textract/textract.json)
+        # Abuse is bounded instead by API throttling and reserved concurrency. The chosen
+        # v1 flow is the polling path: no SNS topic and no Textract service role.
+        - Statement:
+            - Effect: Allow
+              Action:
+                - textract:StartDocumentAnalysis
+                - textract:GetDocumentAnalysis
+              Resource: "*"
       Events:
-        # Public reference data - no authorizer.
+        # Reference data. Requires sign-in (default JWT authorizer); the app
+        # only calls it after login. Explicit route so it can be throttled.
         Categories:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
             Method: GET
             Path: /categories
-            Auth:
-              Authorizer: NONE
         # All other routes fall through to this catch-all under the default
         # Cognito JWT authorizer. The in-Lambda router matches the exact path.
         ProxyAny:
@@ -414,6 +665,63 @@ Resources:
             ApiId: !Ref HttpApi
             Method: ANY
             Path: /{proxy+}
+        # Explicit routes for the throttled paid-third-party paths. They exist
+        # only so RouteSettings can target them; the JWT authorizer still
+        # applies (default) and the same Lambda serves them.
+        ThrottledAddressSuggest:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /addresses
+        ThrottledAddressUnits:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /addresses/units
+        ThrottledPropertyEnrich:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /properties/enrich
+        ThrottledExtractionCreate:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /imports/schedule-e/extractions
+        ThrottledExtractionStart:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /imports/schedule-e/extractions/{jobId}/start
+        ThrottledPackageCreate:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /accountant-packages
+        ThrottledPropertyReportPdf:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /properties/{propertyId}/report/pdf
+        ThrottledCombinedReportPdf:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /reports/combined/pdf
+        ThrottledSearch:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /search
         # CORS preflight: browsers send OPTIONS with no Authorization header, so
         # it must NOT be behind the JWT authorizer. Without this explicit route,
         # the ANY /{proxy+} route above catches OPTIONS and the authorizer 401s
@@ -428,6 +736,66 @@ Resources:
             Auth:
               Authorizer: NONE
 
+  # --- Package worker Lambda (accountant package builder) --------------------
+  # Same source as ApiFunction, different handler. It is started only by the
+  # API through an asynchronous invoke and builds one ZIP per job.
+  PackageWorkerFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+      com.aws.cloudformation.Context:
+        why: >-
+          Builds the accountant package ZIP outside the 30 second API
+          integration limit and the 6 MB response limit.
+        must:
+          - Reserved concurrency stays at 2; it counts against the account's
+            unreserved Lambda pool (see docs/deployment.md).
+          - Zero retries; a failed build marks the job failed and the user
+            starts a new one, so a retry would only repeat the same failure.
+          - Grants stay limited to the table, receipts/* reads and
+            exports/packages/* writes.
+    Properties:
+      FunctionName: logstead-package-worker
+      CodeUri: ../backend/
+      Handler: logstead.worker.package_worker.handler
+      Timeout: 600
+      MemorySize: 1024
+      EphemeralStorage:
+        Size: 1024
+      ReservedConcurrentExecutions: 2
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref LogsteadTable
+          FILES_BUCKET: !Ref FilesBucket
+      EventInvokeConfig:
+        MaximumRetryAttempts: 0
+        MaximumEventAgeInSeconds: 300
+      Policies:
+        # Reads properties, transactions, documents and the job, and writes the
+        # job. No delete, update, scan, or batch actions are needed.
+        - Statement:
+            - Sid: TableReadJobWrite
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:Query
+                - dynamodb:PutItem
+              Resource:
+                - !GetAtt LogsteadTable.Arn
+                - !Sub "${LogsteadTable.Arn}/index/*"
+            # Receipts are read by key. No ListBucket: an absent receipt is a
+            # skipped entry, not an error.
+            - Sid: ReadReceipts
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: !Sub "${FilesBucket.Arn}/receipts/*"
+            - Sid: WritePackage
+              Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:AbortMultipartUpload
+              Resource: !Sub "${FilesBucket.Arn}/exports/packages/*"
+
   # --- Observability alarms --------------------------------------------------
   LambdaErrorsAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -439,6 +807,23 @@ Resources:
       Dimensions:
         - Name: FunctionName
           Value: !Ref ApiFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+  PackageWorkerErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-package-worker-errors
+      AlarmDescription: The accountant package worker reported function errors.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref PackageWorkerFunction
       Statistic: Sum
       Period: 300
       EvaluationPeriods: 1
@@ -479,6 +864,191 @@ Resources:
       Threshold: 1
       ComparisonOperator: GreaterThanOrEqualToThreshold
       TreatMissingData: notBreaching
+
+  # HTTP API metrics cannot be split by status code beyond 4xx/5xx, so this
+  # fires on any 4xx spike (including 429 throttling and auth failures).
+  Api4xxSpikeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-http-api-4xx-spike
+      AlarmDescription: >-
+        Spike of 4xx responses from the HTTP API (may indicate 429 throttling
+        or abuse). Check the access log for status 429.
+      Namespace: AWS/ApiGateway
+      MetricName: 4xx
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref HttpApi
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 100
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+  # --- Cost and usage alarms for paid third-party routes (review S4) ---------
+  # Notifications are sent only when AlertEmail is set. Thresholds are request
+  # counts per 5 minutes, well above normal single-user use. RentCast is
+  # external, so the enrich-route count is the usage proxy; the monthly budget
+  # covers actual AWS spend (Location, Textract).
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Condition: HasAlertEmail
+    Properties:
+      TopicName: logstead-alerts
+      KmsMasterKeyId: alias/aws/sns
+      Subscription:
+        - Protocol: email
+          Endpoint: !Ref AlertEmail
+
+  MonthlyCostBudget:
+    Type: AWS::Budgets::Budget
+    Condition: HasAlertEmail
+    Properties:
+      Budget:
+        BudgetName: logstead-monthly-cost
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref BudgetMonthlyUsd
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+
+  PaidRouteAddressSuggestUsageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-paid-route-addresssuggest-usage
+      AlarmDescription: >-
+        High request volume on GET /addresses (Amazon Location autocomplete). Possible abuse or a
+        runaway client; check the access log.
+      Namespace: AWS/ApiGateway
+      MetricName: Count
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref HttpApi
+        - Name: Stage
+          Value: prod
+        - Name: Route
+          Value: "GET /addresses"
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 300
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlertEmail, [!Ref AlertTopic], !Ref "AWS::NoValue"]
+
+  PaidRouteAddressUnitsUsageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-paid-route-addressunits-usage
+      AlarmDescription: >-
+        High request volume on GET /addresses/units (Amazon Location secondary-address lookups). Possible abuse or a
+        runaway client; check the access log.
+      Namespace: AWS/ApiGateway
+      MetricName: Count
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref HttpApi
+        - Name: Stage
+          Value: prod
+        - Name: Route
+          Value: "GET /addresses/units"
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 100
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlertEmail, [!Ref AlertTopic], !Ref "AWS::NoValue"]
+
+  PaidRouteEnrichUsageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-paid-route-enrich-usage
+      AlarmDescription: >-
+        High request volume on POST /properties/enrich (RentCast enrichment, a proxy for third-party API usage). Possible abuse or a
+        runaway client; check the access log.
+      Namespace: AWS/ApiGateway
+      MetricName: Count
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref HttpApi
+        - Name: Stage
+          Value: prod
+        - Name: Route
+          Value: "POST /properties/enrich"
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 20
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlertEmail, [!Ref AlertTopic], !Ref "AWS::NoValue"]
+
+  PaidRouteExtractionCreateUsageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-paid-route-extractioncreate-usage
+      AlarmDescription: >-
+        High request volume on POST /imports/schedule-e/extractions (Textract extraction job creation). Possible abuse or a
+        runaway client; check the access log.
+      Namespace: AWS/ApiGateway
+      MetricName: Count
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref HttpApi
+        - Name: Stage
+          Value: prod
+        - Name: Route
+          Value: "POST /imports/schedule-e/extractions"
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlertEmail, [!Ref AlertTopic], !Ref "AWS::NoValue"]
+
+  PaidRouteExtractionStartUsageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: logstead-paid-route-extractionstart-usage
+      AlarmDescription: >-
+        High request volume on POST /imports/schedule-e/extractions/{jobId}/start (Textract extraction start). Possible abuse or a
+        runaway client; check the access log.
+      Namespace: AWS/ApiGateway
+      MetricName: Count
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref HttpApi
+        - Name: Stage
+          Value: prod
+        - Name: Route
+          Value: "POST /imports/schedule-e/extractions/{jobId}/start"
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlertEmail, [!Ref AlertTopic], !Ref "AWS::NoValue"]
 
 Outputs:
   ApiBaseUrl:

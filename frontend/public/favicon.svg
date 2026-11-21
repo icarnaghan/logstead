@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="25 21 140 140">
+  <defs>
+    <linearGradient id="house-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#EA580C" />
+    </linearGradient>
+    <linearGradient id="bar1-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F97316" />
+      <stop offset="100%" stop-color="#EA580C" />
+    </linearGradient>
+    <linearGradient id="bar2-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+    <linearGradient id="bar3-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#0F766E" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(15, 10)">
+    <path d="M 46 54 L 46 36 L 58 36 L 58 44" fill="none" stroke="url(#house-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 28 72 L 80 30 L 132 72 L 132 124 C 132 128 128 132 124 132 L 36 132 C 32 132 28 128 28 124 Z" fill="none" stroke="url(#house-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <rect x="46" y="94" width="16" height="30" rx="4" fill="url(#bar1-grad)" />
+    <rect x="72" y="74" width="16" height="50" rx="4" fill="url(#bar2-grad)" />
+    <rect x="98" y="54" width="16" height="70" rx="4" fill="url(#bar3-grad)" />
+  </g>
+</svg>

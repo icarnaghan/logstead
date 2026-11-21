@@ -1,0 +1,330 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Add `depreciation_overrides` to `AssetInput` and `DepreciableAsset` in `backend/src/logstead/models/depreciation.py`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491082
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369499604
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369589291
+      }
+    ],
+    "2.1 Implement the `_apply_overrides` pure helper in `backend/src/logstead/services/depreciation.py`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491116
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369594709
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369961356
+      }
+    ],
+    "3.1 Implement `_coerce_overrides` and wire it into `_validate` in `backend/src/logstead/services/depreciation.py`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491192
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369972202
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792370525904
+      }
+    ],
+    "4.1 Add override serialization to `asset_to_item` / `_from_item` in `backend/src/logstead/services/depreciation.py`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491222
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792370532818
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792370884466
+      }
+    ],
+    "5.1 Carry the validated map through `create_asset` / `update_asset`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491254
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792370887828
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792371316373
+      }
+    ],
+    "5.2 Map the override map in `_asset_input` in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491287
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792371324202
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792371758102
+      }
+    ],
+    "6. Checkpoint — backend override feature": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491317
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792371763003
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792371993837
+      }
+    ],
+    "7.1 Add `formatMoneyWholeDollars` to `frontend/src/lib/money.ts`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491349
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369500371
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369590315
+      }
+    ],
+    "8.1 Swap the report surfaces to `formatMoneyWholeDollars`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491429
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369596088
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369958856
+      }
+    ],
+    "8.2 Swap the dashboard and carryforward surfaces to `formatMoneyWholeDollars`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491460
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369597090
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369960290
+      }
+    ],
+    "9.1 Add the override map to `frontend/src/api/assets.ts`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491493
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372000400
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372046717
+      }
+    ],
+    "10.1 Add override affordances and the override marker to `frontend/src/components/assets/ScheduleTable.tsx`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491526
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372058719
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372186912
+      }
+    ],
+    "10.2 Wire override persistence + dotted-field error mapping in `frontend/src/pages/AssetsPage.tsx`": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491566
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372190417
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372374134
+      }
+    ],
+    "11. Final verification — suites green, invariants preserved, no new float (no deploy)": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369491599
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372662896
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792373492344
+      }
+    ],
+    "1. Backend: asset model — add the override map": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369589336
+      }
+    ],
+    "7. Frontend: whole-dollar formatter (independent of Feature A)": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369590349
+      }
+    ],
+    "8. Frontend: swap whole-dollar formatter into the tax-oriented surfaces": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369960328
+      }
+    ],
+    "2. Backend: override-and-reconcile engine": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792369961393
+      }
+    ],
+    "3. Backend: override validation": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792370525980
+      }
+    ],
+    "4. Backend: override persistence (serialization round-trip)": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792370884503
+      }
+    ],
+    "5. Backend: wire overrides through service CRUD and the route": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792371758176
+      }
+    ],
+    "9. Frontend: override transport types (depends on backend wire shape)": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372046753
+      }
+    ],
+    "10. Frontend: override UI and persistence": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372374167
+      }
+    ],
+    "8.3 RTL — switched surfaces round and keep alignment + loss cues; excluded surfaces keep cents": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372413595
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372657895
+      }
+    ],
+    "10.3 RTL — override entry, clear, marker, inline error, no-float handling": [
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372414492
+      },
+      {
+        "executionId": "135a7c48-2103-49be-aa00-75f9eeb1eb9c",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792372658881
+      }
+    ]
+  }
+}

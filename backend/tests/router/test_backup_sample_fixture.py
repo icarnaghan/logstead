@@ -130,6 +130,47 @@ def test_sample_fixture_validates():
     parsed = result.value
     assert parsed.schema_version == "1"
     assert len(parsed.properties) == 2
+    assert sum(len(p.loans) for p in parsed.properties) == 1
+
+
+def test_sample_fixture_loan_without_anchor_fields_is_rejected():
+    """A sample loan stripped of its anchor fields fails validation (Req 9.4)."""
+    for missing in ("monthly_payment", "anchor_balance", "anchor_date"):
+        document = _load_sample_document()
+        for p in document["properties"]:
+            for raw_loan in p.get("loans", []):
+                del raw_loan[missing]
+        result = validate_document(document)
+        assert not result.is_ok, missing
+        assert missing in result.error.message
+
+
+def test_sample_fixture_loan_round_trips(backup_service, repo):
+    """The sample Loan restores with its override and exports back unchanged."""
+    document = _load_sample_document()
+    assert backup_service.restore(document).is_ok
+
+    exported = backup_service.export()
+    loans = [loan for p in exported.properties for loan in p.loans]
+    assert len(loans) == 1
+    loan = loans[0]
+    raw = next(
+        raw_loan
+        for p in document["properties"]
+        for raw_loan in p.get("loans", [])
+    )
+    assert loan.id == raw["id"]
+    assert loan.property_id == raw["property_id"]
+    assert str(loan.original_principal) == raw["original_principal"]
+    assert str(loan.annual_interest_rate) == raw["annual_interest_rate"]
+    assert str(loan.monthly_payment) == raw["monthly_payment"]
+    assert str(loan.anchor_balance) == raw["anchor_balance"]
+    assert loan.anchor_date == raw["anchor_date"]
+    # The override year precedes the anchor year (an override-only year).
+    assert all(y < int(loan.anchor_date[:4]) for y in loan.interest_overrides)
+    assert {y: str(v) for y, v in loan.interest_overrides.items()} == {
+        2024: "11850.00"
+    }
 
 
 def test_sample_fixture_restores_and_lands_as_advertised(backup_service, repo):
@@ -148,6 +189,7 @@ def test_sample_fixture_restores_and_lands_as_advertised(backup_service, repo):
     )
     summary = restore_result.value
     assert summary.properties == 2
+    assert summary.loans == 1
 
     # --- Inspect the restored store via the read services (user-scoped). ----
     property_service = PropertyService(repo, USER_ID)

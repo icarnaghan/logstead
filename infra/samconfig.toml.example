@@ -27,6 +27,24 @@ resolve_s3 = true
 # overrides and set UseCustomDomain="false":
 #   parameter_overrides = "UseCustomDomain=\"false\" RentCastApiKeyParam=\"/logstead/rentcast-api-key\""
 #
+# Optional cost/usage alerts: AlertEmail receives AWS Budgets and paid-route
+# alarm notifications (confirm the SNS subscription email); BudgetMonthlyUsd
+# defaults to 20. Append e.g. AlertEmail=\"you@example.com\" BudgetMonthlyUsd=\"20\"
+# to parameter_overrides. Leave AlertEmail unset to skip the budget and alarm actions.
+#
+# Sign-in providers: IdentityProviders defaults to COGNITO. If you add a federated
+# provider (e.g. IAM Identity Center as SAML) in the Cognito console, list it here,
+# e.g. IdentityProviders=\"COGNITO,IAMIdentityCenter\", or the next deploy that
+# updates the app client resets the list to COGNITO only.
+#
+# Files-bucket CORS never uses "*". With UseCustomDomain="false" it allows only
+# http://localhost:5173 until you set AllowedSpaOrigin. Two-step first deploy:
+#   1. sam deploy (AllowedSpaOrigin unset).
+#   2. Copy the CloudFrontDomain output, append
+#      AllowedSpaOrigin=\"https://<id>.cloudfront.net\" to parameter_overrides
+#      and sam deploy again. Browser uploads from the deployed SPA fail until then.
+# With a custom domain, DomainName is used and AllowedSpaOrigin is ignored.
+#
 # For a custom domain, supply your own values:
 parameter_overrides = "DomainName=\"app.example.com\" UseCustomDomain=\"true\" CertificateArn=\"<CERT_ARN>\" CognitoDomainPrefix=\"<COGNITO_PREFIX>\" RentCastApiKeyParam=\"/logstead/rentcast-api-key\""
 

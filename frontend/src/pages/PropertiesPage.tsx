@@ -1,13 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { listProperties, ApiError, type Property } from "../api/properties";
 import { listPhotos, type PhotoWithUrl } from "../api/photos";
 import { PropertyList } from "../components/properties/PropertyList";
 import { AddPropertyDialog } from "../components/properties/AddPropertyDialog";
-
-type LoadState =
-  | { status: "loading" }
-  | { status: "loaded"; properties: Property[] }
-  | { status: "error"; message: string };
+import {
+  Button,
+  EmptyGuide,
+  LoadingRegion,
+  PageHeader,
+  RefreshingIndicator,
+  StateBlock,
+  TableSkeleton,
+  useFirstLoad,
+} from "../components/ui";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
+import { isAsyncLoading, useAsyncResource } from "../lib/useAsyncResource";
+import { useNewParam } from "../lib/useNewParam";
+import { EMPTY_COPY, SAMPLE_DATA_LINK_LABEL } from "../lib/emptyCopy";
+import { useShellProperties } from "../components/ShellPropertiesContext";
 
 interface PropertiesPageProps {
   /** Test seam: property loader. Defaults to the real `listProperties`. */
@@ -30,96 +40,103 @@ export default function PropertiesPage({
   load = listProperties,
   loadPhotos = listPhotos,
 }: PropertiesPageProps) {
-  const [state, setState] = useState<LoadState>({ status: "loading" });
-
-  const refresh = useCallback(
-    (signal?: AbortSignal) => {
-      setState({ status: "loading" });
-      load(signal)
-        .then((properties) => setState({ status: "loaded", properties }))
-        .catch((err) => {
-          if (signal?.aborted) return;
-          const message =
-            err instanceof ApiError
-              ? err.message
-              : "Could not load your properties.";
-          setState({ status: "error", message });
-        });
-    },
-    [load],
-  );
-
-  useEffect(() => {
-    const controller = new AbortController();
-    refresh(controller.signal);
-    return () => controller.abort();
-  }, [refresh]);
+  useDocumentTitle("Properties");
+  const {
+    data: properties,
+    error,
+    status,
+    reload: refresh,
+    setData: setProperties,
+  } = useAsyncResource((signal) => load(signal), {
+    describeError: (err) =>
+      err instanceof ApiError ? err.message : "Could not load your properties.",
+  });
+  const [addOpen, setAddOpen] = useState(false);
+  const view = useFirstLoad({ loading: isAsyncLoading(status), error });
+  useNewParam(() => setAddOpen(true), view.showContent);
+  const { reload: reloadShell } = useShellProperties();
+  // Refreshes never clear `properties`, so content stays mounted (14.2, 14.3).
 
   function handleCreated(property: Property) {
-    setState((prev) =>
-      prev.status === "loaded"
-        ? { status: "loaded", properties: [...prev.properties, property] }
-        : { status: "loaded", properties: [property] },
-    );
+    setProperties((prev) => (prev ? [...prev, property] : [property]));
+    reloadShell();
   }
 
   function handleDeleted(id: string) {
-    setState((prev) =>
-      prev.status === "loaded"
-        ? {
-            status: "loaded",
-            properties: prev.properties.filter((p) => p.id !== id),
-          }
-        : prev,
-    );
+    setProperties((prev) => (prev ? prev.filter((p) => p.id !== id) : prev));
+    reloadShell();
   }
+
+  function handleUpdated(property: Property) {
+    setProperties((prev) =>
+      prev ? prev.map((p) => (p.id === property.id ? property : p)) : prev,
+    );
+    reloadShell();
+  }
+
+  const items = view.showContent ? (properties ?? []) : null;
+  const hasProperties = items !== null && items.length > 0;
 
   return (
     <section aria-labelledby="page-heading">
-      <div className="flex items-center justify-between gap-4">
-        <h1 id="page-heading" className="text-2xl font-semibold text-fg">
-          Properties
-        </h1>
-        <AddPropertyDialog onCreated={handleCreated} />
-      </div>
-
-      <p className="mt-2 text-fg-muted">
-        Manage your rental properties. Select a property to record its
-        transactions, depreciable assets, and Schedule E report.
-      </p>
+      <PageHeader
+        title="Properties"
+        description="Manage your rental properties. Select a property to record its transactions, depreciable assets, and Schedule E report."
+        actions={
+          hasProperties ? (
+            <Button type="button" variant="primary" onClick={() => setAddOpen(true)}>
+              Add property
+            </Button>
+          ) : null
+        }
+      />
+      <AddPropertyDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onCreated={handleCreated}
+      />
 
       <div className="mt-6">
-        {state.status === "loading" ? (
-          <p className="text-fg-subtle" role="status">
-            Loading properties…
-          </p>
+        {view.showSkeleton ? (
+          <LoadingRegion label="Loading properties">
+            <TableSkeleton columns={4} />
+          </LoadingRegion>
         ) : null}
 
-        {state.status === "error" ? (
-          <p role="alert" className="rounded-md bg-danger-subtle px-3 py-2 text-sm text-danger">
-            {state.message}
-          </p>
-        ) : null}
-
-        {state.status === "loaded" && state.properties.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border p-8 text-center">
-            <h2 className="text-lg font-medium text-fg">
-              No properties yet
-            </h2>
-            <p className="mt-1 text-sm text-fg-subtle">
-              Add your first rental property to start tracking income,
-              expenses, and Schedule E reporting.
-            </p>
-            <div className="mt-4 flex justify-center">
-              <AddPropertyDialog onCreated={handleCreated} />
-            </div>
+        {view.showError ? (
+          <div className={view.errorIsStale ? "mb-4" : undefined}>
+            <StateBlock
+              kind="error"
+              compact={view.errorIsStale}
+              title="Could not load your properties"
+              description={error ?? undefined}
+              onRetry={() => void refresh()}
+            />
           </div>
         ) : null}
 
-        {state.status === "loaded" && state.properties.length > 0 ? (
+        {view.refreshing ? <RefreshingIndicator className="mb-4" /> : null}
+
+        {items !== null && items.length === 0 ? (
+          <EmptyGuide
+            title={EMPTY_COPY.properties.title}
+            description={EMPTY_COPY.properties.description}
+            primary={{
+              label: EMPTY_COPY.properties.primaryLabel,
+              onClick: () => setAddOpen(true),
+            }}
+            secondary={{
+              label: SAMPLE_DATA_LINK_LABEL,
+              to: "/profile?focus=backup",
+            }}
+          />
+        ) : null}
+
+        {items !== null && items.length > 0 ? (
           <PropertyList
-            properties={state.properties}
+            properties={items}
             onDeleted={handleDeleted}
+            onUpdated={handleUpdated}
             loadPhotos={loadPhotos}
           />
         ) : null}

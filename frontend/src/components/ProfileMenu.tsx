@@ -1,6 +1,9 @@
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { getUserProfile, logout } from "../lib/auth";
+import { useSetupGuide } from "../lib/setupGuide";
+import { usePalette } from "./palette/paletteContext";
 import { ThemeToggle } from "./ThemeToggle";
 
 /**
@@ -16,6 +19,11 @@ import { ThemeToggle } from "./ThemeToggle";
  */
 export function ProfileMenu() {
   const navigate = useNavigate();
+  const { openHelp } = usePalette();
+  const setupGuide = useSetupGuide();
+  // "Show setup guide" moves focus to the guide heading; skip the menu's
+  // focus return to the trigger so it does not take focus back.
+  const skipFocusReturn = useRef(false);
   const profile = getUserProfile();
 
   const label = profile?.displayName ?? "Account";
@@ -29,7 +37,7 @@ export function ProfileMenu() {
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-fg hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex h-9 w-9 items-center justify-center rounded-full max-md:h-11 max-md:w-11 bg-accent text-sm font-semibold text-accent-fg hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <span aria-hidden="true">{initial}</span>
           <span className="sr-only">Open account menu for {label}</span>
@@ -40,6 +48,12 @@ export function ProfileMenu() {
         <DropdownMenu.Content
           align="end"
           sideOffset={8}
+          onCloseAutoFocus={(event) => {
+            if (skipFocusReturn.current) {
+              skipFocusReturn.current = false;
+              event.preventDefault();
+            }
+          }}
           className="z-50 min-w-60 rounded-lg border border-border bg-surface p-1 shadow-card focus:outline-none"
         >
           <div className="px-3 py-2">
@@ -61,6 +75,25 @@ export function ProfileMenu() {
           >
             Profile &amp; settings
           </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            onSelect={() => openHelp()}
+            className="cursor-pointer rounded-md px-3 py-2 text-sm text-fg-muted outline-none data-[highlighted]:bg-surface-muted data-[highlighted]:text-fg"
+          >
+            Keyboard shortcuts
+          </DropdownMenu.Item>
+
+          {setupGuide && (
+            <DropdownMenu.Item
+              onSelect={() => {
+                skipFocusReturn.current = true;
+                setupGuide.showSetupGuide();
+              }}
+              className="cursor-pointer rounded-md px-3 py-2 text-sm text-fg-muted outline-none data-[highlighted]:bg-surface-muted data-[highlighted]:text-fg"
+            >
+              Show setup guide
+            </DropdownMenu.Item>
+          )}
 
           <DropdownMenu.Item
             onSelect={() => logout()}

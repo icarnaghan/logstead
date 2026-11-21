@@ -71,7 +71,7 @@ test-frontend: ## Run frontend tests (vitest)
 	cd $(FRONTEND) && npm test
 
 .PHONY: lint
-lint: ## Type-check the frontend (tsc --noEmit)
+lint: ## Lint the frontend (ESLint)
 	cd $(FRONTEND) && npm run lint
 
 .PHONY: build-frontend
@@ -89,6 +89,10 @@ build: clean-icloud clean-venv ## SAM build in a container (Docker required)
 .PHONY: deploy-infra
 deploy-infra: build ## Build + deploy the AWS stack (SAM)
 	cd $(INFRA) && sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+
+.PHONY: deploy-preview
+deploy-preview: build ## Build + show the CloudFormation change set without applying it
+	cd $(INFRA) && sam deploy --no-execute-changeset --no-fail-on-empty-changeset
 
 .PHONY: deploy-spa
 deploy-spa: ## Build + publish the SPA and invalidate CloudFront

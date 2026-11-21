@@ -25,6 +25,7 @@ function photo(
       content_type: contentType,
       original_filename: filename,
       uploaded_at: "2024-01-01T00:00:00Z",
+      is_cover: false,
     },
     display_url: `https://s3.example/${id}`,
   };
@@ -40,6 +41,7 @@ function presign(id: string, filename: string, contentType: string): PresignedUp
       content_type: contentType,
       original_filename: filename,
       uploaded_at: null,
+      is_cover: false,
     },
   };
 }
@@ -58,6 +60,11 @@ function makeApi(initial: PhotoWithUrl[] = []) {
     deletePhoto: vi.fn(async (_propertyId: string, photoId: string) => {
       const idx = store.findIndex((p) => p.photo.id === photoId);
       if (idx >= 0) store.splice(idx, 1);
+    }),
+    setCover: vi.fn(async (_propertyId: string, photoId: string) => {
+      for (const item of store) {
+        item.photo = { ...item.photo, is_cover: item.photo.id === photoId };
+      }
     }),
   };
 }

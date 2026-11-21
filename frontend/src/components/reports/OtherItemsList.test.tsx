@@ -27,11 +27,11 @@ describe("OtherItemsList — itemization (Req 10.5)", () => {
 
     const hoa = within(rowgroups[1]).getByRole("row", { name: /hoa dues/i });
     expect(within(hoa).getByText("HOA dues")).toBeInTheDocument();
-    expect(within(hoa).getByText("$100.00")).toBeInTheDocument();
+    expect(within(hoa).getByText("$100")).toBeInTheDocument();
 
     const bank = within(rowgroups[1]).getByRole("row", { name: /bank fees/i });
     expect(within(bank).getByText("Bank fees")).toBeInTheDocument();
-    expect(within(bank).getByText("$42.50")).toBeInTheDocument();
+    expect(within(bank).getByText("$43")).toBeInTheDocument();
   });
 
   it("exposes an accessible caption", () => {

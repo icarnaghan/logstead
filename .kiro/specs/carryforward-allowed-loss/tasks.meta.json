@@ -1,0 +1,410 @@
+{
+  "pbtResults": {
+    "2.5 Property test — fully-allowed contributes zero and equals the explicit-full-amount case": {
+      "status": "passed",
+      "lastRunTimestamp": 1792414143755
+    },
+    "2.3 Property test — suspended is the floored unallowed portion; balance stays non-negative": {
+      "status": "passed",
+      "lastRunTimestamp": 1792414393966
+    },
+    "5.2 Property test — serialization is two-decimal strings + boolean flag; §469 independence": {
+      "status": "passed",
+      "lastRunTimestamp": 1792450713738
+    }
+  },
+  "executionHistory": {
+    "1.1 Add `allowed_loss` and `fully_allowed` fields to `ReconciledYear` in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103557
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410111476
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410391626
+      }
+    ],
+    "2.1 Factor out `_schedule_e_net_for` and implement `_effective_allowed` in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103644
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410395767
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410768794
+      }
+    ],
+    "2.2 Read per-year allowed maps and subtract the effective allowed in `reconcile()`'s loop": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103679
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410772106
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792411088483
+      }
+    ],
+    "3.1 Switch `set_reported` / `clear_reported` to read-modify-write and add allowed-data setters in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103708
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792411092366
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792412479151
+      }
+    ],
+    "3.2 Implement allowed-data validation in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103738
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792412482662
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792412788279
+      }
+    ],
+    "4.1 Ensure `allowedLoss` is money and `fullyAllowed` is a BOOL on every per-year put/get/query": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103774
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792412792262
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413053676
+      }
+    ],
+    "5.1 Extend `_set_carryforward_reported` and confirm GET serialization in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103807
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413057668
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413348124
+      }
+    ],
+    "6. Checkpoint — backend allowed-loss feature": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103843
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413351864
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413421423
+      }
+    ],
+    "7.1 Extend `ReconciledYear` and add `setYear` + wrappers in `frontend/src/api/carryforward.ts`": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103903
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413425201
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413506633
+      }
+    ],
+    "8.1 Add `AllowedLossControl` to `ReconciliationRow` in `frontend/src/pages/CarryforwardPage.tsx`": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103949
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413510863
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413684203
+      }
+    ],
+    "9. Final verification — suites green, no new float, §469 not computed (no deploy)": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410103980
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450857678
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792451626194
+      }
+    ],
+    "1. Backend: extend the `ReconciledYear` dataclass": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792410391683
+      }
+    ],
+    "2. Backend: shared net derivation and the effective-allowed engine step": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792411088536
+      }
+    ],
+    "3. Backend: read-modify-write setters/clears for reported and allowed data": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792412788339
+      }
+    ],
+    "4. Backend: per-year item money-attrs / BOOL serialization": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413053726
+      }
+    ],
+    "5. Backend: extend the per-year PUT route and GET serialization": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413348176
+      }
+    ],
+    "7. Frontend: carryforward API transport (depends on backend wire shape)": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413506677
+      }
+    ],
+    "8. Frontend: the allowed-loss control on loss rows": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413684262
+      }
+    ],
+    "8.2 RTL — loss-row-only render, moot-while-on, save/clear/toggle + reload, inline error": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413691716
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413848507
+      }
+    ],
+    "7.2 Unit test — `setYear`/wrappers hit the PUT route with the expected body": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413692668
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413847414
+      }
+    ],
+    "2.3 Property test — suspended is the floored unallowed portion; balance stays non-negative": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413856716
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450522721
+      }
+    ],
+    "2.5 Property test — fully-allowed contributes zero and equals the explicit-full-amount case": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413857973
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450520995
+      }
+    ],
+    "2.7 Unit example — reconcile over a hand-built mixed fixture": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413859368
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450523477
+      }
+    ],
+    "3.3 Property test — validation rejects impossible allowed data and persists nothing": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413860403
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450518776
+      }
+    ],
+    "3.4 Property test — persistence round-trip; independence; siblings never clobbered": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792413861546
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450519608
+      }
+    ],
+    "2.4 Property test — backward compatibility reproduces today's series exactly": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450530427
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450730048
+      }
+    ],
+    "2.6 Property test — monotonic roll-forward of a year's allowed amount": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450531186
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450731430
+      }
+    ],
+    "3.5 Unit example — read-modify-write sibling preservation and delete-when-empty": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450532639
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450732823
+      }
+    ],
+    "5.2 Property test — serialization is two-decimal strings + boolean flag; §469 independence": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450534041
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450734278
+      }
+    ],
+    "5.4 Route example tests — extended PUT field subsets, null-clear, DELETE, GET body": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450535079
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450735170
+      }
+    ],
+    "5.3 Property test — the 2010 acceptance scenario reconciles to ok, both ways": [
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450739060
+      },
+      {
+        "executionId": "56a1873e-7eba-4738-aca1-6833336297f2",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792450856595
+      }
+    ]
+  }
+}

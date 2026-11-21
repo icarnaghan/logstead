@@ -441,3 +441,27 @@ def test_delete_receipt_unknown_is_not_found(service):
     assert not result.is_ok
     assert result.error.kind == "not_found"
     assert result.error.field == "document_id"
+
+
+def test_attach_receipt_rejects_disallowed_content_type(service):
+    created = service.create(_income("2024-03-07")).value
+
+    result = service.attach_receipt(
+        PROPERTY_ID, created.id, "r.html", "text/html"
+    )
+
+    assert not result.is_ok
+    assert result.error.kind == "validation"
+    assert result.error.field == "content_type"
+
+
+def test_attach_receipt_sanitizes_filename(service):
+    created = service.create(_income("2024-03-07")).value
+
+    result = service.attach_receipt(
+        PROPERTY_ID, created.id, "../../x/receipt.pdf", "application/pdf"
+    )
+
+    assert result.is_ok
+    assert result.value.document.original_filename == "receipt.pdf"
+    assert ".." not in result.value.document.s3_key

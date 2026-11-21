@@ -11,8 +11,43 @@ You record one entry per Schedule E line per tax year (the transaction form
 defaults new entries to Dec 31 of the selected year) and attach the year-end
 statement PDF as evidence under each entry's "supporting documents". A PDF
 expense-import flow exists in the backend but is not currently surfaced in the
-UI. Your Schedule E data can also be exported to a JSON backup, restored from
+UI. Repairs (Line 14) can optionally be broken into itemized entries on the
+Repairs tab; an entered total, when present, still wins and the two are never
+added. Your Schedule E data can also be exported to a JSON backup, restored from
 one, or cleared.
+
+The **Year-end checklist** (the property page's "Checklist" tab at
+`/properties/{propertyId}/checklist`, plus a property page section and a
+dashboard card) reviews a property's records for a tax year and lists items
+that need attention first. It is a read-only reminder aid and not tax advice:
+it stores no data and changes none.
+
+The per-property and combined report pages each have a **Download PDF** button
+that produces a Schedule E report PDF. The **Accountant package** page (at
+`/accountant-package`) builds a ZIP for a tax year and the properties you pick:
+the Schedule E reports (PDF, CSV, JSON), a transactions CSV, your receipts, and
+a manifest. The PDF report and the Accountant package are organizing aids for
+sharing your records, not tax advice.
+
+Other features:
+- **Seven property tabs.** Overview, Transactions, Repairs, Depreciable Assets,
+  Loans, Schedule E Report and Checklist. On screens narrower than 768px the
+  tabs collapse into a "Property sections" menu.
+- **Command palette and shortcuts.** Cmd+K (Ctrl+K elsewhere) or `/` opens a
+  palette that jumps to pages, properties and tax years and runs actions such
+  as adding a record or switching theme. `?` lists the shortcuts, and `g` then
+  `d`, `p`, `r`, `c`, `i` or `a` goes to a page.
+- **Search.** Find properties, transactions, repairs, assets, loans and
+  businesses by text from the palette or the Search page (`/search`).
+- **Activity history.** The Activity page (`/activity`) lists what changed,
+  with before and after values, and can restore a deleted record. Events are
+  kept for 24 months.
+- **Onboarding guide.** The Dashboard setup guide shows the next step, can be
+  collapsed or dismissed, and can be shown again from the account menu or the
+  palette. Empty pages explain what they record, and the dashboard and
+  Properties empty states offer sample data.
+- **Responsive layout.** Forms and tables fit narrow screens, and modal forms
+  keep Cancel and Save in view.
 
 It is built as a **serverless AWS application**:
 
@@ -26,6 +61,9 @@ It is built as a **serverless AWS application**:
   Gateway HTTP API with a Cognito JWT authorizer, over a single-table DynamoDB
   design, with binary files (photos, receipts, uploaded PDFs, exported reports)
   in S3.
+- **Package worker** - a second Lambda (`logstead-package-worker`, same source
+  as the API function, different handler) that builds accountant package ZIPs.
+  The API starts it with an asynchronous invoke.
 
 > Scope: the initial release is deliberately narrow - everything needed to
 > prepare the federal Schedule E for the rental activity, and nothing more.
@@ -44,7 +82,8 @@ logstead/
   infra/              AWS SAM template, deploy/seed scripts, and samconfig.toml.example
   docs/               Developer, architecture, API, testing, and deployment guides
   Makefile            Top-level dev + deploy commands (run `make help`)
-  .kiro/specs/logstead/   requirements.md, design.md, tasks.md (the source spec)
+  .kiro/specs/        One folder per feature spec (requirements.md, design.md,
+                      tasks.md); .kiro/specs/logstead/ is the original app spec
 ```
 
 ## Quick start
@@ -60,6 +99,10 @@ make test           # backend (pytest) + frontend (vitest)
 make dev            # frontend dev server
 make deploy         # build + deploy infra (SAM) then publish the SPA
 ```
+
+`make deploy` reinstalls the frontend dependencies with `npm ci` (a clean,
+lock-exact install that deletes `node_modules` first) before it builds the SPA,
+so there is no need to clear `node_modules` by hand before a deploy.
 
 The steps below are the equivalent manual commands.
 
@@ -77,10 +120,12 @@ pytest -q -n auto            # runs the suite in parallel (pytest-xdist)
 
 ```bash
 cd frontend
-npm install
+npm ci                       # lock-exact install (npm install also works)
 npm test                     # vitest run
 npm run build                # type-check (tsc -b) + production bundle
+npm run lint                 # ESLint
 npm run dev                  # local dev server
+npm run e2e                  # Playwright (run `npm run e2e:install` once first)
 ```
 
 Copy `frontend/.env.example` to `frontend/.env` and fill in the Cognito / API
@@ -97,6 +142,11 @@ values before running the SPA against a real backend. See
 - [Data model](docs/data-model.md) - domain entities and the DynamoDB key scheme.
 - [Testing guide](docs/testing.md) - unit, property-based, and integration tests.
 - [Deployment](docs/deployment.md) - how the pieces map onto AWS.
+- [Local checks](docs/local-checks.md) - the checks to run before merging (there
+  is no hosted CI).
+- [Dependency policy](docs/dependency-policy.md) - pinning, audits, and upgrades.
+- [Future improvements](docs/future-improvements.md) - deferred work and known
+  limitations.
 - [Changelog](CHANGELOG.md) - notable changes per release.
 
 ## Key design rules
@@ -119,12 +169,15 @@ These invariants run through the whole codebase (see
 - **Authentication is delegated.** Cognito Hosted UI handles sign-in; the API
   trusts the JWT authorizer verified claims and performs no token verification
   itself.
+- **History never feeds reports.** Activity events are recorded by the router
+  only, best effort, and no report, dashboard or carryforward code reads them.
 
 ## Status
 
-All spec tasks are implemented and tested: the backend service layer, single
-Lambda router, and the SPA are complete, with unit, property-based (Hypothesis),
-and integration coverage. See [docs/testing.md](docs/testing.md).
+All spec tasks under `.kiro/specs/` are implemented and tested, with unit,
+property-based (Hypothesis and fast-check), integration and Playwright browser
+coverage. See [docs/testing.md](docs/testing.md). Deferred work and known
+limitations are in [docs/future-improvements.md](docs/future-improvements.md).
 
 ## License
 

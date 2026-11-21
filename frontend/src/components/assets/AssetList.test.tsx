@@ -70,6 +70,11 @@ describe("AssetList — rendering (Req 8.7)", () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
+
+  it("empty message does not refer to a form above", () => {
+    render(<AssetList assets={[]} {...handlers()} />);
+    expect(screen.queryByText(/form above/i)).not.toBeInTheDocument();
+  });
 });
 
 describe("AssetList — actions (Req 8.5, 8.6, 9.4)", () => {
@@ -79,8 +84,6 @@ describe("AssetList — actions (Req 8.5, 8.6, 9.4)", () => {
     const a = asset({ id: "a1" });
     render(<AssetList assets={[a]} {...h} />);
 
-    // ResponsiveTable renders both a <table> and a card fallback, so each
-    // action button appears twice; scope to the table representation.
     const table = screen.getByRole("table");
 
     await user.click(
@@ -121,7 +124,7 @@ describe("AssetList — actions (Req 8.5, 8.6, 9.4)", () => {
 });
 
 describe("AssetList — responsive layout (Req 6.1, 6.2, 6.3)", () => {
-  it("renders the desktop table and a card fallback container hidden at >= sm", () => {
+  it("renders a single table that also serves narrow viewports", () => {
     const h = handlers();
     const { container } = render(
       <AssetList assets={[asset({ id: "a1" })]} {...h} />,
@@ -129,8 +132,8 @@ describe("AssetList — responsive layout (Req 6.1, 6.2, 6.3)", () => {
 
     // The scroll-wrapped table is present at desktop widths.
     expect(screen.getByRole("table")).toBeInTheDocument();
-    // The card list coexists in the DOM, CSS-hidden at >= sm.
-    expect(container.querySelector("ul.sm\\:hidden")).not.toBeNull();
+    // One DOM serves both layouts: no separate card list.
+    expect(container.querySelector("ul")).toBeNull();
   });
 });
 

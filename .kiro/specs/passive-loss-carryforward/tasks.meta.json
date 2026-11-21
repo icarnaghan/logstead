@@ -1,0 +1,390 @@
+{
+  "pbtResults": {
+    "2.5 Property test — Schedule E net reconciles with the reports": {
+      "status": "passed",
+      "lastRunTimestamp": 1792361154772
+    },
+    "2.6 Property test — expected is a correct, non-negative running balance": {
+      "status": "passed",
+      "lastRunTimestamp": 1792361165563
+    },
+    "2.7 Property test — profitable run floors at zero; pure-loss accumulation": {
+      "status": "passed",
+      "lastRunTimestamp": 1792361185586
+    },
+    "2.8 Property test — status classification is total and correct": {
+      "status": "passed",
+      "lastRunTimestamp": 1792361212224
+    },
+    "4.2 Property test — every figure is a two-decimal money string": {
+      "status": "passed",
+      "lastRunTimestamp": 1792362795959
+    }
+  },
+  "executionHistory": {
+    "1.1 Add carryforward key helpers to `backend/src/logstead/repository/keys.py`": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732637
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359743961
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359833184
+      }
+    ],
+    "2.1 Add transport dataclasses and the service skeleton in `backend/src/logstead/services/carryforward.py`": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732671
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359745126
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359834423
+      }
+    ],
+    "2.2 Implement the Data_Year derivation reuse": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732699
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359841650
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792360811751
+      }
+    ],
+    "2.3 Implement `set_reported`, `clear_reported`, and `set_opening_balance`": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732730
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792360817226
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792360912031
+      }
+    ],
+    "2.4 Implement `reconcile()`": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732801
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792360916095
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361046548
+      }
+    ],
+    "3. Checkpoint — backend service": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732833
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361581468
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362576672
+      }
+    ],
+    "4.1 Add the carryforward handlers and route registration in `backend/src/logstead/router/handler.py`": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732866
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362580663
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362681120
+      }
+    ],
+    "5. Checkpoint — backend endpoints": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732896
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362856486
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362885995
+      }
+    ],
+    "6.1 Add `frontend/src/api/carryforward.ts`": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732925
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359742981
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359835323
+      }
+    ],
+    "7.1 Add `frontend/src/pages/CarryforwardPage.tsx` — fetch, table, and statuses": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359732954
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362688064
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362851354
+      }
+    ],
+    "7.2 Add the inline reported-value editor and the opening-balance control": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359733010
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362857198
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792363002556
+      }
+    ],
+    "7.3 Add the empty state and the plain-language disclaimer": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359733056
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792363006006
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792363103153
+      }
+    ],
+    "8. Final checkpoint — full suite": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359733082
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792363240067
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792363647734
+      }
+    ],
+    "1. Backend: key helpers and carryforward persistence": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359833219
+      }
+    ],
+    "6. Frontend: carryforward API transport": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359835358
+      }
+    ],
+    "6.2 Unit test — the API calls the right routes and types money as strings": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792359840721
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792360812758
+      }
+    ],
+    "2. Backend: `CarryforwardService` dataclasses and construction": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361046639
+      }
+    ],
+    "2.5 Property test — Schedule E net reconciles with the reports": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361055566
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361572323
+      }
+    ],
+    "2.6 Property test — expected is a correct, non-negative running balance": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361057006
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361573678
+      }
+    ],
+    "2.7 Property test — profitable run floors at zero; pure-loss accumulation": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361058372
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361575164
+      }
+    ],
+    "2.8 Property test — status classification is total and correct": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361059362
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361576101
+      }
+    ],
+    "2.9 Property test — reported round-trips and validates; user scoping; empty case; §469 independence": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361060479
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792361577127
+      }
+    ],
+    "4. Backend: routes": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362681155
+      }
+    ],
+    "4.2 Property test — every figure is a two-decimal money string": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362685886
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362850036
+      }
+    ],
+    "4.3 Route example tests for the carryforward endpoints": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362686834
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792362849210
+      }
+    ],
+    "7. Frontend: carryforward page": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792363103284
+      }
+    ],
+    "7.4 RTL tests for the carryforward page": [
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792363106996
+      },
+      {
+        "executionId": "cf91d939-8b64-4f7d-bbe3-b74caeb3da77",
+        "chatSessionId": "sess_6facf6ed-c5bd-49ba-9115-475334cf8ff2",
+        "timestamp": 1792363235977
+      }
+    ]
+  }
+}

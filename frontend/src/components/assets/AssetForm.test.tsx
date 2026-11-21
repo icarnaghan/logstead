@@ -98,7 +98,7 @@ describe("AssetForm — edit mode (Req 8.5)", () => {
     );
 
     expect(screen.getByLabelText(/description/i)).toHaveValue("HVAC unit");
-    expect(screen.getByLabelText(/cost basis/i)).toHaveValue("8000.00");
+    expect(screen.getByLabelText(/cost basis/i)).toHaveValue("8,000.00");
     expect(screen.getByLabelText(/placed in service/i)).toHaveValue(
       "2022-05-01",
     );
@@ -144,7 +144,7 @@ describe("AssetForm — field errors (Req 8.2, 8.3)", () => {
       />,
     );
 
-    const alert = screen.getByRole("alert");
+    const alert = screen.getAllByRole("alert")[0];
     expect(alert).toHaveTextContent(/cost_basis must be greater than 0/i);
 
     const costInput = screen.getByLabelText(/cost basis/i);
@@ -178,6 +178,52 @@ describe("AssetForm — required fields & actions", () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
+  it("renders formError as an alert", () => {
+    render(<AssetForm onSubmit={vi.fn()} formError="Something broke" />);
+    expect(screen.getByRole("alert")).toHaveTextContent("Something broke");
+  });
+  it("hides a field's server error once that field is edited", async () => {
+    const user = userEvent.setup();
+    render(
+      <AssetForm
+        onSubmit={vi.fn()}
+        fieldErrors={{ cost_basis: "cost_basis must be greater than 0" }}
+      />,
+    );
+    expect(screen.getAllByRole("alert")[0]).toBeInTheDocument();
+    await user.type(screen.getByLabelText(/cost basis/i), "1");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+  it("leaves other fields' server errors when one field is edited", async () => {
+    const user = userEvent.setup();
+    render(
+      <AssetForm
+        onSubmit={vi.fn()}
+        fieldErrors={{
+          cost_basis: "Cost is bad",
+          description: "Description is bad",
+        }}
+      />,
+    );
+    await user.type(screen.getByLabelText(/cost basis/i), "1");
+    expect(screen.queryByText("Cost is bad")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Description is bad")[0]).toBeInTheDocument();
+  });
+
+  it("re-shows a dismissed error when a new fieldErrors object arrives", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <AssetForm onSubmit={vi.fn()} fieldErrors={{ cost_basis: "Cost is bad" }} />,
+    );
+    await user.type(screen.getByLabelText(/cost basis/i), "1");
+    expect(screen.queryByText("Cost is bad")).not.toBeInTheDocument();
+
+    rerender(
+      <AssetForm onSubmit={vi.fn()} fieldErrors={{ cost_basis: "Cost is bad" }} />,
+    );
+    expect(screen.getAllByText("Cost is bad")[0]).toBeInTheDocument();
+  });
+
   it("omits the cancel button when no onCancel handler is provided", () => {
     render(<AssetForm onSubmit={vi.fn()} />);
     expect(
@@ -198,5 +244,47 @@ describe("AssetForm — required fields & actions", () => {
       rules: { "color-contrast": { enabled: false } },
     });
     expect(results).toHaveNoViolations();
+  });
+});
+
+describe("AssetForm - error summary (Req 11.1-11.7)", () => {
+  const summaryHeading = () => screen.queryByRole("heading", { level: 2 });
+  const errs = { cost_basis: "Cost is bad", description: "Description is bad" };
+
+  it("lists all errors and its links focus the right field", async () => {
+    const user = userEvent.setup();
+    render(<AssetForm onSubmit={vi.fn()} fieldErrors={errs} />);
+    expect(summaryHeading()).toHaveTextContent("There are 2 errors");
+    // Inline errors still show.
+    expect(screen.getAllByText("Cost is bad")).toHaveLength(2);
+
+    await user.click(screen.getByRole("button", { name: "Cost is bad" }));
+    expect(screen.getByLabelText(/cost basis/i)).toHaveFocus();
+  });
+
+  it("moves focus to the first invalid field in document order when errors arrive", () => {
+    const { rerender } = render(<AssetForm onSubmit={vi.fn()} />);
+    rerender(<AssetForm onSubmit={vi.fn()} fieldErrors={{ ...errs }} />);
+    expect(screen.getByLabelText(/description/i)).toHaveFocus();
+  });
+
+  it("removes the summary once the errors are fixed", async () => {
+    const user = userEvent.setup();
+    render(<AssetForm onSubmit={vi.fn()} fieldErrors={errs} />);
+    await user.type(screen.getByLabelText(/description/i), "x");
+    await user.type(screen.getByLabelText(/cost basis/i), "1");
+    expect(summaryHeading()).not.toBeInTheDocument();
+  });
+
+  it("shows a form-level error in the summary without moving focus", () => {
+    render(<AssetForm onSubmit={vi.fn()} formError="Something broke" />);
+    expect(summaryHeading()).toHaveTextContent("There is 1 error");
+    expect(screen.queryByRole("button", { name: "Something broke" })).not.toBeInTheDocument();
+    expect(document.body).toHaveFocus();
+  });
+
+  it("has no axe violations with the summary showing", async () => {
+    const { container } = render(<AssetForm onSubmit={vi.fn()} fieldErrors={errs} formError="Oops" />);
+    expect(await axe(container, { rules: { "color-contrast": { enabled: false } } })).toHaveNoViolations();
   });
 });

@@ -7,10 +7,8 @@ import { ResponsiveTable } from "./ResponsiveTable";
  * Unit + axe tests for the shared ResponsiveTable primitive
  * (task 3.8, Requirements 6.1, 6.2).
  *
- * The design's responsive approach is CSS-driven: both the >= sm table and the
- * < sm card layout live in the DOM at once and are shown/hidden via Tailwind
- * breakpoints. Tests assert the presence of both representations and their
- * responsive classes rather than mocking matchMedia.
+ * One semantic table serves every viewport; Tailwind `max-sm:` classes restyle
+ * rows as cards. Tests assert the single DOM and the per-cell `data-label`.
  */
 
 const COLUMNS = [
@@ -61,35 +59,32 @@ describe("ResponsiveTable — table representation (Req 6.1)", () => {
     expect(within(table).getByText("$300.00")).toBeInTheDocument();
   });
 
-  it("wraps the table in an overflow-x-auto scroll wrapper shown at >= sm", () => {
+  it("wraps the table in an overflow-x-auto scroll wrapper", () => {
     const { container } = renderTable();
-    const table = screen.getByRole("table");
-    const wrapper = table.parentElement as HTMLElement;
+    const wrapper = screen.getByRole("table").parentElement as HTMLElement;
     expect(wrapper).toHaveClass("overflow-x-auto");
-    expect(wrapper).toHaveClass("sm:block");
-    expect(wrapper).toHaveClass("hidden");
-    // sanity: the wrapper is inside the primitive's root.
     expect(container).toContainElement(wrapper);
   });
 });
 
-describe("ResponsiveTable — card representation (Req 6.2)", () => {
-  it("also renders a card layout container hidden at >= sm", () => {
+describe("ResponsiveTable — single DOM for all viewports (Req 6.2)", () => {
+  it("renders exactly one table and no separate card list", () => {
     const { container } = renderTable();
-    const cardList = container.querySelector("ul.sm\\:hidden");
-    expect(cardList).not.toBeNull();
-    expect(cardList).toHaveClass("sm:hidden");
+    expect(screen.getAllByRole("table")).toHaveLength(1);
+    expect(container.querySelector("ul")).toBeNull();
+    // Each value appears once, so plain single queries work.
+    expect(screen.getByText("Repairs")).toBeInTheDocument();
+    expect(screen.getByText("$300.00")).toBeInTheDocument();
   });
 
-  it("renders one card per row with header:value pairs", () => {
-    const { container } = renderTable();
-    const cardList = container.querySelector("ul.sm\\:hidden") as HTMLElement;
-    const cards = within(cardList).getAllByRole("listitem");
-    expect(cards).toHaveLength(ROWS.length);
-    // Each card labels values with the column headers.
-    expect(within(cardList).getAllByText("Date")).toHaveLength(ROWS.length);
-    expect(within(cardList).getByText("Repairs")).toBeInTheDocument();
-    expect(within(cardList).getByText("$300.00")).toBeInTheDocument();
+  it("labels every body cell with its column header for the stacked layout", () => {
+    renderTable();
+    const rows = within(screen.getByRole("table")).getAllByRole("row").slice(1);
+    expect(rows).toHaveLength(ROWS.length);
+    for (const row of rows) {
+      const labels = Array.from(row.children).map((c) => c.getAttribute("data-label"));
+      expect(labels).toEqual(COLUMNS.map((c) => c.header));
+    }
   });
 });
 

@@ -56,8 +56,6 @@ describe("PropertyBreakdownTable — rows (Req 11.2)", () => {
   it("links each property name to its transactions page", () => {
     renderTable();
 
-    // ResponsiveTable renders both a <table> and a card fallback, so each link
-    // appears twice; scope the assertions to the table representation.
     const table = screen.getByRole("table");
     expect(
       within(table).getByRole("link", { name: "Maple Duplex" }),
@@ -114,12 +112,10 @@ describe("PropertyBreakdownTable — responsive layout (Req 6.1, 6.2, 6.3)", () 
     expect(within(rowgroups[1]).getAllByRole("row")).toHaveLength(2);
   });
 
-  it("also renders a card fallback container hidden at >= sm", () => {
+  it("renders a single table with no separate card list", () => {
     const { container } = renderTable();
 
-    // ResponsiveTable keeps both representations in the DOM; the card list is
-    // CSS-hidden (sm:hidden) at desktop widths and shown below the sm breakpoint.
-    const cardList = container.querySelector("ul.sm\\:hidden");
-    expect(cardList).not.toBeNull();
+    expect(screen.getAllByRole("table")).toHaveLength(1);
+    expect(container.querySelector("ul")).toBeNull();
   });
 });

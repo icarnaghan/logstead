@@ -13,7 +13,8 @@
 
 const ID_TOKEN_KEY = "logstead.idToken";
 const ACCESS_TOKEN_KEY = "logstead.accessToken";
-const REFRESH_TOKEN_KEY = "logstead.refreshToken";
+/** Legacy key. Refresh tokens are no longer stored; this is only removed. */
+const LEGACY_REFRESH_TOKEN_KEY = "logstead.refreshToken";
 const EXPIRES_AT_KEY = "logstead.expiresAt";
 
 export interface SessionTokens {
@@ -21,8 +22,6 @@ export interface SessionTokens {
   idToken: string;
   /** Cognito access token (JWT). */
   accessToken: string;
-  /** Optional refresh token. */
-  refreshToken?: string;
   /**
    * Absolute expiry as epoch milliseconds. Derived by the caller from the
    * token `expires_in` at exchange time.
@@ -57,9 +56,8 @@ export function storeSession(tokens: SessionTokens): void {
   if (!s) return;
   s.setItem(ID_TOKEN_KEY, tokens.idToken);
   s.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
-  if (tokens.refreshToken) {
-    s.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-  }
+  // Clean up any refresh token persisted by older versions.
+  s.removeItem(LEGACY_REFRESH_TOKEN_KEY);
   if (typeof tokens.expiresAt === "number") {
     s.setItem(EXPIRES_AT_KEY, String(tokens.expiresAt));
   }
@@ -80,12 +78,6 @@ export function getToken(which: AuthToken = "access"): string | null {
 /** Return the stored ID token, or `null`. */
 export function getIdToken(): string | null {
   return getToken("id");
-}
-
-/** Return the stored refresh token, or `null`. */
-export function getRefreshToken(): string | null {
-  const s = storage();
-  return s?.getItem(REFRESH_TOKEN_KEY) ?? null;
 }
 
 /** True when a non-expired access token is present. */
@@ -110,6 +102,6 @@ export function clearSession(): void {
   if (!s) return;
   s.removeItem(ID_TOKEN_KEY);
   s.removeItem(ACCESS_TOKEN_KEY);
-  s.removeItem(REFRESH_TOKEN_KEY);
+  s.removeItem(LEGACY_REFRESH_TOKEN_KEY);
   s.removeItem(EXPIRES_AT_KEY);
 }

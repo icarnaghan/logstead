@@ -1,6 +1,8 @@
 import { useSearchParams } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { ImportReview } from "../components/imports/ImportReview";
+import { PageHeader } from "../components/ui";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
 
 /**
  * Page wrapper for the expense-summary import + review flow (task 22.2).
@@ -15,6 +17,7 @@ import { ImportReview } from "../components/imports/ImportReview";
  * from the transactions area without this page.
  */
 export default function ImportReviewPage() {
+  useDocumentTitle("Import");
   const { propertyId = "" } = useParams();
   const [searchParams] = useSearchParams();
   const taxYear = Number(
@@ -23,9 +26,7 @@ export default function ImportReviewPage() {
 
   return (
     <section aria-labelledby="page-heading">
-      <h1 id="page-heading" className="text-2xl font-semibold text-fg">
-        Import
-      </h1>
+      <PageHeader title="Import" />
       <div className="mt-4">
         <ImportReview propertyId={propertyId} taxYear={taxYear} />
       </div>

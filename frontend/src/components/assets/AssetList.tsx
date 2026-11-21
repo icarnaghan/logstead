@@ -38,7 +38,7 @@ export function AssetList({
   if (assets.length === 0) {
     return (
       <p className="text-fg-muted">
-        No depreciable assets yet. Add one using the form above.
+        No depreciable assets yet. Use Add asset to create one.
       </p>
     );
   }
@@ -100,6 +100,7 @@ export function AssetList({
       caption="Depreciable assets for this property"
       columns={COLUMNS}
       rows={rows}
+        focusableRows
     />
   );
 }

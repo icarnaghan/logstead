@@ -34,6 +34,12 @@ export interface ReportLine {
   kind: ReportLineKind;
   /** Two-decimal money string for the line total, e.g. "1250.00". */
   total: string;
+  /**
+   * True when at least one transaction contributing to this line's total was
+   * synthesized by Schedule E Import (Requirement 7.4). Optional/false for a
+   * line fed only by user-tracked transactions, so the UI reads it defensively.
+   */
+  includes_imported?: boolean;
 }
 
 /** One itemized Line 19 "Other" expense (Requirement 10.5). */
@@ -41,6 +47,11 @@ export interface OtherItem {
   description: string;
   /** Two-decimal money string, e.g. "42.00". */
   amount: string;
+  /**
+   * True when this itemized Other row was synthesized by Schedule E Import
+   * (Requirement 7.4). Optional/false for user-tracked Other expenses.
+   */
+  imported?: boolean;
 }
 
 /** The Schedule E report header for a property + tax year (Requirement 10.2). */
@@ -64,12 +75,28 @@ export interface ReportTotals {
   net: string;
 }
 
+/** Where a report's Line 12 (mortgage interest) figure came from. */
+export type Line12Source = "loan-generated" | "transaction-entered";
+
+/** Line 12 detail on a per-property report (Requirements 6.3-6.5, 10.5). */
+export interface Line12Detail {
+  source: Line12Source;
+  superseded_manual_interest: {
+    /** Two-decimal money string, e.g. "1234.00". */
+    amount: string;
+    /** Number of superseded Line 12 transactions. */
+    count: number;
+  };
+}
+
 /** A per-property Schedule E report (Requirements 10.1-10.5). */
 export interface ScheduleEReport {
   header: ReportHeader;
   lines: ReportLine[];
   other_items: OtherItem[];
   totals: ReportTotals;
+  /** Absent on reports from backends that predate loan-generated interest. */
+  line12?: Line12Detail;
 }
 
 /**
@@ -83,6 +110,10 @@ export interface CombinedScheduleEReport {
   tax_year: number;
   properties: ScheduleEReport[];
   totals: ReportTotals;
+  line12?: {
+    total: string;
+    superseded_manual_interest: { amount: string; count: number };
+  };
 }
 
 /** The Schedule E Part I line number for depreciation. */
@@ -119,6 +150,43 @@ export function getReport(
 ): Promise<ScheduleEReport> {
   return client.get<ScheduleEReport>(reportPath(propertyId), {
     query: { taxYear },
+  });
+}
+
+/** A generated PDF report with a short-lived download link. */
+export interface PdfDownload {
+  download_url: string;
+  filename: string;
+  content_type: string;
+  size_bytes: number;
+  expires_in_seconds: number;
+}
+
+/** Builds the Schedule E PDF for one property (`POST .../report/pdf`). */
+export function createReportPdf(
+  propertyId: string,
+  taxYear: number,
+  client: ApiClient = apiClient,
+): Promise<PdfDownload> {
+  return client.post<PdfDownload>(`${reportPath(propertyId)}/pdf`, {
+    query: { taxYear },
+  });
+}
+
+/**
+ * Builds the combined Schedule E PDF (`POST /reports/combined/pdf`). Omit
+ * `propertyIds` to include every property.
+ */
+export function createCombinedReportPdf(
+  taxYear: number,
+  propertyIds?: string[],
+  client: ApiClient = apiClient,
+): Promise<PdfDownload> {
+  return client.post<PdfDownload>("/reports/combined/pdf", {
+    query: {
+      taxYear,
+      propertyIds: propertyIds?.length ? propertyIds.join(",") : undefined,
+    },
   });
 }
 
@@ -167,6 +235,14 @@ export function reportToCsv(report: ScheduleEReport): string {
   rows.push(csvRow(["Line", "Label", "Kind", "Amount"]));
   for (const line of lines) {
     rows.push(csvRow([line.line, line.label, line.kind, line.total]));
+  }
+  if (report.line12) {
+    const { source, superseded_manual_interest: superseded } = report.line12;
+    rows.push(csvRow(["Line 12 Source", source]));
+    rows.push(csvRow(["Line 12 Superseded Manual Interest", superseded.amount]));
+    rows.push(
+      csvRow(["Line 12 Superseded Transaction Count", superseded.count]),
+    );
   }
   rows.push("");
 

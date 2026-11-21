@@ -300,6 +300,11 @@ def test_csv_export_download_url_returns_exact_bytes_and_parses_back(
     assert net_row[1] == f"{(Decimal('2650.00') - expected_expenses):.2f}"
     assert all(_two_decimal(cell[3]) for cell in line_rows.values())
 
+    # Line 12 source and superseded-manual-interest rows (Requirement 6.10).
+    assert ["Line 12 Source", "transaction-entered"] in rows
+    assert ["Line 12 Superseded Manual Interest", "0.00"] in rows
+    assert ["Line 12 Superseded Transaction Count", "0"] in rows
+
 
 # --- JSON export: download URL round-trip ------------------------------------
 
@@ -351,6 +356,12 @@ def test_json_export_download_url_returns_exact_bytes_and_parses_back(
     assert all(_two_decimal(v) for v in lines.values())
     assert all(_two_decimal(v) for v in totals.values())
 
+    # Line 12 object (Requirement 6.10).
+    assert payload["line12"] == {
+        "source": "transaction-entered",
+        "superseded_manual_interest": {"amount": "0.00", "count": 0},
+    }
+
 
 # --- Combined portfolio export: download URL round-trip (10.6/10.7) ----------
 
@@ -375,7 +386,7 @@ def test_combined_export_download_url_round_trips(
     assert result.is_ok, result.error
     export = result.value
 
-    assert export.key.startswith("exports/combined/")
+    assert export.key.startswith(f"exports/combined/{USER}/")
     assert str(TAX_YEAR) in export.key
     assert export.key in _object_keys(s3_client)
 
@@ -391,6 +402,10 @@ def test_combined_export_download_url_round_trips(
     assert totals["total_expenses"] == "700.00"     # 200 + 500
     assert totals["net"] == "3300.00"               # 4000 - 700
     assert all(_two_decimal(v) for v in totals.values())
+    assert payload["line12"] == {
+        "total": "0.00",
+        "superseded_manual_interest": {"amount": "0.00", "count": 0},
+    }
 
 
 def test_combined_csv_export_download_url_round_trips(
@@ -408,7 +423,7 @@ def test_combined_csv_export_download_url_round_trips(
     assert result.is_ok, result.error
     export = result.value
 
-    assert export.key.startswith("exports/combined/")
+    assert export.key.startswith(f"exports/combined/{USER}/")
     assert export.content_type == "text/csv"
     assert export.key in _object_keys(s3_client)
 
@@ -420,3 +435,6 @@ def test_combined_csv_export_download_url_round_trips(
     # Portfolio totals block ends the file; the last Net row is the portfolio net.
     portfolio_net = [r for r in rows if r and r[0] == "Net" and len(r) == 2][-1]
     assert portfolio_net[1] == "2000.00"  # 1500 + 500, no expenses
+    assert ["Line 12 Total", "0.00"] in rows
+    assert ["Line 12 Superseded Manual Interest", "0.00"] in rows
+    assert ["Line 12 Superseded Transaction Count", "0"] in rows

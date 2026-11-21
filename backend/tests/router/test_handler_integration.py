@@ -340,11 +340,20 @@ def test_dispatch_dashboard_per_property(wired):
     assert [s["property_id"] for s in summaries] == [prop["id"]]
 
 
-def test_dispatch_categories_public_no_claims(wired):
-    """GET /categories is public: it dispatches with no JWT claims (200)."""
+def test_categories_requires_claims(wired):
+    """GET /categories needs a signed-in user: no claims gives 401."""
     seed_categories(wired)
     resp = handler(_event("GET", "/categories"))  # no claims
+    assert resp["statusCode"] == 401
+
+
+def test_dispatch_categories_with_claims_sets_cache_control(wired):
+    """GET /categories returns the catalog with a private Cache-Control."""
+    seed_categories(wired)
+    resp = handler(_event("GET", "/categories", claims=_claims()))
     assert resp["statusCode"] == 200
+    assert resp["headers"]["Cache-Control"] == "private, max-age=3600"
+    assert resp["headers"]["Content-Type"] == "application/json"
     catalog = json.loads(resp["body"])
     lines = {c["schedule_e_line"] for c in catalog}
     assert {3, 4, 19} <= lines
@@ -732,3 +741,87 @@ def test_property_notes_unknown_property_404(wired):
 def test_property_notes_requires_auth(wired):
     resp = handler(_event("GET", "/properties/any/notes"))  # no claims
     assert resp["statusCode"] == 401
+
+
+# ============================================================================
+# Property photo cover selection (PUT .../photos/{photoId}/cover)
+# ============================================================================
+
+
+def _upload_photo(property_id: str, filename: str) -> dict:
+    """Request a photo upload via the handler; return the created photo dict."""
+    resp = handler(
+        _event(
+            "POST",
+            f"/properties/{property_id}/photos",
+            claims=_claims(),
+            body={"filename": filename, "content_type": "image/jpeg"},
+        )
+    )
+    assert resp["statusCode"] in (200, 201), resp["body"]
+    return json.loads(resp["body"])["photo"]
+
+
+def _list_photos(property_id: str) -> list:
+    resp = handler(
+        _event("GET", f"/properties/{property_id}/photos", claims=_claims())
+    )
+    assert resp["statusCode"] == 200, resp["body"]
+    return json.loads(resp["body"])
+
+
+def test_set_photo_cover_marks_the_chosen_photo(wired):
+    """PUT .../photos/{id}/cover flags exactly that photo as the cover."""
+    prop = _create_property()
+    a = _upload_photo(prop["id"], "a.jpg")
+    _upload_photo(prop["id"], "b.jpg")
+
+    resp = handler(
+        _event(
+            "PUT",
+            f"/properties/{prop['id']}/photos/{a['id']}/cover",
+            claims=_claims(),
+        )
+    )
+    assert resp["statusCode"] == 200, resp["body"]
+
+    photos = _list_photos(prop["id"])
+    covers = [p for p in photos if p["photo"]["is_cover"]]
+    assert len(covers) == 1
+    assert covers[0]["photo"]["id"] == a["id"]
+
+
+def test_set_photo_cover_unknown_photo_returns_404(wired):
+    prop = _create_property()
+    _upload_photo(prop["id"], "a.jpg")
+
+    resp = handler(
+        _event(
+            "PUT",
+            f"/properties/{prop['id']}/photos/does-not-exist/cover",
+            claims=_claims(),
+        )
+    )
+    assert resp["statusCode"] == 404, resp["body"]
+    assert json.loads(resp["body"])["error"] == "not_found"
+
+
+def test_cover_route_does_not_shadow_photo_delete(wired):
+    """The 4-segment DELETE .../photos/{id} still resolves to delete, not cover.
+
+    The cover route adds a 5-segment PUT; it must not disturb dispatch of the
+    existing delete. A DELETE of a real photo returns 200 (removed), proving the
+    delete handler — not the cover handler — was reached.
+    """
+    prop = _create_property()
+    a = _upload_photo(prop["id"], "a.jpg")
+
+    resp = handler(
+        _event(
+            "DELETE",
+            f"/properties/{prop['id']}/photos/{a['id']}",
+            claims=_claims(),
+        )
+    )
+    assert resp["statusCode"] == 200, resp["body"]
+    assert _list_photos(prop["id"]) == []

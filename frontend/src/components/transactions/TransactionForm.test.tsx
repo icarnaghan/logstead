@@ -124,7 +124,7 @@ describe("TransactionForm", () => {
     // Missing description blocks submit and surfaces a field error.
     expect(onSubmit).not.toHaveBeenCalled();
     expect(
-      screen.getByText(/a description is required for the other category/i),
+      screen.getAllByText(/a description is required for the other category/i)[0],
     ).toBeInTheDocument();
 
     // Supplying a description clears the block and submits.
@@ -152,7 +152,7 @@ describe("TransactionForm", () => {
     const amountInput = screen.getByLabelText(/amount/i);
     expect(amountInput).toHaveAttribute("aria-invalid", "true");
     expect(
-      screen.getByText(/amount must be a number greater than zero/i),
+      screen.getAllByText(/amount must be a number greater than zero/i)[0],
     ).toBeInTheDocument();
   });
 
@@ -173,7 +173,9 @@ describe("TransactionForm", () => {
 
     const amountInput = screen.getByLabelText(/amount/i);
     expect(amountInput).toHaveAttribute("aria-invalid", "true");
-    const error = screen.getByText(/amount was rejected by the server/i);
+    const error = screen
+      .getAllByText(/amount was rejected by the server/i)
+      .find((el) => el.id === "tx-amount-error") as HTMLElement;
     expect(error).toBeInTheDocument();
     // The message is wired to the amount input for assistive tech.
     expect(amountInput).toHaveAttribute("aria-describedby", "tx-amount-error");
@@ -193,5 +195,86 @@ describe("TransactionForm", () => {
       rules: { "color-contrast": { enabled: false } },
     });
     expect(results).toHaveNoViolations();
+  });
+});
+
+describe("TransactionForm - error summary (Req 11.1-11.7)", () => {
+  const summaryHeading = () => screen.queryByRole("heading", { level: 2 });
+
+  it("lists all errors, focuses the first invalid field, and links focus fields", async () => {
+    const { user } = setup();
+    await user.click(screen.getByRole("button", { name: /add transaction|save/i }));
+    expect(summaryHeading()).toHaveTextContent("There are 2 errors");
+    expect(screen.getByLabelText(/amount/i)).toHaveFocus();
+    // Inline errors still show.
+    expect(screen.getByLabelText(/amount/i)).toHaveAttribute("aria-invalid", "true");
+
+    await user.click(screen.getByRole("button", { name: "Category is required." }));
+    expect(categorySelect()).toHaveFocus();
+  });
+
+  it("removes the summary once the errors are fixed", async () => {
+    const { user } = setup();
+    await user.click(screen.getByRole("button", { name: /add transaction|save/i }));
+    await user.type(screen.getByLabelText(/amount/i), "10");
+    await user.selectOptions(categorySelect(), "repairs");
+    // Client errors are re-evaluated on the next submit.
+    await user.click(screen.getByRole("button", { name: /add transaction|save/i }));
+    expect(summaryHeading()).not.toBeInTheDocument();
+  });
+
+  it("shows a server error with no field in the summary without moving focus", () => {
+    setup({ serverError: { message: "Server exploded" } as never });
+    expect(summaryHeading()).toHaveTextContent("There is 1 error");
+    expect(screen.getByText("Server exploded")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Server exploded" })).not.toBeInTheDocument();
+    expect(document.body).toHaveFocus();
+  });
+
+  it("has no axe violations with the summary showing", async () => {
+    const { user } = setup();
+    await user.click(screen.getByRole("button", { name: /add transaction|save/i }));
+    const results = await axe(screen.getByRole("button", { name: /add transaction|save/i }).closest("form") as HTMLElement, { rules: { "color-contrast": { enabled: false } } });
+    expect(results).toHaveNoViolations();
+  });
+});
+
+describe("TransactionForm - itemized hint (Req 10.4)", () => {
+  const HINT = /new transaction becomes the entered total/i;
+  const years = new Set(["repairs:2026"]);
+
+  it("shows the hint for Repairs in a year with itemized entries", async () => {
+    const { user } = setup({ itemizedYears: years });
+    expect(screen.queryByText(HINT)).not.toBeInTheDocument();
+    await user.selectOptions(categorySelect(), "repairs");
+    expect(screen.getByText(HINT)).toHaveTextContent(/line 14/i);
+  });
+
+  it("does not show the hint for other categories", async () => {
+    const { user } = setup({ itemizedYears: years });
+    await user.selectOptions(categorySelect(), "other");
+    expect(screen.queryByText(HINT)).not.toBeInTheDocument();
+  });
+
+  it("does not show the hint for Repairs in a year without itemized entries", async () => {
+    const { user } = setup({ itemizedYears: new Set(["repairs:2025"]) });
+    await user.selectOptions(categorySelect(), "repairs");
+    expect(screen.queryByText(HINT)).not.toBeInTheDocument();
+  });
+
+  it("does not show the hint when editing", () => {
+    setup({
+      itemizedYears: years,
+      initial: {
+        id: "t1",
+        property_id: "p1",
+        date: "2026-12-31",
+        amount: "10.00",
+        type: "expense",
+        category_id: "repairs",
+        description: null,
+      },
+    });
+    expect(screen.queryByText(HINT)).not.toBeInTheDocument();
   });
 });

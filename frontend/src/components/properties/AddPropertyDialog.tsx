@@ -1,8 +1,19 @@
 import { useState } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
 import { AddressAutocomplete } from "./AddressAutocomplete";
 import { PropertyDetailsView } from "./PropertyDetailsView";
-import { Button } from "../ui";
+import {
+  Button,
+  ErrorSummary,
+  FormField,
+  Input,
+  RecordModal,
+  Select,
+  useDiscardGuard,
+  useFocusFirstInvalid,
+  ModalFormActions,
+} from "../ui";
+import { useDirtyReporter } from "../../lib/dirty";
+import { orderedErrors, type ErrorSummaryItem } from "../../lib/formErrors";
 import {
   createProperty,
   enrichAddress,
@@ -15,6 +26,13 @@ import {
 } from "../../api/properties";
 
 interface AddPropertyDialogProps {
+  /**
+   * Controlled open state. When undefined the dialog owns its state and
+   * renders the built-in "Add property" trigger (as before).
+   */
+  open?: boolean;
+  /** Called when the dialog requests to open or close. */
+  onOpenChange?: (open: boolean) => void;
   /** Called with the newly created property so the list can refresh. */
   onCreated: (property: Property) => void;
   /** Test seam: enrichment call. Defaults to the real `enrichAddress`. */
@@ -70,14 +88,31 @@ interface FieldErrors {
  * validation errors carry the offending `field`, which is rendered adjacent to
  * that input (Requirement 2.2).
  */
+const FIELD_ORDER = ["address_text", "name"] as const;
+const FIELD_IDS: Record<(typeof FIELD_ORDER)[number], string> = {
+  address_text: "add-property-address",
+  name: "add-property-name",
+};
+const INITIAL_VALUES = { name: "", address_text: "", property_type: "" };
+
 export function AddPropertyDialog({
+  open: openProp,
+  onOpenChange,
   onCreated,
   enrich = enrichAddress,
   create = createProperty,
   fetchSuggestions,
   fetchUnits = fetchUnitAddresses,
 }: AddPropertyDialogProps) {
-  const [open, setOpen] = useState(false);
+  const controlled = openProp !== undefined;
+  const [innerOpen, setInnerOpen] = useState(false);
+  const open = controlled ? openProp : innerOpen;
+  function setOpen(next: boolean) {
+    if (!controlled) setInnerOpen(next);
+    onOpenChange?.(next);
+  }
+  const [dirty, setDirty] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [name, setName] = useState("");
   const [addressText, setAddressText] = useState("");
   const [propertyType, setPropertyType] = useState("");
@@ -177,6 +212,7 @@ export function AddPropertyDialog({
     const clientErrors = validate();
     if (Object.keys(clientErrors).length > 0) {
       setErrors(clientErrors);
+      setAttempt((n) => n + 1);
       return;
     }
     setErrors({});
@@ -203,6 +239,7 @@ export function AddPropertyDialog({
         const message = body?.message ?? "Please correct the highlighted field.";
         if (field === "name" || field === "address_text") {
           setErrors({ [field]: message });
+          setAttempt((n) => n + 1);
         } else {
           setErrors({ form: message });
         }
@@ -217,79 +254,85 @@ export function AddPropertyDialog({
     }
   }
 
+  useDirtyReporter(
+    INITIAL_VALUES,
+    { name, address_text: addressText, property_type: propertyType },
+    setDirty,
+  );
+
+  const guard = useDiscardGuard({
+    dirty,
+    onClose: () => {
+      resetForm();
+      setOpen(false);
+    },
+  });
+
+  useFocusFirstInvalid({
+    errors,
+    order: FIELD_ORDER,
+    idFor: (field) => FIELD_IDS[field],
+    attempt,
+  });
+
+  const summaryItems: ErrorSummaryItem[] = [
+    ...orderedErrors(errors, FIELD_ORDER),
+    ...(errors.form ? [{ message: errors.form }] : []),
+  ];
+
   return (
-    <Dialog.Root
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (!next) resetForm();
-      }}
-    >
-      <Dialog.Trigger asChild>
-        <Button type="button" variant="primary">
+    <>
+      {controlled ? null : (
+        <Button type="button" variant="primary" onClick={() => setOpen(true)}>
           Add property
         </Button>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-fg/40" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 max-h-[90vh] w-[92vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-surface p-6 shadow-card focus:outline-none">
-          <Dialog.Title className="text-lg font-semibold text-fg">
-            Add a property
-          </Dialog.Title>
-          <Dialog.Description className="mt-1 text-sm text-fg-subtle">
-            Search for the address to prefill details, or enter everything
-            manually. Details are optional — you can always add them later.
-          </Dialog.Description>
+      )}
+      <RecordModal
+        open={open}
+        onOpenChange={(next) => {
+          if (next) setOpen(true);
+          else guard.requestClose();
+        }}
+        title="Add a property"
+        description="Search for the address to prefill details, or enter everything manually. Details are optional — you can always add them later."
+        dismissible={!submitting}
+        discard={guard.discard}
+      >
+        <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+          <ErrorSummary
+            items={summaryItems}
+            idFor={(field) => FIELD_IDS[field as keyof typeof FIELD_IDS]}
+            headingId="add-property-errors"
+          />
 
-          <form className="mt-4 space-y-4" onSubmit={handleSubmit} noValidate>
-            {errors.form ? (
-              <p role="alert" className="rounded-md bg-danger-subtle px-3 py-2 text-sm text-danger">
-                {errors.form}
-              </p>
-            ) : null}
-
-            <div>
-              <label
-                htmlFor="add-property-address"
-                className="block text-sm font-medium text-fg-muted"
-              >
-                Address
-              </label>
+          <FormField
+            label="Address"
+            id={FIELD_IDS.address_text}
+            error={errors.address_text}
+          >
+            {(control) => (
               <AddressAutocomplete
-                id="add-property-address"
+                id={control.id}
                 value={addressText}
                 onChange={setAddressText}
                 onSelect={handleSelectAddress}
                 fetchSuggestions={fetchSuggestions}
                 invalid={Boolean(errors.address_text)}
-                errorId={errors.address_text ? "add-property-address-error" : undefined}
+                errorId={control["aria-describedby"]}
               />
-              {errors.address_text ? (
-                <p
-                  id="add-property-address-error"
-                  role="alert"
-                  className="mt-1 text-sm text-danger"
-                >
-                  {errors.address_text}
-                </p>
-              ) : null}
-            </div>
+            )}
+          </FormField>
 
-            {units.length > 0 ? (
-              <div>
-                <label
-                  htmlFor="add-property-unit"
-                  className="block text-sm font-medium text-fg-muted"
-                >
-                  Unit
-                </label>
-                <select
-                  id="add-property-unit"
+          {units.length > 0 ? (
+            <FormField label="Unit" id="add-property-unit">
+              {(control) => (
+                <Select
+                  {...control}
                   value={addressText}
                   onChange={(e) => {
                     void handleSelectUnit(e.target.value);
                   }}
-                  className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="w-full"
                 >
                   <option value={baseAddress}>No specific unit</option>
                   {units.map((unit) => (
@@ -300,105 +343,93 @@ export function AddPropertyDialog({
                       {unit.formatted_address}
                     </option>
                   ))}
-                </select>
-              </div>
-            ) : null}
+                </Select>
+              )}
+            </FormField>
+          ) : null}
 
-            {enrichPhase.kind === "loading" ? (
-              <p className="text-sm text-fg-subtle" aria-live="polite">
-                Looking up property details…
-              </p>
-            ) : null}
-            {enrichPhase.kind === "found" ? (
-              <div className="space-y-2">
-                <p
-                  className="rounded-md bg-success-subtle px-3 py-2 text-sm text-success"
-                  aria-live="polite"
-                >
-                  Property details found and prefilled below. Review and edit
-                  anything before saving.
-                </p>
-                <section
-                  aria-labelledby="add-property-details-heading"
-                  className="rounded-md border border-border p-3"
-                >
-                  <h3
-                    id="add-property-details-heading"
-                    className="text-sm font-semibold text-fg"
-                  >
-                    Property details
-                  </h3>
-                  <div className="mt-2">
-                    <PropertyDetailsView details={enrichPhase.details} />
-                  </div>
-                </section>
-              </div>
-            ) : null}
-            {enrichPhase.kind === "not_found" || enrichPhase.kind === "unavailable" ? (
+          {enrichPhase.kind === "loading" ? (
+            <p className="text-sm text-fg-subtle" aria-live="polite">
+              Looking up property details…
+            </p>
+          ) : null}
+          {enrichPhase.kind === "found" ? (
+            <div className="space-y-2">
               <p
-                className="rounded-md bg-warning-subtle px-3 py-2 text-sm text-warning"
+                className="rounded-md bg-success-subtle px-3 py-2 text-sm text-success"
                 aria-live="polite"
               >
-                {enrichPhase.message} You can still save the property.
+                Property details found and prefilled below. Review and edit
+                anything before saving.
               </p>
-            ) : null}
-
-            <div>
-              <label
-                htmlFor="add-property-name"
-                className="block text-sm font-medium text-fg-muted"
+              <section
+                aria-labelledby="add-property-details-heading"
+                className="rounded-md border border-border p-3"
               >
-                Name
-              </label>
-              <input
-                id="add-property-name"
+                <h3
+                  id="add-property-details-heading"
+                  className="text-sm font-semibold text-fg"
+                >
+                  Property details
+                </h3>
+                <div className="mt-2">
+                  <PropertyDetailsView details={enrichPhase.details} />
+                </div>
+              </section>
+            </div>
+          ) : null}
+          {enrichPhase.kind === "not_found" || enrichPhase.kind === "unavailable" ? (
+            <p
+              className="rounded-md bg-warning-subtle px-3 py-2 text-sm text-warning"
+              aria-live="polite"
+            >
+              {enrichPhase.message} You can still save the property.
+            </p>
+          ) : null}
+
+          <FormField label="Name" id={FIELD_IDS.name} error={errors.name}>
+            {(control) => (
+              <Input
+                {...control}
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                aria-invalid={Boolean(errors.name) || undefined}
-                aria-describedby={errors.name ? "add-property-name-error" : undefined}
-                className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               />
-              {errors.name ? (
-                <p
-                  id="add-property-name-error"
-                  role="alert"
-                  className="mt-1 text-sm text-danger"
-                >
-                  {errors.name}
-                </p>
-              ) : null}
-            </div>
+            )}
+          </FormField>
 
-            <div>
-              <label
-                htmlFor="add-property-type"
-                className="block text-sm font-medium text-fg-muted"
-              >
+          <FormField
+            label={
+              <>
                 Property type <span className="text-fg-subtle">(optional)</span>
-              </label>
-              <input
-                id="add-property-type"
+              </>
+            }
+            id="add-property-type"
+          >
+            {(control) => (
+              <Input
+                {...control}
                 type="text"
                 value={propertyType}
                 onChange={(e) => setPropertyType(e.target.value)}
-                className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               />
-            </div>
+            )}
+          </FormField>
 
-            <div className="flex justify-end gap-2 pt-2">
-              <Dialog.Close asChild>
-                <Button type="button" variant="secondary">
-                  Cancel
-                </Button>
-              </Dialog.Close>
-              <Button type="submit" variant="primary" disabled={submitting}>
-                {submitting ? "Saving…" : "Save property"}
-              </Button>
-            </div>
-          </form>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+          <ModalFormActions>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => guard.requestClose()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={submitting}>
+              {submitting ? "Saving…" : "Save property"}
+            </Button>
+          </ModalFormActions>
+        </form>
+      </RecordModal>
+    </>
   );
 }

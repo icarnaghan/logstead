@@ -15,6 +15,8 @@ export interface ConfirmDialogProps {
   onConfirm: () => void | Promise<void>;
   /** Disables confirm + shows a pending label while a delete is in flight. */
   pending?: boolean;
+  /** Forwarded to Radix `Dialog.Content`; used to restore focus when no trigger exists. */
+  onCloseAutoFocus?: (event: Event) => void;
 }
 
 /**
@@ -37,6 +39,7 @@ export function ConfirmDialog({
   destructive = true,
   onConfirm,
   pending = false,
+  onCloseAutoFocus,
 }: ConfirmDialogProps) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -47,6 +50,7 @@ export function ConfirmDialog({
             "fixed left-1/2 top-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2",
             "rounded-lg border border-border bg-surface p-6 shadow-card focus:outline-none",
           )}
+          onCloseAutoFocus={onCloseAutoFocus}
         >
           <Dialog.Title className="text-lg font-semibold text-fg">
             {title}

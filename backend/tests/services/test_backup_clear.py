@@ -347,3 +347,37 @@ def test_children_deleted_before_parent_property_row(repo, files, user):
     assert has_child(keys.USAGE_PREFIX)  # usage year
     assert has_child(keys.DETAILS_SK)  # details
     assert has_child(keys.NOTE_SK)  # note
+
+
+# --- Requirements 11.7, 12.1: Loans counted (not rollups) and deleted --------
+
+
+def test_clear_counts_loans_not_rollups_and_deletes_all_rows(repo, files, user):
+    from logstead.models.loan import LoanInput
+    from logstead.services.loan import LoanService
+
+    seeded = _seed_full_property(repo, files, user)
+    property_id = seeded["property_id"]
+    loans = LoanService(repo)
+    for desc in ("First mortgage", "Second mortgage"):
+        created = loans.create_loan(
+            LoanInput(
+                property_id=property_id,
+                description=desc,
+                annual_interest_rate=Decimal("6.5"),
+                monthly_payment=Decimal("1500.00"),
+                anchor_balance=Decimal("200000.00"),
+                anchor_date="2023-02-01",
+            )
+        )
+        assert created.is_ok
+
+    pk = keys.property_scoped_pk(property_id)
+    before = [str(r["SK"]) for r in repo.query(pk, sk_begins_with=keys.loan_list_prefix())]
+    # Rollup rows exist in addition to the two base loan rows.
+    assert any(keys.is_loan_year_sk(sk) for sk in before)
+
+    result = BackupService(repo, files, user).clear()
+    assert result.is_ok
+    assert result.value.loans == 2
+    assert repo.query(pk, sk_begins_with=keys.loan_list_prefix()) == []

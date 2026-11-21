@@ -1,0 +1,21 @@
+{
+  "_comment": "HAND-BUILT APPROXIMATION of a garbled / low-confidence Textract response for a Schedule E Part I page with ONE property column and NO TABLE block, so the parser must use the geometry fallback (numeric tokens bucketed onto each label's horizontal band). Confidences are below a typical min_confidence floor so values are flagged needs_verification; one amount is garbled/unreadable; there is NO detectable tax year so the year is left unset + flagged. Real Textract output differs; the user confirms downstream.",
+  "blocks": [
+    { "Id": "page-1", "BlockType": "PAGE", "Page": 1, "Relationships": [ { "Type": "CHILD", "Ids": ["ttl", "parti", "rents-lbl", "rents-amt", "adv-lbl", "adv-amt", "ins-lbl", "ins-amt", "repairs-lbl", "repairs-amt"] } ] },
+
+    { "Id": "ttl", "BlockType": "LINE", "Page": 1, "Text": "Schedule E", "Confidence": 55.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.02, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "parti", "BlockType": "LINE", "Page": 1, "Text": "Part I Income or Loss From Rental Real Estate", "Confidence": 51.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.06, "Width": 0.5, "Height": 0.02 } } },
+
+    { "Id": "rents-lbl", "BlockType": "LINE", "Page": 1, "Text": "3 Rents received", "Confidence": 60.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.30, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "rents-amt", "BlockType": "LINE", "Page": 1, "Text": "12000", "Confidence": 42.0, "Geometry": { "BoundingBox": { "Left": 0.60, "Top": 0.305, "Width": 0.1, "Height": 0.02 } } },
+
+    { "Id": "adv-lbl", "BlockType": "LINE", "Page": 1, "Text": "5 Advertising", "Confidence": 58.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.36, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "adv-amt", "BlockType": "LINE", "Page": 1, "Text": "l2O", "Confidence": 20.0, "Geometry": { "BoundingBox": { "Left": 0.60, "Top": 0.365, "Width": 0.1, "Height": 0.02 } } },
+
+    { "Id": "ins-lbl", "BlockType": "LINE", "Page": 1, "Text": "9 Insurance", "Confidence": 57.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.42, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "ins-amt", "BlockType": "LINE", "Page": 1, "Text": "800.00", "Confidence": 48.0, "Geometry": { "BoundingBox": { "Left": 0.60, "Top": 0.425, "Width": 0.1, "Height": 0.02 } } },
+
+    { "Id": "repairs-lbl", "BlockType": "LINE", "Page": 1, "Text": "14 Repairs", "Confidence": 59.0, "Geometry": { "BoundingBox": { "Left": 0.05, "Top": 0.48, "Width": 0.3, "Height": 0.02 } } },
+    { "Id": "repairs-amt", "BlockType": "LINE", "Page": 1, "Text": "450.00", "Confidence": 44.0, "Geometry": { "BoundingBox": { "Left": 0.60, "Top": 0.485, "Width": 0.1, "Height": 0.02 } } }
+  ]
+}

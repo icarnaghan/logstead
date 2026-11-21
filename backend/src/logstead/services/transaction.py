@@ -51,6 +51,7 @@ from logstead.models.transaction import (
 )
 from logstead.repository import keys
 from logstead.services.category import CATEGORY_CATALOG
+from logstead.services.itemized import ITEMIZED_CATEGORIES
 
 if TYPE_CHECKING:
     from logstead.adapters.s3_files import S3FileAdapter
@@ -164,6 +165,9 @@ class TransactionService:
             description=_clean_description(data.description),
             created_at=now,
             updated_at=now,
+            imported=data.imported,
+            itemized=data.itemized,
+            notes=_clean_notes(data.notes) if data.itemized else None,
         )
         self._repo.put_item(transaction_to_item(txn, parsed))
         return Result.success(txn)
@@ -216,6 +220,32 @@ class TransactionService:
         ]
         return Result.success(txns)
 
+    # --- Earliest year -------------------------------------------------------
+
+    def earliest_year(self, property_id: str) -> int | None:
+        """Return the calendar year of a property's earliest transaction.
+
+        Sort keys embed an inverted date, so the *earliest* transaction has the
+        *largest* ``TXN#<invDate>`` key. A descending, ``limit=1`` query on the
+        property's transaction prefix therefore reads exactly one item. A
+        receipt ``#DOC#`` row shares its transaction's date token, so it yields
+        the same year. Reads nothing else and writes nothing.
+
+        Returns:
+            The year of the earliest transaction, or ``None`` if the property
+            has no transactions.
+        """
+        items = self._repo.query(
+            keys.property_scoped_pk(property_id),
+            sk_begins_with=keys.transaction_list_prefix(),
+            ascending=False,
+            limit=1,
+        )
+        if not items:
+            return None
+        sk = str(items[0]["SK"])
+        return keys.date_from_inverted(sk.split("#")[1]).year
+
     # --- Update (Requirement 5.6) --------------------------------------------
 
     def update(
@@ -237,6 +267,14 @@ class TransactionService:
             )
         old_sk, existing = found
 
+        # The itemized marker is fixed at creation (Requirement 2.12).
+        if bool(data.itemized) != existing.itemized:
+            return Result.failure(
+                "validation",
+                "The itemized marker cannot be changed.",
+                field="itemized",
+            )
+
         validated = self._validate(data)
         if not validated.is_ok:
             return Result.failure(
@@ -256,6 +294,11 @@ class TransactionService:
             schedule_e_line=category.schedule_e_line,
             description=_clean_description(data.description),
             updated_at=_now_iso(),
+            # Markers are owned by their own flows (Schedule E Import, item
+            # service); a generic update never changes them.
+            imported=existing.imported,
+            itemized=existing.itemized,
+            notes=_clean_notes(data.notes) if existing.itemized else None,
         )
         new_item = transaction_to_item(updated, new_parsed)
         new_sk = new_item["SK"]
@@ -266,12 +309,20 @@ class TransactionService:
         else:
             # Date changed: the sort key moved. Delete the old row and write the
             # new one atomically so a transaction is never lost or duplicated.
-            self._repo.transact_write(
-                [
-                    {"delete": {"pk": keys.property_scoped_pk(property_id), "sk": old_sk}},
-                    {"put": new_item},
-                ]
-            )
+            # Receipt rows embed the transaction's sort key, so they move too.
+            pk = keys.property_scoped_pk(property_id)
+            actions: list[dict[str, Any]] = [
+                {"delete": {"pk": pk, "sk": old_sk}},
+                {"put": new_item},
+            ]
+            for doc in self._receipt_items(property_id, existing):
+                actions.append({"delete": {"pk": pk, "sk": str(doc["SK"])}})
+                moved = dict(doc)
+                moved["SK"] = keys.document_sk(
+                    new_parsed, existing.id, str(doc["id"])
+                )
+                actions.append({"put": moved})
+            self._repo.transact_write(actions)
         return Result.success(updated)
 
     # --- Delete (Requirement 5.7) --------------------------------------------
@@ -326,15 +377,22 @@ class TransactionService:
             )
         _sk, txn = found
 
-        clean_name = str(filename).strip()
-        if not clean_name:
+        if not str(filename).strip():
             return Result.failure(
                 "validation", "A filename is required.", field="filename"
             )
-        clean_type = str(content_type).strip()
+        clean_name = s3_files.sanitize_filename(filename)
+        clean_type = str(content_type).strip().lower()
         if not clean_type:
             return Result.failure(
                 "validation", "A content type is required.", field="content_type"
+            )
+        if clean_type not in s3_files.RECEIPT_CONTENT_TYPES:
+            return Result.failure(
+                "validation",
+                "Unsupported receipt type. Accepted types: "
+                f"{', '.join(sorted(s3_files.RECEIPT_CONTENT_TYPES))}.",
+                field="content_type",
             )
 
         doc_id = str(uuid.uuid4())
@@ -370,14 +428,48 @@ class TransactionService:
                 "not_found", "Transaction not found.", field="transaction_id"
             )
         _sk, txn = found
-        receipts = [
-            ReceiptWithUrl(
-                document=_document_from_item(item),
-                download_url=self._files.presigned_get_url(str(item["s3Key"])),
+        receipts = []
+        for item in self._receipt_items(property_id, txn):
+            # PUT URLs cannot cap size: drop any oversized upload on read.
+            if self._files.purge_if_oversized(
+                str(item["s3Key"]), s3_files.MAX_DOCUMENT_BYTES
+            ):
+                self._repo.delete_item(
+                    keys.property_scoped_pk(property_id), str(item["SK"])
+                )
+                continue
+            receipts.append(
+                ReceiptWithUrl(
+                    document=_document_from_item(item),
+                    download_url=self._files.presigned_get_url(str(item["s3Key"])),
+                )
             )
-            for item in self._receipt_items(property_id, txn)
-        ]
         return Result.success(receipts)
+
+    def has_receipt(self, property_id: str, transaction: Transaction) -> bool:
+        """True when at least one receipt metadata row exists.
+
+        One ``Limit=1`` query on the ``#DOC#`` prefix; no S3 call and no
+        pre-signed URL (year-end checklist Requirements 2.4, 12.7).
+        """
+        d = _parse_date(transaction.date)
+        prefix = f"{keys.transaction_sk(d, transaction.id)}#{keys.DOC_PREFIX}"
+        items = self._repo.query(
+            keys.property_scoped_pk(property_id), sk_begins_with=prefix, limit=1
+        )
+        return len(items) > 0
+
+    def receipt_documents(
+        self, property_id: str, transaction: Transaction
+    ) -> list[Document]:
+        """Receipt metadata rows only.
+
+        No S3 call, no pre-signed URL, no purge, and no write.
+        """
+        return [
+            _document_from_item(item)
+            for item in self._receipt_items(property_id, transaction)
+        ]
 
     def delete_receipt(
         self, property_id: str, transaction_id: str, document_id: str
@@ -468,6 +560,40 @@ class TransactionService:
                 field="description",
             )
 
+        if data.itemized:
+            if data.category_id not in ITEMIZED_CATEGORIES:
+                return Result.failure(
+                    "validation",
+                    "Itemized entries are not supported for this category.",
+                    field="category_id",
+                )
+            if data.type != "expense":
+                return Result.failure(
+                    "validation",
+                    "Itemized entries must be expenses.",
+                    field="type",
+                )
+            desc = _clean_description(data.description)
+            if desc is None or len(desc) > 200:
+                return Result.failure(
+                    "validation",
+                    "A description of 1 to 200 characters is required.",
+                    field="description",
+                )
+            notes = _clean_notes(data.notes)
+            if notes is not None and len(notes) > 1000:
+                return Result.failure(
+                    "validation",
+                    "Notes must be at most 1000 characters.",
+                    field="notes",
+                )
+        elif data.notes is not None:
+            return Result.failure(
+                "validation",
+                "Notes are only allowed on itemized entries.",
+                field="notes",
+            )
+
         return Result.success((parsed_date, category))
 
     def _find(
@@ -536,6 +662,14 @@ def _clean_description(description: str | None) -> str | None:
     return text or None
 
 
+def _clean_notes(notes: str | None) -> str | None:
+    """Trim notes; blank/whitespace-only becomes ``None``."""
+    if notes is None:
+        return None
+    text = notes.strip()
+    return text or None
+
+
 # --- Serialization boundary --------------------------------------------------
 #
 # Transaction items use the design's camelCase attribute names and carry the
@@ -550,7 +684,7 @@ def transaction_to_item(txn: Transaction, txn_date: date) -> dict[str, Any]:
     Ids and timestamps are taken verbatim from ``txn`` so a restore can preserve
     the original values rather than generating fresh ones.
     """
-    return {
+    item: dict[str, Any] = {
         "PK": keys.property_scoped_pk(txn.property_id),
         "SK": keys.transaction_sk(txn_date, txn.id),
         "GSI2PK": keys.gsi2_year_pk(txn.property_id, txn_date.year),
@@ -565,7 +699,14 @@ def transaction_to_item(txn: Transaction, txn_date: date) -> dict[str, Any]:
         "description": txn.description,
         "createdAt": txn.created_at,
         "updatedAt": txn.updated_at,
+        "imported": txn.imported,
+        # None is dropped by the repository, so unset notes are not stored.
+        "notes": txn.notes,
     }
+    # Written only when true so legacy and non-itemized rows stay unchanged.
+    if txn.itemized:
+        item["itemized"] = True
+    return item
 
 
 def _from_item(item: dict[str, Any]) -> Transaction:
@@ -587,6 +728,11 @@ def _from_item(item: dict[str, Any]) -> Transaction:
         updated_at=(
             str(item["updatedAt"]) if item.get("updatedAt") is not None else None
         ),
+        # Legacy items written before Schedule E Import have no "imported"
+        # attribute; they must read back as not-imported.
+        imported=bool(item.get("imported", False)),
+        itemized=bool(item.get("itemized", False)),
+        notes=str(item["notes"]) if item.get("notes") is not None else None,
     )
 
 

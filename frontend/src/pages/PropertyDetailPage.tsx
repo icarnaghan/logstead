@@ -1,308 +1,72 @@
-import { lazy, useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useMemo, useState } from "react";
 import {
-  getProperty,
   getPropertyNote,
   setPropertyNote,
+  getEarliestDataYear,
   ApiError,
-  type Property,
 } from "../api/properties";
 import { listPhotos, type PhotoWithUrl } from "../api/photos";
 import { listAssets, type DepreciableAsset } from "../api/assets";
-import {
-  getReport,
-  DEPRECIATION_LINE,
-  type ScheduleEReport,
-} from "../api/reports";
+import type { ActivityListParams, ActivityPage } from "../api/activity";
+import { getReport, type ScheduleEReport } from "../api/reports";
+import { RecentActivityPanel } from "../components/activity/RecentActivityPanel";
 import { PropertyDetailsView } from "../components/properties/PropertyDetailsView";
-import { PropertyPhotos } from "../components/photos";
-import { TaxYearSelector } from "../components/dashboard/TaxYearSelector";
-import { Button, Card, Tile } from "../components/ui";
-import { formatMoney, isLoss } from "../lib/money";
+import { PropertyBusinessSelector } from "../components/businesses/PropertyBusinessSelector";
+import { PropertyPhotos, PhotoLightbox } from "../components/photos";
+import {
+  Card,
+  LoadingRegion,
+  PageHeader,
+  RefreshingIndicator,
+  StateBlock,
+  Tile,
+  TileSkeleton,
+  useFirstLoad,
+} from "../components/ui";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
+import { useAsyncResource } from "../lib/useAsyncResource";
+import { usePropertyYearRange } from "../lib/usePropertyYearRange";
 import { propertyPath } from "../components/navConfig";
-import { ChartCard } from "../components/charts/ChartCard";
-import { LazyChart } from "../components/charts/LazyChart";
-import { incomeExpenseNet } from "../components/charts/prepare";
-import { IncomeExpenseNetTable } from "../components/charts/IncomeExpenseNetTable";
-
-/**
- * The per-property income/expenses/net chart is the lazy boundary: Recharts is
- * reached only through this `React.lazy` import, so it code-splits into its own
- * async chunk absent from the initial paint (Requirement 14). The always-present
- * data table lives in a Recharts-free module imported eagerly above.
- */
-const IncomeExpenseNetChart = lazy(
-  () => import("../components/charts/IncomeExpenseNetChart"),
-);
-
-type LoadState =
-  | { status: "loading" }
-  | { status: "loaded"; property: Property }
-  | { status: "error"; message: string };
-
-type ReportState =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "loaded"; report: ScheduleEReport }
-  | { status: "error"; message: string };
+import { PageContainer } from "../components/PageContainer";
+import { usePropertyContext } from "../components/PropertyLayout";
+import { PropertySectionTabs } from "../components/PropertySectionTabs";
+import { resolvePropertyName } from "../components/propertyName";
+import { DepreciationTile } from "../components/property-detail/DepreciationTile";
+import { IncomeExpenseTile } from "../components/property-detail/IncomeExpenseTile";
+import { NotesTile } from "../components/property-detail/NotesTile";
+import { PropertyHeaderCard } from "../components/property-detail/PropertyHeaderCard";
+import { QuickLink } from "../components/property-detail/QuickLink";
+import { toReportState } from "../components/property-detail/reportState";
+import { usePropertyAssets } from "../components/property-detail/usePropertyAssets";
+import { usePropertyHeaderPhoto } from "../components/property-detail/usePropertyHeaderPhoto";
+import {
+  YearEndSummarySection,
+  type YearEndSummarySectionProps,
+} from "../components/year-end-checklist/YearEndSummarySection";
 
 interface PropertyDetailPageProps {
-  /** Test seam: single-property loader. Defaults to the real `getProperty`. */
-  load?: (id: string, signal?: AbortSignal) => Promise<Property>;
   /** Test seam: Schedule E report loader. Defaults to the real `getReport`. */
   loadReport?: (propertyId: string, taxYear: number) => Promise<ScheduleEReport>;
   /** Test seam: per-property photo loader. Defaults to the real `listPhotos`. */
   loadPhotos?: (propertyId: string) => Promise<PhotoWithUrl[]>;
   /** Test seam: per-property asset loader (drives the tax-year range). */
   loadAssets?: (propertyId: string) => Promise<DepreciableAsset[]>;
+  /** Test seam: earliest-activity-year loader. Defaults to `getEarliestDataYear`. */
+  loadEarliestYear?: (
+    propertyId: string,
+    signal?: AbortSignal,
+  ) => Promise<number | null>;
   /** Test seam: note loader. Defaults to the real `getPropertyNote`. */
   loadNote?: (propertyId: string, signal?: AbortSignal) => Promise<string>;
   /** Test seam: note saver. Defaults to the real `setPropertyNote`. */
   saveNote?: (propertyId: string, text: string) => Promise<string>;
-}
-
-/**
- * Build the selectable tax years, newest first: from the earliest depreciable
- * asset's placed-in-service year through the current year. When a property has
- * no assets yet, fall back to a recent-years window so the selector is never
- * empty. A `+1` guard caps a future-dated in-service year at the current year.
- */
-function taxYearRange(
-  assets: readonly DepreciableAsset[],
-  fallbackCount = 6,
-): number[] {
-  const current = new Date().getFullYear();
-  let earliest = current - (fallbackCount - 1);
-  for (const asset of assets) {
-    const year = Number(asset.placed_in_service_date?.slice(0, 4));
-    if (Number.isFinite(year) && year >= 1900 && year < earliest) {
-      earliest = year;
-    }
-  }
-  earliest = Math.min(earliest, current); // never start after the current year
-  const span = current - earliest + 1;
-  return Array.from({ length: span }, (_, index) => current - index);
-}
-
-/** Income / expenses / net tile driven by the selected year's report. */
-function IncomeExpenseTile({ report }: { report: ReportState }) {
-  return (
-    <Tile title="Income & expenses (year-end)" headingId="tile-income">
-      {report.status === "loading" ? (
-        <p className="text-sm text-fg-subtle" role="status">
-          Loading totals…
-        </p>
-      ) : report.status === "error" ? (
-        <p role="alert" className="text-sm text-danger">
-          {report.message}
-        </p>
-      ) : report.status === "loaded" ? (
-        <>
-          <dl className="space-y-2">
-            <div className="flex items-baseline justify-between gap-4">
-              <dt className="text-sm text-fg-muted">Total income</dt>
-              <dd className="tabular-nums font-semibold text-fg">
-                {formatMoney(report.report.totals.total_income)}
-              </dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4">
-              <dt className="text-sm text-fg-muted">Total expenses</dt>
-              <dd className="tabular-nums font-semibold text-fg">
-                {formatMoney(report.report.totals.total_expenses)}
-              </dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4 border-t border-border pt-2">
-              <dt className="text-sm font-medium text-fg-muted">
-                {isLoss(report.report.totals.net) ? "Net loss" : "Net income"}
-              </dt>
-              <dd
-                className={[
-                  "tabular-nums text-lg font-semibold",
-                  isLoss(report.report.totals.net)
-                    ? "text-danger"
-                    : "text-success",
-                ].join(" ")}
-              >
-                {formatMoney(report.report.totals.net)}
-                {isLoss(report.report.totals.net) ? (
-                  <span className="ml-2 align-middle text-xs font-medium uppercase tracking-wide text-danger">
-                    Loss
-                  </span>
-                ) : null}
-              </dd>
-            </div>
-          </dl>
-
-          {/*
-            Compact income / expenses / net chart for this property (Req 17.2),
-            below the numbers. Lazy-loaded; the always-present data table is the
-            mobile / error fallback (Req 12.1, 14).
-          */}
-          <div className="mt-4">
-            {(() => {
-              const chartData = incomeExpenseNet(report.report.totals);
-              return (
-                <ChartCard
-                  title="Income, expenses & net"
-                  ariaLabel="Income, expenses, and net for the selected year"
-                  height={220}
-                  chart={
-                    <LazyChart
-                      height={220}
-                      fallbackTable={<IncomeExpenseNetTable data={chartData} />}
-                    >
-                      <IncomeExpenseNetChart data={chartData} />
-                    </LazyChart>
-                  }
-                  dataTable={<IncomeExpenseNetTable data={chartData} />}
-                />
-              );
-            })()}
-          </div>
-        </>
-      ) : null}
-    </Tile>
-  );
-}
-
-/** Depreciation tile: the Line 18 total from the selected year's report. */
-function DepreciationTile({ report }: { report: ReportState }) {
-  const total =
-    report.status === "loaded"
-      ? (report.report.lines.find((l) => l.line === DEPRECIATION_LINE)?.total ??
-        "0.00")
-      : null;
-  return (
-    <Tile title="Depreciation" headingId="tile-depreciation">
-      {report.status === "loading" ? (
-        <p className="text-sm text-fg-subtle" role="status">
-          Loading…
-        </p>
-      ) : report.status === "error" ? (
-        <p role="alert" className="text-sm text-danger">
-          {report.message}
-        </p>
-      ) : total !== null ? (
-        <>
-          <p className="tabular-nums text-2xl font-semibold text-fg">
-            {formatMoney(total)}
-          </p>
-          <p className="mt-1 text-xs text-fg-subtle">
-            Schedule E Line 18 for this tax year.
-          </p>
-        </>
-      ) : null}
-    </Tile>
-  );
-}
-
-/** Inline-editable free-text note tile (backed by the notes API). */
-function NotesTile({
-  propertyId,
-  loadNote,
-  saveNote,
-}: {
-  propertyId: string;
-  loadNote: (propertyId: string, signal?: AbortSignal) => Promise<string>;
-  saveNote: (propertyId: string, text: string) => Promise<string>;
-}) {
-  const [text, setText] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [savedMessage, setSavedMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    setLoading(true);
-    setError(null);
-    loadNote(propertyId, controller.signal)
-      .then((value) => setText(value))
-      .catch((err) => {
-        if (controller.signal.aborted) return;
-        setError(
-          err instanceof ApiError ? err.message : "Could not load the note.",
-        );
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-    return () => controller.abort();
-  }, [loadNote, propertyId]);
-
-  async function handleSave() {
-    setSaving(true);
-    setError(null);
-    setSavedMessage(null);
-    try {
-      const saved = await saveNote(propertyId, text);
-      setText(saved);
-      setSavedMessage("Saved");
-    } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : "Could not save the note.",
-      );
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <Tile title="Notes" headingId="tile-notes">
-      {loading ? (
-        <p className="text-sm text-fg-subtle" role="status">
-          Loading note…
-        </p>
-      ) : (
-        <div className="space-y-2">
-          <label htmlFor="property-note" className="sr-only">
-            Property note
-          </label>
-          <textarea
-            id="property-note"
-            value={text}
-            onChange={(event) => {
-              setText(event.target.value);
-              setSavedMessage(null);
-            }}
-            rows={4}
-            placeholder="Add a note about this property…"
-            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          />
-          <div className="flex items-center gap-3">
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              onClick={() => void handleSave()}
-              disabled={saving}
-            >
-              {saving ? "Saving…" : "Save"}
-            </Button>
-            {savedMessage ? (
-              <span role="status" className="text-sm text-success">
-                {savedMessage}
-              </span>
-            ) : null}
-          </div>
-          {error ? (
-            <p role="alert" className="text-sm text-danger">
-              {error}
-            </p>
-          ) : null}
-        </div>
-      )}
-    </Tile>
-  );
-}
-
-/** A single quicklink button styled like a bordered nav pill. */
-function QuickLink({ to, label }: { to: string; label: string }) {
-  return (
-    <Button asChild variant="secondary" size="sm">
-      <Link to={to}>{label}</Link>
-    </Button>
-  );
+  /** Test seam: year-end checklist summary loader. Defaults to the real API. */
+  loadChecklistSummary?: YearEndSummarySectionProps["loadSummary"];
+  /** Test seam: recent activity loader. Defaults to the real activity API. */
+  loadActivity?: (
+    propertyId: string,
+    params?: ActivityListParams,
+  ) => Promise<ActivityPage>;
 }
 
 /**
@@ -319,268 +83,221 @@ function QuickLink({ to, label }: { to: string; label: string }) {
  * and never re-derived from a float.
  */
 export default function PropertyDetailPage({
-  load = getProperty,
   loadReport = getReport,
   loadPhotos = listPhotos,
   loadAssets = listAssets,
+  loadEarliestYear = getEarliestDataYear,
   loadNote = getPropertyNote,
   saveNote = setPropertyNote,
+  loadChecklistSummary,
+  loadActivity,
 }: PropertyDetailPageProps) {
-  const { propertyId } = useParams<{ propertyId: string }>();
-  const [state, setState] = useState<LoadState>({ status: "loading" });
-  const [headerPhoto, setHeaderPhoto] = useState<string | null>(null);
-
-  const currentYear = useMemo(() => new Date().getFullYear(), []);
-  const [assets, setAssets] = useState<DepreciableAsset[]>([]);
-  // Tax years span from the earliest asset's in-service year to now; recompute
-  // when the loaded assets change (falls back to recent years when none).
-  const years = useMemo(() => taxYearRange(assets), [assets]);
-  const [taxYear, setTaxYear] = useState<number>(currentYear);
-  const [report, setReport] = useState<ReportState>({ status: "idle" });
-
-  const refresh = useCallback(
-    (signal?: AbortSignal) => {
-      if (!propertyId) return;
-      setState({ status: "loading" });
-      load(propertyId, signal)
-        .then((property) => setState({ status: "loaded", property }))
-        .catch((err) => {
-          if (signal?.aborted) return;
-          const message =
-            err instanceof ApiError && err.status === 404
-              ? "That property could not be found."
-              : err instanceof ApiError
-                ? err.message
-                : "Could not load this property.";
-          setState({ status: "error", message });
-        });
-    },
-    [propertyId, load],
+  // Identity and orientation come from the shared property context fetched once
+  // by `PropertyLayout` (Requirements 4.1, 4.2) — the overview no longer issues
+  // its own `getProperty` fetch. The resolved name is used for the breadcrumb
+  // tail crumb and the single page `<h1>`, never the raw id (Requirement 1.3).
+  const context = usePropertyContext();
+  const propertyId = context.propertyId;
+  const propertyName = resolvePropertyName(
+    context.status,
+    context.property?.name,
   );
 
-  useEffect(() => {
-    const controller = new AbortController();
-    refresh(controller.signal);
-    return () => controller.abort();
-  }, [refresh]);
+  useDocumentTitle(`Overview - ${propertyName}`);
 
-  // Load the header photo (first photo, if any).
-  useEffect(() => {
-    if (!propertyId) return;
-    let active = true;
-    loadPhotos(propertyId)
-      .then((photos) => {
-        if (active) setHeaderPhoto(photos[0]?.display_url ?? null);
-      })
-      .catch(() => {
-        if (active) setHeaderPhoto(null);
-      });
-    return () => {
-      active = false;
-    };
-  }, [loadPhotos, propertyId]);
+  // First-load-only skeleton; refreshes keep content mounted (14.1-14.3).
+  const view = useFirstLoad({
+    loading: context.status === "loading" || Boolean(context.refreshing),
+    error: context.error ?? (context.status === "error" ? "" : null),
+    resetKey: propertyId,
+  });
 
-  // Load the property's depreciable assets to size the tax-year selector
-  // (earliest placed-in-service year through now). Degrades to no assets ->
-  // the recent-years fallback on any failure.
-  useEffect(() => {
-    if (!propertyId) return;
-    let active = true;
-    loadAssets(propertyId)
-      .then((rows) => {
-        if (active) setAssets(rows);
-      })
-      .catch(() => {
-        if (active) setAssets([]);
-      });
-    return () => {
-      active = false;
-    };
-  }, [loadAssets, propertyId]);
+  const headerPhoto = usePropertyHeaderPhoto(propertyId, loadPhotos);
+  const [headerLightboxOpen, setHeaderLightboxOpen] = useState(false);
 
-  // (Re)load the Schedule E report whenever the property or tax year changes
-  // (drives the income/expense and depreciation tiles).
-  useEffect(() => {
-    if (!propertyId) return;
-    let active = true;
-    setReport({ status: "loading" });
-    loadReport(propertyId, taxYear)
-      .then((r) => {
-        if (active) setReport({ status: "loaded", report: r });
-      })
-      .catch((err) => {
-        if (!active) return;
-        setReport({
-          status: "error",
-          message:
-            err instanceof ApiError
-              ? err.message
-              : "Could not load the report.",
-        });
-      });
-    return () => {
-      active = false;
-    };
-  }, [loadReport, propertyId, taxYear]);
+  // The latest filable tax year is the prior calendar year — the current year
+  // isn't over yet, so it is never the default or an option.
+  const latestTaxYear = useMemo(() => new Date().getFullYear() - 1, []);
+  // Depreciable assets size the tax-year selector.
+  const assets = usePropertyAssets(propertyId, loadAssets);
+  // Tax years span from the property's earliest activity (transaction or asset
+  // year) to the latest completed year.
+  const years = usePropertyYearRange(propertyId, assets, loadEarliestYear);
+  const [taxYear, setTaxYear] = useState<number>(latestTaxYear);
+  // Every property or tax-year change resets to the loading state.
+  const {
+    data: loadedReport,
+    error: reportError,
+    status: reportStatus,
+  } = useAsyncResource(() => loadReport(propertyId, taxYear), {
+    resetKeys: [propertyId, taxYear],
+    enabled: propertyId !== "",
+    describeError: (err) =>
+      err instanceof ApiError ? err.message : "Could not load the report.",
+  });
+  const report = toReportState(reportStatus, loadedReport, reportError);
 
   return (
-    <section aria-labelledby="property-heading">
-      <p className="text-sm">
-        <Link
-          to="/properties"
-          className="text-accent underline underline-offset-2 hover:text-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    <PageContainer>
+      <section aria-labelledby="page-heading">
+        {/*
+          Orientation header — rendered in every context state so the user never
+          loses their place while the property loads or if it fails
+          (Requirements 1.1, 1.2, 3.1–3.3). The breadcrumb ends at the resolved
+          property name as the current, non-link crumb (Requirement 1.4), and
+          the single page `<h1>` shows that same name.
+        */}
+        <PageHeader
+          breadcrumb={[
+            { label: "Properties", to: "/properties" },
+            { label: propertyName },
+          ]}
+          title="Overview"
+          meta={propertyName}
         >
-          ← All properties
-        </Link>
-      </p>
+          <PropertySectionTabs propertyId={propertyId} />
+        </PageHeader>
 
-      {state.status === "loading" ? (
-        <p className="mt-4 text-fg-subtle" role="status">
-          Loading property…
-        </p>
-      ) : null}
-
-      {state.status === "error" ? (
-        <p
-          role="alert"
-          className="mt-4 rounded-md bg-danger-subtle px-3 py-2 text-sm text-danger"
-        >
-          {state.message}
-        </p>
-      ) : null}
-
-      {state.status === "loaded" ? (
-        <>
-          {/* Header tile: photo + identity + tax-year selector. */}
-          <Card className="mt-3 flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="h-20 w-28 shrink-0 overflow-hidden rounded-md bg-surface-muted">
-                {headerPhoto ? (
-                  <img
-                    src={headerPhoto}
-                    alt={`Photo of ${state.property.name}`}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div
-                    aria-hidden="true"
-                    className="flex h-full w-full items-center justify-center text-fg-subtle"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 10.5 12 3l9 7.5" />
-                      <path d="M5 9.5V21h14V9.5" />
-                      <path d="M9.5 21v-6h5v6" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-              <div>
-                <h1
-                  id="property-heading"
-                  className="text-2xl font-semibold text-fg"
-                >
-                  {state.property.name}
-                </h1>
-                <p className="mt-1 text-fg-muted">
-                  {state.property.address_text}
-                </p>
-                {state.property.property_type ? (
-                  <p className="mt-1 text-sm text-fg-subtle">
-                    {state.property.property_type}
-                  </p>
-                ) : null}
-              </div>
+        {view.showSkeleton ? (
+          <LoadingRegion label="Loading property" className="mt-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <TileSkeleton />
+              <TileSkeleton />
+              <TileSkeleton />
             </div>
-            <TaxYearSelector value={taxYear} years={years} onChange={setTaxYear} />
-          </Card>
+          </LoadingRegion>
+        ) : null}
 
-          {/* Tile grid. */}
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <IncomeExpenseTile report={report} />
-            <DepreciationTile report={report} />
+        {view.showError ? (
+          <div className="mt-4">
+            <StateBlock
+              kind="error"
+              compact={view.errorIsStale}
+              title="Could not load this property"
+              description={context.error ?? undefined}
+              onRetry={context.retry}
+            />
+          </div>
+        ) : null}
 
-            <Tile title="Schedule E report" headingId="tile-report">
-              <p className="text-sm text-fg-muted">
-                View the full Schedule E line-by-line report for the selected
-                tax year.
-              </p>
-              <div className="mt-3">
-                <QuickLink
-                  to={propertyPath(state.property.id, "reports")}
-                  label="Open report"
-                />
-              </div>
-            </Tile>
+        {view.refreshing ? <RefreshingIndicator className="mt-4" /> : null}
 
-            <Tile title="Supporting documents" headingId="tile-documents">
-              <p className="text-sm text-fg-muted">
-                Receipts and documents are attached to transactions.
-              </p>
-              <div className="mt-3">
-                <QuickLink
-                  to={propertyPath(state.property.id, "transactions")}
-                  label="View transactions"
-                />
-              </div>
-            </Tile>
-
-            <NotesTile
-              propertyId={state.property.id}
-              loadNote={loadNote}
-              saveNote={saveNote}
+        {view.showContent && context.property ? (
+          <>
+            <PropertyHeaderCard
+              property={context.property}
+              photo={headerPhoto}
+              onOpenPhoto={() => setHeaderLightboxOpen(true)}
+              taxYear={taxYear}
+              years={years}
+              onTaxYearChange={setTaxYear}
             />
 
-            <Tile
-              title="Quicklinks"
-              headingId="tile-quicklinks"
-              className="sm:col-span-2 lg:col-span-1"
-            >
-              <div className="flex flex-wrap gap-2">
-                <QuickLink
-                  to={propertyPath(state.property.id, "transactions")}
-                  label="Transactions"
-                />
-                <QuickLink
-                  to={propertyPath(state.property.id, "assets")}
-                  label="Depreciable Assets"
-                />
-                <QuickLink
-                  to={propertyPath(state.property.id, "reports")}
-                  label="Schedule E Report"
-                />
-              </div>
-            </Tile>
+            {/* Tile grid. */}
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <IncomeExpenseTile report={report} />
+              <DepreciationTile report={report} />
 
-            <Tile
-              title="Property details"
-              headingId="tile-details"
-              className="sm:col-span-2 lg:col-span-3"
-            >
-              {state.property.details ? (
-                <PropertyDetailsView details={state.property.details} />
-              ) : (
-                <p className="text-sm text-fg-subtle">
-                  No additional property details are on file. Details are added
-                  automatically when a property is created from an address that
-                  RentCast has data for.
+              <Tile title="Schedule E report" headingId="tile-report">
+                <p className="text-sm text-fg-muted">
+                  View the full Schedule E line-by-line report for the selected
+                  tax year.
                 </p>
-              )}
-            </Tile>
+                <div className="mt-3">
+                  <QuickLink
+                    to={propertyPath(context.property.id, "reports")}
+                    label="Open report"
+                  />
+                </div>
+              </Tile>
 
-            <Card className="p-4 sm:col-span-2 lg:col-span-3">
-              <PropertyPhotos propertyId={state.property.id} />
-            </Card>
-          </div>
-        </>
-      ) : null}
-    </section>
+              <Tile title="Supporting documents" headingId="tile-documents">
+                <p className="text-sm text-fg-muted">
+                  Receipts and documents are attached to transactions.
+                </p>
+                <div className="mt-3">
+                  <QuickLink
+                    to={propertyPath(context.property.id, "transactions")}
+                    label="View transactions"
+                  />
+                </div>
+              </Tile>
+
+              <NotesTile
+                propertyId={context.property.id}
+                loadNote={loadNote}
+                saveNote={saveNote}
+              />
+
+              <Tile title="Owning business" headingId="tile-business">
+                <PropertyBusinessSelector
+                  propertyId={context.property.id}
+                  businessId={context.property.business_id ?? null}
+                />
+              </Tile>
+
+              <Tile
+                title="Quicklinks"
+                headingId="tile-quicklinks"
+                className="sm:col-span-2 lg:col-span-1"
+              >
+                <div className="flex flex-wrap gap-2">
+                  <QuickLink
+                    to={propertyPath(context.property.id, "transactions")}
+                    label="Transactions"
+                  />
+                  <QuickLink
+                    to={propertyPath(context.property.id, "assets")}
+                    label="Depreciable Assets"
+                  />
+                  <QuickLink
+                    to={propertyPath(context.property.id, "reports")}
+                    label="Schedule E Report"
+                  />
+                </div>
+              </Tile>
+
+              <Tile
+                title="Property details"
+                headingId="tile-details"
+                className="sm:col-span-2 lg:col-span-3"
+              >
+                {context.property.details ? (
+                  <PropertyDetailsView details={context.property.details} />
+                ) : (
+                  <p className="text-sm text-fg-subtle">
+                    No additional property details are on file. Details are
+                    added automatically when a property is created from an
+                    address that RentCast has data for.
+                  </p>
+                )}
+              </Tile>
+
+              <Card className="p-4 sm:col-span-2 lg:col-span-3">
+                <PropertyPhotos propertyId={context.property.id} />
+              </Card>
+
+              {headerPhoto ? (
+                <PhotoLightbox
+                  open={headerLightboxOpen}
+                  onOpenChange={setHeaderLightboxOpen}
+                  src={headerPhoto}
+                  alt={`Photo of ${context.property.name}`}
+                />
+              ) : null}
+            </div>
+
+            <RecentActivityPanel
+              propertyId={context.property.id}
+              loadActivity={loadActivity}
+            />
+            <YearEndSummarySection
+              propertyId={context.property.id}
+              loadSummary={loadChecklistSummary}
+            />
+          </>
+        ) : null}
+      </section>
+    </PageContainer>
   );
 }

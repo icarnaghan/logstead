@@ -19,7 +19,7 @@ import type {
   CombinedScheduleEReport,
   ScheduleEReport,
 } from "../../api/reports";
-import type { PropertySummary } from "../../api/dashboard";
+import type { PropertySummary, TrendsSeries } from "../../api/dashboard";
 import type { ScheduleRow } from "../../api/assets";
 
 /** One category slice for the expense-by-category chart (Req 16). */
@@ -134,5 +134,127 @@ export function depreciationSeries(
     year: row.tax_year,
     amountCents: toCents(row.amount),
     remainingCents: toCents(row.remaining_basis),
+  }));
+}
+
+/** One point on the portfolio income / expenses / net trend chart (Req 3.1). */
+export interface TrendPointDatum {
+  /** The four-digit Data_Year this point represents. */
+  year: number;
+  /** Portfolio total income for the year, in exact integer cents. */
+  income: number;
+  /** Portfolio total expenses for the year, in exact integer cents. */
+  expenses: number;
+  /** Portfolio net for the year, in exact integer cents; negative is a loss. */
+  net: number;
+}
+
+/** One property's net-over-years series on the net-by-property trend chart (Req 4). */
+export interface PropertyTrendSeries {
+  /** A label unique across all series (disambiguated on name collision). */
+  label: string;
+  /** The owning property's id. */
+  propertyId: string;
+  /** One point per Data_Year; a missing year resolves to `0` cents. */
+  points: { year: number; cents: number }[];
+}
+
+/** One point on the portfolio depreciation (Schedule E Line 18) trend chart (Req 5.1). */
+export interface DepreciationTrendDatum {
+  /** The four-digit Data_Year this point represents. */
+  year: number;
+  /** Portfolio Line 18 depreciation total for the year, in exact integer cents. */
+  cents: number;
+}
+
+/**
+ * Portfolio income / expenses / net across every Data_Year (Requirement 3.1).
+ *
+ * One datum per Data_Year, preserving the backend's ascending chronological
+ * order. Each money figure crosses the Money_String → integer-cents boundary
+ * exclusively through {@link toCents}, so no float enters the chart pipeline
+ * (Requirement 10.4). `net` may be negative, denoting a loss.
+ */
+export function incomeExpenseNetTrend(series: TrendsSeries): TrendPointDatum[] {
+  return series.years.map((year) => ({
+    year: year.tax_year,
+    income: toCents(year.total_income),
+    expenses: toCents(year.total_expenses),
+    net: toCents(year.net),
+  }));
+}
+
+/**
+ * Net-by-property across every Data_Year — one series per owned property
+ * (Requirement 4.1). Each series carries one point per Data_Year in the
+ * backend's ascending order, with a property's missing year contributed as
+ * `0` cents from the backend's `0.00` (Requirement 4.2); every amount crosses
+ * the boundary via {@link toCents} (Requirement 10.4).
+ *
+ * The property set and ordering are taken from the first Data_Year's
+ * per-property list (the backend emits every owned property in every year, in
+ * a stable order). Each series is keyed by property id so a property that is
+ * absent from a given year's list still resolves to `0` cents.
+ *
+ * Labels default to the property display name; where two or more properties
+ * share a display name, every colliding label is suffixed with a disambiguator
+ * so each series' label is unique (Requirement 4.5).
+ */
+export function netByPropertyTrend(series: TrendsSeries): PropertyTrendSeries[] {
+  const years = series.years;
+  if (years.length === 0) return [];
+
+  // Owned properties, in the stable order the backend emits them. The first
+  // year's per-property list enumerates every property; de-duplicate by id in
+  // case later years surface a property the first year omitted.
+  const order: { propertyId: string; name: string }[] = [];
+  const seen = new Set<string>();
+  for (const year of years) {
+    for (const point of year.properties) {
+      if (seen.has(point.property_id)) continue;
+      seen.add(point.property_id);
+      order.push({ propertyId: point.property_id, name: point.property_name });
+    }
+  }
+
+  // Resolve unique labels: a display name shared by multiple properties is
+  // suffixed with a running per-name index so every label is distinct.
+  const nameCounts = new Map<string, number>();
+  for (const { name } of order) {
+    nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1);
+  }
+  const nameSeen = new Map<string, number>();
+  const labels = new Map<string, string>();
+  for (const { propertyId, name } of order) {
+    if ((nameCounts.get(name) ?? 0) > 1) {
+      const n = (nameSeen.get(name) ?? 0) + 1;
+      nameSeen.set(name, n);
+      labels.set(propertyId, `${name} (${n})`);
+    } else {
+      labels.set(propertyId, name);
+    }
+  }
+
+  // Per-year net lookup by property id, so a property absent from a year's
+  // list resolves to 0 cents.
+  return order.map(({ propertyId }) => ({
+    label: labels.get(propertyId) ?? propertyId,
+    propertyId,
+    points: years.map((year) => {
+      const point = year.properties.find((p) => p.property_id === propertyId);
+      return { year: year.tax_year, cents: point ? toCents(point.net) : 0 };
+    }),
+  }));
+}
+
+/**
+ * Portfolio Schedule E Line 18 depreciation total across every Data_Year
+ * (Requirement 5.1). One datum per Data_Year in the backend's ascending order;
+ * each total crosses the boundary via {@link toCents} (Requirement 10.4).
+ */
+export function depreciationTrend(series: TrendsSeries): DepreciationTrendDatum[] {
+  return series.years.map((year) => ({
+    year: year.tax_year,
+    cents: toCents(year.depreciation_total),
   }));
 }

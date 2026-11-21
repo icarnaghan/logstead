@@ -29,6 +29,7 @@ transactions could be extracted" message (Requirement 6.12).
 
 from __future__ import annotations
 
+import logging
 import re
 import time
 from dataclasses import dataclass, field
@@ -36,6 +37,7 @@ from decimal import Decimal
 from typing import Callable, Final
 
 from logstead.models.result import Result
+from logstead.util.logsafe import exc_summary
 from logstead.util.money import Money, to_money
 
 __all__ = [
@@ -336,15 +338,14 @@ def parse_expense_summary(
     try:
         text, page_count = extractor(bytes(pdf_bytes))
     except _ParseFailure as exc:
-        return Result.failure(
-            "unavailable",
-            f"No transactions could be extracted: {exc.message}",
+        # Library messages can quote document text, so log the cause type only.
+        logging.getLogger(__name__).warning(
+            "PDF parse failed: %s", exc_summary(exc)
         )
+        return Result.failure("unavailable", "No transactions could be extracted.")
     except Exception as exc:  # noqa: BLE001 - any extractor error is a parse failure
-        return Result.failure(
-            "unavailable",
-            f"No transactions could be extracted: {exc}",
-        )
+        logging.getLogger(__name__).error("PDF extractor raised: %s", exc_summary(exc))
+        return Result.failure("unavailable", "No transactions could be extracted.")
 
     if page_count > bounds.max_pages:
         return Result.failure(

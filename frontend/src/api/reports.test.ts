@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { ApiClient } from "../lib/apiClient";
 import {
+  createCombinedReportPdf,
+  createReportPdf,
   getCombinedReport,
   getReport,
   reportToCsv,
@@ -51,6 +53,10 @@ function makeReport(overrides: Partial<ScheduleEReport> = {}): ScheduleEReport {
       total_expenses: "7175.33",
       net: "16824.67",
     },
+    line12: {
+      source: "transaction-entered",
+      superseded_manual_interest: { amount: "0.00", count: 0 },
+    },
     ...overrides,
   };
 }
@@ -97,6 +103,10 @@ function makeCombined(
       total_income: "24000.00",
       total_expenses: "7175.33",
       net: "16824.67",
+    },
+    line12: {
+      total: "0.00",
+      superseded_manual_interest: { amount: "0.00", count: 0 },
     },
     ...overrides,
   };
@@ -188,6 +198,50 @@ describe("reportToCsv", () => {
   });
 });
 
+describe("Line 12 export rows (Requirement 6.10, Property 24)", () => {
+  const loanLine12: ScheduleEReport["line12"] = {
+    source: "loan-generated",
+    superseded_manual_interest: { amount: "1234.00", count: 3 },
+  };
+
+  it("writes the three Line 12 rows directly after the line table", () => {
+    const csv = reportToCsv(makeReport({ line12: loanLine12 }));
+    const rows = csv.split("\n");
+
+    const last = rows.indexOf("19,Other,expense,142.00");
+    expect(rows.slice(last + 1, last + 5)).toEqual([
+      "Line 12 Source,loan-generated",
+      "Line 12 Superseded Manual Interest,1234.00",
+      "Line 12 Superseded Transaction Count,3",
+      "",
+    ]);
+  });
+
+  it("writes transaction-entered detail with zero superseded values", () => {
+    const csv = reportToCsv(makeReport());
+    expect(csv).toContain("Line 12 Source,transaction-entered");
+    expect(csv).toContain("Line 12 Superseded Manual Interest,0.00");
+    expect(csv).toContain("Line 12 Superseded Transaction Count,0");
+  });
+
+  it("omits the Line 12 rows when line12 is absent", () => {
+    const csv = reportToCsv(makeReport({ line12: undefined }));
+    expect(csv).not.toContain("Line 12");
+  });
+
+  it("carries line12 verbatim, with money strings, in the JSON export", () => {
+    const report = makeReport({ line12: loanLine12 });
+    const json = reportToJson(report);
+    expect(JSON.parse(json).line12).toEqual(loanLine12);
+    expect(json).toContain('"amount": "1234.00"');
+  });
+
+  it("does not add a line12 key to JSON when absent", () => {
+    const json = reportToJson(makeReport({ line12: undefined }));
+    expect(JSON.parse(json)).not.toHaveProperty("line12");
+  });
+});
+
 describe("reportFilename", () => {
   it("builds a slugged filename with the tax year and format", () => {
     const report = makeReport();
@@ -204,5 +258,51 @@ describe("reportFilename", () => {
       header: { ...makeReport().header, property_name: "***" },
     });
     expect(reportFilename(report, "csv")).toBe("schedule-e-property-2024.csv");
+  });
+});
+
+const PDF_RESPONSE = {
+  download_url: "https://files.example.com/a.pdf",
+  filename: "schedule-e-maple-2024.pdf",
+  content_type: "application/pdf",
+  size_bytes: 1234,
+  expires_in_seconds: 900,
+};
+
+describe("createReportPdf", () => {
+  it("POSTs to the property PDF route with the taxYear query", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(200, PDF_RESPONSE));
+
+    const pdf = await createReportPdf("a/b", 2024, clientWith(fetchImpl));
+
+    const [url, init] = fetchImpl.mock.calls[0];
+    expect(url).toBe(
+      "https://api.example.com/properties/a%2Fb/report/pdf?taxYear=2024",
+    );
+    expect(init.method).toBe("POST");
+    expect(pdf.filename).toBe("schedule-e-maple-2024.pdf");
+  });
+});
+
+describe("createCombinedReportPdf", () => {
+  it("POSTs with only taxYear when no property ids are given", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(200, PDF_RESPONSE));
+
+    await createCombinedReportPdf(2024, undefined, clientWith(fetchImpl));
+
+    const [url, init] = fetchImpl.mock.calls[0];
+    expect(url).toBe("https://api.example.com/reports/combined/pdf?taxYear=2024");
+    expect(init.method).toBe("POST");
+  });
+
+  it("sends property ids as a comma-separated query value", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(200, PDF_RESPONSE));
+
+    await createCombinedReportPdf(2024, ["p1", "p2"], clientWith(fetchImpl));
+
+    const [url] = fetchImpl.mock.calls[0];
+    const parsed = new URL(url as string);
+    expect(parsed.pathname).toBe("/reports/combined/pdf");
+    expect(parsed.searchParams.get("propertyIds")).toBe("p1,p2");
   });
 });

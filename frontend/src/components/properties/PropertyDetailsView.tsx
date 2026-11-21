@@ -47,7 +47,7 @@ export function PropertyDetailsView({ details, headingId }: PropertyDetailsViewP
   return (
     <div className="space-y-4 text-sm" aria-labelledby={headingId}>
       <section>
-        <h4 className="font-medium text-fg-muted">Structure</h4>
+        <h3 className="font-medium text-fg-muted">Structure</h3>
         <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
           <Row label="Type" value={details.property_type} />
           <Row label="Bedrooms" value={details.bedrooms} />
@@ -61,7 +61,7 @@ export function PropertyDetailsView({ details, headingId }: PropertyDetailsViewP
       </section>
 
       <section>
-        <h4 className="font-medium text-fg-muted">Features</h4>
+        <h3 className="font-medium text-fg-muted">Features</h3>
         <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
           <Row label="Architecture" value={features.architecture_type} />
           <Row label="Exterior" value={features.exterior_type} />
@@ -86,7 +86,7 @@ export function PropertyDetailsView({ details, headingId }: PropertyDetailsViewP
       </section>
 
       <section>
-        <h4 className="font-medium text-fg-muted">Sale &amp; tax</h4>
+        <h3 className="font-medium text-fg-muted">Sale &amp; tax</h3>
         <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
           <Row label="Last sale date" value={details.last_sale_date} />
           <Row label="Last sale price" value={lastSalePrice} />

@@ -12,12 +12,14 @@ function makeClient(
   overrides: Partial<Pick<PhotosApi, never>> & {
     get?: ReturnType<typeof vi.fn>;
     post?: ReturnType<typeof vi.fn>;
+    put?: ReturnType<typeof vi.fn>;
     delete?: ReturnType<typeof vi.fn>;
   } = {},
 ) {
   return {
     get: overrides.get ?? vi.fn(),
     post: overrides.post ?? vi.fn(),
+    put: overrides.put ?? vi.fn(),
     delete: overrides.delete ?? vi.fn(),
   };
 }
@@ -48,6 +50,7 @@ describe("PhotosApi.listPhotos (Req 4.3)", () => {
           content_type: "image/jpeg",
           original_filename: "a.jpg",
           uploaded_at: "2024-01-01T00:00:00Z",
+          is_cover: false,
         },
         display_url: "https://s3.example/a.jpg",
       },
@@ -73,6 +76,7 @@ describe("PhotosApi.requestUpload (Req 4.1)", () => {
         content_type: "image/png",
         original_filename: "b.png",
         uploaded_at: null,
+        is_cover: false,
       },
     };
     const post = vi.fn().mockResolvedValue(presigned);
@@ -95,6 +99,17 @@ describe("PhotosApi.deletePhoto (Req 4.4)", () => {
     await api.deletePhoto("prop-1", "p1");
 
     expect(del).toHaveBeenCalledWith("/properties/prop-1/photos/p1");
+  });
+});
+
+describe("PhotosApi.setCover", () => {
+  it("PUTs the photo cover path", async () => {
+    const put = vi.fn().mockResolvedValue(undefined);
+    const api = new PhotosApi(makeClient({ put }));
+
+    await api.setCover("prop-1", "p1");
+
+    expect(put).toHaveBeenCalledWith("/properties/prop-1/photos/p1/cover");
   });
 });
 

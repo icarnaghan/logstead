@@ -43,6 +43,20 @@ export interface Transaction {
   readonly type: TransactionType;
   readonly category_id: string;
   readonly description?: string | null;
+  /**
+   * True when this transaction was synthesized by Schedule E Import rather than
+   * tracked by the user (Requirement 7.1–7.3). Absent/false for every
+   * user-tracked transaction and for any row stored before the marker existed,
+   * so the field is optional and defaults to not-imported in the UI.
+   */
+  readonly imported?: boolean;
+  /**
+   * True for an itemized entry (a detail row behind a line's total, managed on
+   * the Repairs page). Absent/false for entered totals and older rows.
+   */
+  readonly itemized?: boolean;
+  /** Free-text notes; only present on itemized entries. */
+  readonly notes?: string | null;
 }
 
 /** Request body for creating a transaction (Requirement 5.1). */

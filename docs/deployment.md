@@ -42,6 +42,15 @@ Target region: **us-east-1**.
   use the authorizer except `GET /categories`, which is explicitly public.
 - **Python 3.12 Lambda** (`logstead.router.handler.handler`) with env config and
   least-privilege DynamoDB + S3 policies.
+- **Package worker Lambda** (`logstead-package-worker`) that builds accountant
+  package ZIPs. See [Accountant package worker](#accountant-package-worker).
+- A **CloudWatch alarm** (`logstead-package-worker-errors`) on the worker's
+  `Errors` metric.
+- **Route throttles** on the HTTP API stage: a default rate plus tighter limits
+  on expensive routes, including `POST /accountant-packages` (rate 1), the two
+  report PDF routes (rate 2) and `GET /search` (rate 2, burst 5). See
+  `RouteSettings` in `infra/template.yaml`.
+- **Reserved concurrency** of 10 on the API function and 2 on the worker.
 
 ## Parameters
 
@@ -50,6 +59,7 @@ Target region: **us-east-1**.
 | `DomainName` | (empty) | SPA custom domain (CloudFront alias + Cognito URLs) |
 | `CertificateArn` | (empty) | ACM cert ARN in us-east-1 covering the domain |
 | `UseCustomDomain` | `false` | Attach the domain + cert to CloudFront |
+| `AllowedSpaOrigin` | (empty) | Origin allowed by the files-bucket CORS when `UseCustomDomain=false` (e.g. `https://d111111abcdef8.cloudfront.net`). Blank allows only `http://localhost:5173` |
 | `CognitoDomainPrefix` | `logstead-auth` | Globally-unique Hosted UI domain prefix |
 | `RentCastApiKeyParam` | `/logstead/rentcast-api-key` | Name of an SSM SecureString holding the RentCast key (optional; enrichment 503s if unset) |
 
@@ -70,8 +80,8 @@ basic (no-custom-domain) deploy.
   - install Python 3.12 locally (e.g. `mise install python@3.12` or Homebrew)
     and build natively, **or**
   - build in a container with `sam build --use-container` (requires Docker
-    running) - no local 3.12 needed. This is what the `deploy:infra` npm script
-    uses by default.
+    running) - no local 3.12 needed. This is what `make deploy` and the
+    `deploy:infra` npm script use.
 - Node 18+ for the SPA.
 
 ## One-command deploy (Makefile)
@@ -89,8 +99,17 @@ make seed           # seed the category catalog
 make create-user EMAIL=you@example.com
 ```
 
-`make deploy-infra`/`make build` automatically clear iCloud `* 2.*` duplicate
-files and the backend venv first (both otherwise break `sam build`).
+`make deploy-infra`/`make build` first delete iCloud `* 2.*` duplicate files
+(outside `node_modules`) and the backend venv, which break `sam build` when the
+repo sits in an iCloud-synced folder. Both steps are harmless elsewhere. Because
+the venv is deleted, run `make install-backend` before backend tests after a
+deploy.
+
+`make deploy-spa` runs `infra/deploy-spa.sh`, which installs the frontend with
+`npm ci` and then runs `npm run build`. `npm ci` deletes `node_modules` and
+reinstalls exactly what `package-lock.json` lists, so every deploy builds from
+a clean dependency tree. `make install-frontend` runs `npm install`, which keeps
+any extra folders already in `node_modules`.
 
 ## One-command deploy (from frontend/)
 
@@ -142,8 +161,9 @@ via the Lambda's IAM role).
 
 ## Deploy the frontend
 
-`infra/deploy-spa.sh` (invoked by `npm run deploy:spa`) reads the stack outputs,
-writes `frontend/.env.production`, builds the SPA, syncs `dist/` to the SPA
+`infra/deploy-spa.sh` (invoked by `make deploy-spa` and `npm run deploy:spa`)
+reads the stack outputs, writes `frontend/.env.production`, runs `npm ci` and
+`npm run build`, syncs `dist/` to the SPA
 bucket, and invalidates CloudFront. To do it by hand, read the outputs:
 
 ```bash
@@ -155,6 +175,95 @@ Use `ApiBaseUrl`, `UserPoolClientId`, and `CognitoHostedUiDomain` for the
 `VITE_*` values (see [Developer guide](developer-guide.md)). If you deploy
 without a custom domain, use the `CloudFrontDomain` output as the app origin and
 make sure the Cognito app client callback/logout URLs match.
+
+### Files-bucket CORS (two-step first deploy without a custom domain)
+
+The files bucket never allows `*`. It allows only `Content-Type` and the
+`GET/PUT/HEAD` methods, from one origin: `https://<DomainName>` when
+`UseCustomDomain=true`, otherwise `AllowedSpaOrigin`, otherwise
+`http://localhost:5173`. The CloudFront domain cannot be referenced from the
+bucket (circular dependency through the CSP policy), so:
+
+1. Run `sam deploy` with `AllowedSpaOrigin` unset.
+2. Read the `CloudFrontDomain` output, add
+   `AllowedSpaOrigin=\"https://<id>.cloudfront.net\"` to `parameter_overrides`
+   in `infra/samconfig.toml`, and run `sam deploy` again.
+
+Until step 2, photo/receipt uploads from the deployed SPA fail the CORS check.
+With a custom domain, set `DomainName` and no second step is needed.
+
+## Accountant package worker
+
+`PackageWorkerFunction` (`logstead-package-worker`) builds the accountant
+package ZIP outside the API's 30 second integration limit and 6 MB response
+limit. It uses the same source as the API function (`CodeUri: ../backend/`) and
+the same makefile build (`build-PackageWorkerFunction` in `backend/Makefile`),
+with handler `logstead.worker.package_worker.handler`. The API function starts
+it with an asynchronous invoke; its name reaches the API through the
+`PACKAGE_WORKER_FUNCTION` environment variable.
+
+| Setting | Value |
+| --- | --- |
+| Timeout | 600 seconds |
+| Memory | 1024 MB |
+| Ephemeral storage | 1024 MB |
+| Reserved concurrency | 2 |
+| Async retries | 0 (`MaximumRetryAttempts: 0`), max event age 300 seconds |
+| Environment | `TABLE_NAME`, `FILES_BUCKET` |
+
+There are no retries because a failed build marks the job failed and the user
+starts a new one, so a retry would only repeat the failure.
+
+### IAM
+
+Worker role (inline statements in the template):
+
+- `TableReadJobWrite`: `dynamodb:GetItem`, `Query`, `PutItem` on the table and
+  its indexes. No delete, update, scan, or batch actions.
+- `ReadReceipts`: `s3:GetObject` on `receipts/*`. There is no `ListBucket`, so
+  a missing receipt is a skipped entry, not an error.
+- `WritePackage`: `s3:PutObject` and `s3:AbortMultipartUpload` on
+  `exports/packages/*`.
+
+API function additions:
+
+- `InvokePackageWorker`: `lambda:InvokeFunction` on the worker only.
+- `s3:DeleteObject` on `exports/packages/*` and `exports/pdf/*`, so a user can
+  delete a finished package and the generated PDFs beside it.
+
+### Lifecycle rules
+
+The files bucket is versioned. Two rules were added to the existing ones:
+
+| Rule | Prefix | Current version | Noncurrent version |
+| --- | --- | --- | --- |
+| `ExpireAccountantPackages` | `exports/packages/` | expires after 1 day | expires after 1 day |
+| `ExpireGeneratedPdfs` | `exports/pdf/` | expires after 1 day | expires after 1 day |
+
+Download links last 15 minutes. These prefixes also match the existing 30-day
+`ExpireExports` rule; the shorter expiry governs. The older rules are
+unchanged (see [Future improvements](future-improvements.md)).
+
+### Package size
+
+The unzipped Lambda runtime dependencies (`pip install --target`, manylinux2014
+x86_64, Python 3.12, application source excluded) measured 98,212 KiB
+(95.9 MiB) before and 107,304 KiB (104.8 MiB) after adding `reportlab==5.1.0`,
+an increase of about 8.9 MiB. This is well under the 250 MB unzipped Lambda
+limit. See [Dependency policy](dependency-policy.md).
+
+### Deploy-time notes
+
+- **Concurrency quota.** The worker's reserved concurrency of 2 counts against
+  the account's unreserved Lambda concurrency pool (the API function reserves
+  10 more). Lambda always keeps 100 executions unreserved, so a new or
+  low-limit account (default limit 10 on some accounts) can fail the deploy on
+  the reservation. If a deployment is blocked by the account's Lambda
+  concurrency limit, request a Lambda concurrency quota increase through
+  Service Quotas. Do not lower the reservation to work around it.
+- **Order of resources.** `sam build` builds both functions; the API function
+  references the worker, so CloudFormation creates the worker first.
+- **Alarm.** `logstead-package-worker-errors` fires on worker function errors.
 
 ## Seed reference data (categories)
 
@@ -201,6 +310,7 @@ Lambda environment variables (set by the template):
 | `TABLE_NAME` | `Logstead` table ref |
 | `FILES_BUCKET` | files bucket ref |
 | `RENTCAST_API_KEY_PARAM` | `RentCastApiKeyParam` (SSM SecureString name; value read + decrypted at runtime) |
+| `PACKAGE_WORKER_FUNCTION` | Package worker function name (API function only) |
 
 Address lookup uses Amazon Location Service (`geo-places`) via the Lambda's IAM
 role - no API key. The template grants both `geo-places:Autocomplete` (candidate
